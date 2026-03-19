@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 # Replace this with your actual Hugging Face model repo
-MODEL_REPO = "your-username/dream-stress-classifier"
+MODEL_REPO = "peterjerry111/dream-stress-classifier"
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
