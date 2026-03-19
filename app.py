@@ -1,1 +1,382 @@
-{"nbformat":4,"nbformat_minor":0,"metadata":{"colab":{"provenance":[],"authorship_tag":"ABX9TyM7ghRBDIU0gkRCF/+CxvVi"},"kernelspec":{"name":"python3","display_name":"Python 3"},"language_info":{"name":"python"}},"cells":[{"cell_type":"code","execution_count":null,"metadata":{"id":"PCs7U0WawV-7"},"outputs":[],"source":["import os\n","import re\n","import random\n","import numpy as np\n","import pandas as pd\n","import torch\n","import streamlit as st\n","\n","from transformers import AutoTokenizer, AutoModelForSequenceClassification\n","\n","st.set_page_config(page_title=\"Dream Analyzer\", page_icon=\"🌙\", layout=\"wide\")\n","\n","SEED = 42\n","random.seed(SEED)\n","np.random.seed(SEED)\n","torch.manual_seed(SEED)\n","if torch.cuda.is_available():\n","    torch.cuda.manual_seed_all(SEED)\n","\n","DEVICE = \"cuda\" if torch.cuda.is_available() else \"cpu\"\n","\n","BASE_DIR = os.path.dirname(os.path.abspath(__file__))\n","DATA_DIR = os.path.join(BASE_DIR, \"data\")\n","MODEL_DIR = os.path.join(BASE_DIR, \"models\", \"stress_model\")\n","\n","MODEL1_PATH = os.path.join(DATA_DIR, \"model1_train.csv\")\n","MODEL2_PATH = os.path.join(DATA_DIR, \"model2_train.csv\")\n","MODEL2_BKUP_PATH = os.path.join(DATA_DIR, \"model2_train.csv.bkup.csv\")\n","SYMBOL_KB_PATH = os.path.join(DATA_DIR, \"symbol_kb.csv\")\n","\n","ID2LABEL = {0: \"low\", 1: \"medium\", 2: \"high\"}\n","\n","def clean_text(x):\n","    if pd.isna(x):\n","        return \"\"\n","    return str(x).strip()\n","\n","def split_tags(x):\n","    x = clean_text(x)\n","    if not x:\n","        return []\n","    return [i.strip().lower() for i in x.split(\",\") if i.strip()]\n","\n","def tokenize_simple(text):\n","    return re.findall(r\"[a-zA-Z_]+\", text.lower())\n","\n","@st.cache_data\n","def load_data():\n","    df_model1 = pd.read_csv(MODEL1_PATH)\n","    df_model2 = pd.read_csv(MODEL2_PATH)\n","    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)\n","    df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)\n","\n","    for col in [\"dream_text\", \"stress_label\", \"emotion_labels\", \"theme_labels\", \"symbol_labels\"]:\n","        df_model1[col] = df_model1[col].apply(clean_text)\n","\n","    df_model1[\"stress_label\"] = df_model1[\"stress_label\"].str.lower().replace({\"moderate\": \"medium\"})\n","    df_model1 = df_model1[df_model1[\"stress_label\"].isin({\"low\", \"medium\", \"high\"})].drop_duplicates().reset_index(drop=True)\n","    df_model1[\"emotion_list\"] = df_model1[\"emotion_labels\"].apply(split_tags)\n","    df_model1[\"theme_list\"] = df_model1[\"theme_labels\"].apply(split_tags)\n","    df_model1[\"symbol_list\"] = df_model1[\"symbol_labels\"].apply(split_tags)\n","\n","    for col in [\"stress_label\", \"emotion_labels\", \"dominant_emotion\", \"recommendation_text\"]:\n","        df_model2[col] = df_model2[col].apply(clean_text)\n","\n","    df_model2[\"stress_label\"] = df_model2[\"stress_label\"].str.lower().replace({\"moderate\": \"medium\"})\n","    df_model2 = df_model2[df_model2[\"stress_label\"].isin({\"low\", \"medium\", \"high\", \"very_high\", \"severe\"})].drop_duplicates().reset_index(drop=True)\n","    df_model2[\"emotion_list\"] = df_model2[\"emotion_labels\"].apply(split_tags)\n","\n","    for col in [\"symbol_name\", \"default_stress\", \"default_recommendation\", \"related_recommendations\"]:\n","        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)\n","\n","    df_model2_bkup[\"symbol_name\"] = df_model2_bkup[\"symbol_name\"].str.lower()\n","    df_model2_bkup[\"default_stress\"] = df_model2_bkup[\"default_stress\"].str.lower()\n","    df_model2_bkup[\"related_list\"] = df_model2_bkup[\"related_recommendations\"].apply(\n","        lambda x: [i.strip() for i in clean_text(x).split(\"|\") if i.strip()]\n","    )\n","\n","    for col in [\"symbol_name\", \"traditional_summary_en\", \"theme_tags\", \"emotion_hints\", \"stress_hint\", \"source_origin\"]:\n","        df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)\n","\n","    df_symbol_kb[\"symbol_name\"] = df_symbol_kb[\"symbol_name\"].str.lower()\n","    df_symbol_kb[\"theme_list\"] = df_symbol_kb[\"theme_tags\"].apply(\n","        lambda x: [i.strip().lower() for i in clean_text(x).split(\",\") if i.strip()]\n","    )\n","    df_symbol_kb[\"emotion_list\"] = df_symbol_kb[\"emotion_hints\"].apply(\n","        lambda x: [i.strip().lower() for i in clean_text(x).split(\",\") if i.strip()]\n","    )\n","\n","    symbol_kb_dict = {row[\"symbol_name\"]: row for _, row in df_symbol_kb.iterrows()}\n","    symbol_reco_dict = {row[\"symbol_name\"]: row for _, row in df_model2_bkup.iterrows()}\n","\n","    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict\n","\n","@st.cache_resource\n","def load_model():\n","    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)\n","    model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR).to(DEVICE)\n","    model.eval()\n","    return tokenizer, model\n","\n","df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()\n","stress_tokenizer, stress_model = load_model()\n","\n","def predict_stress(text):\n","    inputs = stress_tokenizer(\n","        text,\n","        return_tensors=\"pt\",\n","        truncation=True,\n","        padding=True,\n","        max_length=256\n","    )\n","    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}\n","\n","    with torch.no_grad():\n","        outputs = stress_model(**inputs)\n","        probs = torch.softmax(outputs.logits, dim=1)[0].cpu().numpy()\n","        pred = int(np.argmax(probs))\n","\n","    return ID2LABEL[pred], probs\n","\n","def detect_symbols(text, known_symbols):\n","    tokens = tokenize_simple(text)\n","    token_set = set(tokens)\n","    found = []\n","\n","    for sym in known_symbols:\n","        if sym in token_set:\n","            found.append(sym)\n","        elif \"_\" in sym:\n","            parts = sym.split(\"_\")\n","            if all(part in token_set for part in parts):\n","                found.append(sym)\n","\n","    return list(dict.fromkeys(found))\n","\n","def find_similar_examples(text, top_k=5):\n","    query_tokens = set(tokenize_simple(text))\n","    scores = []\n","\n","    for _, row in df_model1.iterrows():\n","        row_tokens = set(tokenize_simple(row[\"dream_text\"]))\n","        overlap = len(query_tokens & row_tokens)\n","        if overlap > 0:\n","            scores.append((overlap, row))\n","\n","    scores = sorted(scores, key=lambda x: x[0], reverse=True)[:top_k]\n","    return [row for _, row in scores]\n","\n","def infer_emotions_themes_symbols(text):\n","    matches = find_similar_examples(text, top_k=5)\n","\n","    emotions = []\n","    themes = []\n","    symbols = []\n","\n","    for row in matches:\n","        emotions.extend(row[\"emotion_list\"])\n","        themes.extend(row[\"theme_list\"])\n","        symbols.extend(row[\"symbol_list\"])\n","\n","    emotions = pd.Series(emotions).value_counts().head(5).index.tolist() if emotions else []\n","    themes = pd.Series(themes).value_counts().head(5).index.tolist() if themes else []\n","    symbols = pd.Series(symbols).value_counts().head(5).index.tolist() if symbols else []\n","\n","    direct_symbols = detect_symbols(\n","        text,\n","        set(df_symbol_kb[\"symbol_name\"].tolist()) | set(df_model2_bkup[\"symbol_name\"].tolist())\n","    )\n","\n","    for s in direct_symbols:\n","        if s not in symbols:\n","            symbols.insert(0, s)\n","\n","    return emotions, themes, symbols\n","\n","def map_stress_for_model2(stress):\n","    if stress == \"low\":\n","        return [\"low\"]\n","    if stress == \"medium\":\n","        return [\"medium\"]\n","    if stress == \"high\":\n","        return [\"high\", \"very_high\"]\n","    return [\"medium\"]\n","\n","def retrieve_recommendation(pred_stress, inferred_emotions):\n","    stress_candidates = map_stress_for_model2(pred_stress)\n","    subset = df_model2[df_model2[\"stress_label\"].isin(stress_candidates)].copy()\n","\n","    if subset.empty:\n","        return \"Take things one step at a time, reduce pressure, and focus on steady emotional recovery.\"\n","\n","    emo_set = set(inferred_emotions)\n","    scored = []\n","\n","    for _, row in subset.iterrows():\n","        overlap = len(emo_set.intersection(set(row[\"emotion_list\"])))\n","        score = overlap + (1 if row[\"dominant_emotion\"] in emo_set else 0)\n","        scored.append((score, row))\n","\n","    scored = sorted(scored, key=lambda x: x[0], reverse=True)\n","    return scored[0][1][\"recommendation_text\"]\n","\n","def natural_stress_phrase(stress):\n","    mapping = {\n","        \"low\": \"fairly calm or reflective\",\n","        \"medium\": \"emotionally unsettled\",\n","        \"high\": \"highly stressed or overwhelmed\"\n","    }\n","    return mapping.get(stress, \"emotionally activated\")\n","\n","def summarize_symbols_naturally(symbols):\n","    symbol_lines = []\n","\n","    for sym in symbols[:3]:\n","        if sym in symbol_kb_dict:\n","            summary = symbol_kb_dict[sym][\"traditional_summary_en\"]\n","            summary = summary.replace(\"May suggest \", \"\").strip()\n","            summary = summary.rstrip(\".\")\n","            symbol_lines.append((sym.replace(\"_\", \" \"), summary))\n","\n","    return symbol_lines\n","\n","def build_interpretation_paragraph(stress, emotions, themes, symbols):\n","    stress_phrase = natural_stress_phrase(stress)\n","    intro = f\"This dream may reflect a mind that feels {stress_phrase} right now.\"\n","\n","    emo_part = f\"Feelings like {', '.join(emotions[:3])} seem to be close to the surface.\" if emotions else \"\"\n","\n","    symbol_info = summarize_symbols_naturally(symbols)\n","    if symbol_info:\n","        symbol_texts = [f\"{name} often point to {meaning}\" for name, meaning in symbol_info[:2]]\n","        symbol_part = \"In this kind of dream, \" + \" and \".join(symbol_texts) + \".\"\n","    else:\n","        symbol_part = \"\"\n","\n","    theme_part = f\"The overall pattern suggests themes around {', '.join(themes[:3]).replace('_', ' ')}.\" if themes else \"\"\n","\n","    closing = \"Rather than predicting something literal, the dream is more likely showing how your mind is processing pressure, change, or unresolved feelings.\"\n","\n","    parts = [intro, emo_part, symbol_part, theme_part, closing]\n","    return \" \".join([p for p in parts if p]).strip()\n","\n","def build_recommendation_paragraph(stress, emotions, symbols):\n","    base_rec = retrieve_recommendation(stress, emotions)\n","\n","    extra = []\n","    for sym in symbols[:2]:\n","        if sym in symbol_reco_dict:\n","            sym_rec = symbol_reco_dict[sym][\"default_recommendation\"]\n","            if sym_rec and sym_rec not in extra:\n","                extra.append(sym_rec)\n","\n","    if stress == \"high\":\n","        support_line = \"If this dream matches how you have been feeling lately, it may help to slow down, reduce stimulation, and focus only on the next manageable step.\"\n","    elif stress == \"medium\":\n","        support_line = \"It may help to simplify your day, check in with your emotions, and avoid forcing clarity too quickly.\"\n","    else:\n","        support_line = \"This can be a good moment to keep things steady, listen to yourself, and move gently with what feels meaningful.\"\n","\n","    final_parts = [base_rec, support_line]\n","    if extra:\n","        final_parts.append(extra[0])\n","\n","    return \" \".join(final_parts).strip()\n","\n","def analyze_dream(dream_text):\n","    stress, probs = predict_stress(dream_text)\n","    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text)\n","\n","    interpretation = build_interpretation_paragraph(stress, emotions, themes, symbols)\n","    recommendation = build_recommendation_paragraph(stress, emotions, symbols)\n","\n","    return {\n","        \"dream_text\": dream_text,\n","        \"stress_level\": stress,\n","        \"stress_probs\": probs,\n","        \"emotions\": emotions,\n","        \"themes\": themes,\n","        \"symbols\": symbols,\n","        \"interpretation\": interpretation,\n","        \"recommendation\": recommendation\n","    }\n","\n","st.title(\"🌙 Dream Analyzer\")\n","st.write(\"Pipeline 1 uses a fine-tuned model for stress classification. Pipeline 2 uses a non-fine-tuned symbolic interpretation pipeline.\")\n","\n","with st.expander(\"About the pipelines\"):\n","    st.markdown(\"\"\"\n","**Pipeline 1 (Fine-tuned):**\n","- Hugging Face `distilroberta-base`\n","- fine-tuned for stress classification\n","\n","**Pipeline 2 (Non-fine-tuned):**\n","- retrieval from dream examples\n","- symbol knowledge base lookup\n","- recommendation retrieval\n","- natural language response construction\n","\"\"\")\n","\n","sample_text = \"I was late for an exam and everyone stared at me while I forgot everything.\"\n","dream_text = st.text_area(\"Enter your dream\", value=sample_text, height=180)\n","\n","if st.button(\"Analyze Dream\"):\n","    if dream_text.strip():\n","        with st.spinner(\"Analyzing your dream...\"):\n","            result = analyze_dream(dream_text.strip())\n","\n","        st.success(\"Analysis completed.\")\n","\n","        col1, col2 = st.columns(2)\n","\n","        with col1:\n","            st.subheader(\"Stress Level\")\n","            st.write(result[\"stress_level\"].upper())\n","\n","            probs = result[\"stress_probs\"]\n","            st.write(\"Confidence scores\")\n","            st.caption(f\"Low: {probs[0]:.4f}\")\n","            st.caption(f\"Medium: {probs[1]:.4f}\")\n","            st.caption(f\"High: {probs[2]:.4f}\")\n","\n","        with col2:\n","            st.subheader(\"Detected Features\")\n","            st.write(\"**Emotions:**\", \", \".join(result[\"emotions\"]) if result[\"emotions\"] else \"None\")\n","            st.write(\"**Themes:**\", \", \".join(result[\"themes\"]) if result[\"themes\"] else \"None\")\n","            st.write(\"**Symbols:**\", \", \".join(result[\"symbols\"]) if result[\"symbols\"] else \"None\")\n","\n","        st.subheader(\"Interpretation\")\n","        st.write(result[\"interpretation\"])\n","\n","        st.subheader(\"Recommendation\")\n","        st.write(result[\"recommendation\"])\n","    else:\n","        st.warning(\"Please enter a dream before analysis.\")"]}]}
+import os
+import re
+import random
+import numpy as np
+import pandas as pd
+import torch
+import streamlit as st
+
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+st.set_page_config(page_title="Dream Analyzer", page_icon="🌙", layout="wide")
+
+SEED = 42
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+if torch.cuda.is_available():
+    torch.cuda.manual_seed_all(SEED)
+
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+
+# Replace this with your actual Hugging Face model repo
+MODEL_REPO = "peterjerry111/dream-stress-classifier"
+
+MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
+MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
+MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
+SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
+
+ID2LABEL = {0: "low", 1: "medium", 2: "high"}
+
+
+def clean_text(x):
+    if pd.isna(x):
+        return ""
+    return str(x).strip()
+
+
+def split_tags(x):
+    x = clean_text(x)
+    if not x:
+        return []
+    return [i.strip().lower() for i in x.split(",") if i.strip()]
+
+
+def tokenize_simple(text):
+    return re.findall(r"[a-zA-Z_]+", text.lower())
+
+
+@st.cache_data
+def load_data():
+    df_model1 = pd.read_csv(MODEL1_PATH)
+    df_model2 = pd.read_csv(MODEL2_PATH)
+    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
+    df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
+
+    for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
+        df_model1[col] = df_model1[col].apply(clean_text)
+
+    df_model1["stress_label"] = df_model1["stress_label"].str.lower().replace({"moderate": "medium"})
+    df_model1 = df_model1[
+        df_model1["stress_label"].isin({"low", "medium", "high"})
+    ].drop_duplicates().reset_index(drop=True)
+    df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
+    df_model1["theme_list"] = df_model1["theme_labels"].apply(split_tags)
+    df_model1["symbol_list"] = df_model1["symbol_labels"].apply(split_tags)
+
+    for col in ["stress_label", "emotion_labels", "dominant_emotion", "recommendation_text"]:
+        df_model2[col] = df_model2[col].apply(clean_text)
+
+    df_model2["stress_label"] = df_model2["stress_label"].str.lower().replace({"moderate": "medium"})
+    df_model2 = df_model2[
+        df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})
+    ].drop_duplicates().reset_index(drop=True)
+    df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
+
+    for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
+        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
+
+    df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
+    df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
+    df_model2_bkup["related_list"] = df_model2_bkup["related_recommendations"].apply(
+        lambda x: [i.strip() for i in clean_text(x).split("|") if i.strip()]
+    )
+
+    for col in [
+        "symbol_name",
+        "traditional_summary_en",
+        "theme_tags",
+        "emotion_hints",
+        "stress_hint",
+        "source_origin",
+    ]:
+        df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
+
+    df_symbol_kb["symbol_name"] = df_symbol_kb["symbol_name"].str.lower()
+    df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(
+        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
+    )
+    df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(
+        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
+    )
+
+    symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
+    symbol_reco_dict = {row["symbol_name"]: row for _, row in df_model2_bkup.iterrows()}
+
+    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict
+
+
+@st.cache_resource
+def load_model():
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO)
+    model = AutoModelForSequenceClassification.from_pretrained(MODEL_REPO).to(DEVICE)
+    model.eval()
+    return tokenizer, model
+
+
+df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()
+stress_tokenizer, stress_model = load_model()
+
+
+def predict_stress(text):
+    inputs = stress_tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        padding=True,
+        max_length=256
+    )
+    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        outputs = stress_model(**inputs)
+        probs = torch.softmax(outputs.logits, dim=1)[0].cpu().numpy()
+        pred = int(np.argmax(probs))
+
+    return ID2LABEL[pred], probs
+
+
+def detect_symbols(text, known_symbols):
+    tokens = tokenize_simple(text)
+    token_set = set(tokens)
+    found = []
+
+    for sym in known_symbols:
+        if sym in token_set:
+            found.append(sym)
+        elif "_" in sym:
+            parts = sym.split("_")
+            if all(part in token_set for part in parts):
+                found.append(sym)
+
+    return list(dict.fromkeys(found))
+
+
+def find_similar_examples(text, top_k=5):
+    query_tokens = set(tokenize_simple(text))
+    scores = []
+
+    for _, row in df_model1.iterrows():
+        row_tokens = set(tokenize_simple(row["dream_text"]))
+        overlap = len(query_tokens & row_tokens)
+        if overlap > 0:
+            scores.append((overlap, row))
+
+    scores = sorted(scores, key=lambda x: x[0], reverse=True)[:top_k]
+    return [row for _, row in scores]
+
+
+def infer_emotions_themes_symbols(text):
+    matches = find_similar_examples(text, top_k=5)
+
+    emotions = []
+    themes = []
+    symbols = []
+
+    for row in matches:
+        emotions.extend(row["emotion_list"])
+        themes.extend(row["theme_list"])
+        symbols.extend(row["symbol_list"])
+
+    emotions = pd.Series(emotions).value_counts().head(5).index.tolist() if emotions else []
+    themes = pd.Series(themes).value_counts().head(5).index.tolist() if themes else []
+    symbols = pd.Series(symbols).value_counts().head(5).index.tolist() if symbols else []
+
+    direct_symbols = detect_symbols(
+        text,
+        set(df_symbol_kb["symbol_name"].tolist()) | set(df_model2_bkup["symbol_name"].tolist())
+    )
+
+    for s in direct_symbols:
+        if s not in symbols:
+            symbols.insert(0, s)
+
+    return emotions, themes, symbols
+
+
+def map_stress_for_model2(stress):
+    if stress == "low":
+        return ["low"]
+    if stress == "medium":
+        return ["medium"]
+    if stress == "high":
+        return ["high", "very_high"]
+    return ["medium"]
+
+
+def retrieve_recommendation(pred_stress, inferred_emotions):
+    stress_candidates = map_stress_for_model2(pred_stress)
+    subset = df_model2[df_model2["stress_label"].isin(stress_candidates)].copy()
+
+    if subset.empty:
+        return "Take things one step at a time, reduce pressure, and focus on steady emotional recovery."
+
+    emo_set = set(inferred_emotions)
+    scored = []
+
+    for _, row in subset.iterrows():
+        overlap = len(emo_set.intersection(set(row["emotion_list"])))
+        score = overlap + (1 if row["dominant_emotion"] in emo_set else 0)
+        scored.append((score, row))
+
+    scored = sorted(scored, key=lambda x: x[0], reverse=True)
+    return scored[0][1]["recommendation_text"]
+
+
+def natural_stress_phrase(stress):
+    mapping = {
+        "low": "fairly calm or reflective",
+        "medium": "emotionally unsettled",
+        "high": "highly stressed or overwhelmed"
+    }
+    return mapping.get(stress, "emotionally activated")
+
+
+def summarize_symbols_naturally(symbols):
+    symbol_lines = []
+
+    for sym in symbols[:3]:
+        if sym in symbol_kb_dict:
+            summary = symbol_kb_dict[sym]["traditional_summary_en"]
+            summary = summary.replace("May suggest ", "").strip()
+            summary = summary.rstrip(".")
+            symbol_lines.append((sym.replace("_", " "), summary))
+
+    return symbol_lines
+
+
+def build_interpretation_paragraph(stress, emotions, themes, symbols):
+    stress_phrase = natural_stress_phrase(stress)
+    intro = f"This dream may reflect a mind that feels {stress_phrase} right now."
+
+    emo_part = (
+        f"Feelings like {', '.join(emotions[:3])} seem to be close to the surface."
+        if emotions else ""
+    )
+
+    symbol_info = summarize_symbols_naturally(symbols)
+    if symbol_info:
+        symbol_texts = [f"{name} often point to {meaning}" for name, meaning in symbol_info[:2]]
+        symbol_part = "In this kind of dream, " + " and ".join(symbol_texts) + "."
+    else:
+        symbol_part = ""
+
+    theme_part = (
+        f"The overall pattern suggests themes around {', '.join(themes[:3]).replace('_', ' ')}."
+        if themes else ""
+    )
+
+    closing = (
+        "Rather than predicting something literal, the dream is more likely showing how your mind "
+        "is processing pressure, change, or unresolved feelings."
+    )
+
+    parts = [intro, emo_part, symbol_part, theme_part, closing]
+    return " ".join([p for p in parts if p]).strip()
+
+
+def build_recommendation_paragraph(stress, emotions, symbols):
+    base_rec = retrieve_recommendation(stress, emotions)
+
+    extra = []
+    for sym in symbols[:2]:
+        if sym in symbol_reco_dict:
+            sym_rec = symbol_reco_dict[sym]["default_recommendation"]
+            if sym_rec and sym_rec not in extra:
+                extra.append(sym_rec)
+
+    if stress == "high":
+        support_line = (
+            "If this dream matches how you have been feeling lately, it may help to slow down, "
+            "reduce stimulation, and focus only on the next manageable step."
+        )
+    elif stress == "medium":
+        support_line = (
+            "It may help to simplify your day, check in with your emotions, and avoid forcing clarity too quickly."
+        )
+    else:
+        support_line = (
+            "This can be a good moment to keep things steady, listen to yourself, and move gently with what feels meaningful."
+        )
+
+    final_parts = [base_rec, support_line]
+    if extra:
+        final_parts.append(extra[0])
+
+    return " ".join(final_parts).strip()
+
+
+def analyze_dream(dream_text):
+    stress, probs = predict_stress(dream_text)
+    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text)
+
+    interpretation = build_interpretation_paragraph(stress, emotions, themes, symbols)
+    recommendation = build_recommendation_paragraph(stress, emotions, symbols)
+
+    return {
+        "dream_text": dream_text,
+        "stress_level": stress,
+        "stress_probs": probs,
+        "emotions": emotions,
+        "themes": themes,
+        "symbols": symbols,
+        "interpretation": interpretation,
+        "recommendation": recommendation
+    }
+
+
+st.title("🌙 Dream Analyzer")
+st.write("Pipeline 1 uses a fine-tuned model for stress classification. Pipeline 2 uses a non-fine-tuned symbolic interpretation pipeline.")
+
+with st.expander("About the pipelines"):
+    st.markdown("""
+**Pipeline 1 (Fine-tuned):**
+- Hugging Face `distilroberta-base`
+- fine-tuned for stress classification
+
+**Pipeline 2 (Non-fine-tuned):**
+- retrieval from dream examples
+- symbol knowledge base lookup
+- recommendation retrieval
+- natural language response construction
+""")
+
+sample_text = "I was late for an exam and everyone stared at me while I forgot everything."
+dream_text = st.text_area("Enter your dream", value=sample_text, height=180)
+
+if st.button("Analyze Dream"):
+    if dream_text.strip():
+        with st.spinner("Analyzing your dream..."):
+            result = analyze_dream(dream_text.strip())
+
+        st.success("Analysis completed.")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Stress Level")
+            st.write(result["stress_level"].upper())
+
+            probs = result["stress_probs"]
+            st.write("Confidence scores")
+            st.caption(f"Low: {probs[0]:.4f}")
+            st.caption(f"Medium: {probs[1]:.4f}")
+            st.caption(f"High: {probs[2]:.4f}")
+
+        with col2:
+            st.subheader("Detected Features")
+            st.write("**Emotions:**", ", ".join(result["emotions"]) if result["emotions"] else "None")
+            st.write("**Themes:**", ", ".join(result["themes"]) if result["themes"] else "None")
+            st.write("**Symbols:**", ", ".join(result["symbols"]) if result["symbols"] else "None")
+
+        st.subheader("Interpretation")
+        st.write(result["interpretation"])
+
+        st.subheader("Recommendation")
+        st.write(result["recommendation"])
+    else:
+        st.warning("Please enter a dream before analysis.")
