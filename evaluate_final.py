@@ -14,7 +14,7 @@ DATA_PATH = "data/model1_train.csv"
 TEXT_COL = "dream_text"
 LABEL_COL = "stress_label"
 
-MODEL_REPO = "your-username/dream-stress-classifier"
+MODEL_REPO = "peterjerry111/dream-stress-classifier"
 
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
