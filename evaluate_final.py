@@ -2,48 +2,40 @@ import os
 import json
 import pandas as pd
 import torch
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-# =========================
-# CONFIG
-# =========================
 DATA_PATH = "data/model1_train.csv"
-
 TEXT_COL = "dream_text"
 LABEL_COL = "stress_label"
-
-MODEL_REPO = "peterjerry111/dream-stress-classifier"
-
+MODEL_REPO = "your-username/dream-stress-classifier"
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
 
 ALLOWED_LABELS = {"low", "medium", "high"}
-LABEL_NORMALIZATION = {
-    "moderate": "medium"
-}
+LABEL_NORMALIZATION = {"moderate": "medium"}
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-# =========================
-# HELPERS
-# =========================
+
 def clean_text(x):
     if pd.isna(x):
         return ""
     return str(x).strip()
 
+
 def normalize_label(x):
     x = clean_text(x).lower()
     return LABEL_NORMALIZATION.get(x, x)
+
 
 def load_dataset():
     df = pd.read_csv(DATA_PATH)
 
     if TEXT_COL not in df.columns:
         raise ValueError(f"Missing text column: {TEXT_COL}")
-
     if LABEL_COL not in df.columns:
         raise ValueError(f"Missing label column: {LABEL_COL}")
 
@@ -53,8 +45,8 @@ def load_dataset():
     df = df[df[LABEL_COL].isin(ALLOWED_LABELS)].copy()
     df = df[df[TEXT_COL] != ""].copy()
     df = df.drop_duplicates().reset_index(drop=True)
-
     return df
+
 
 def load_model():
     tokenizer = AutoTokenizer.from_pretrained(MODEL_REPO)
@@ -62,6 +54,7 @@ def load_model():
     model.to(DEVICE)
     model.eval()
     return tokenizer, model
+
 
 def predict_label(text, tokenizer, model):
     id2label = model.config.id2label
@@ -80,14 +73,14 @@ def predict_label(text, tokenizer, model):
         pred_id = int(torch.argmax(outputs.logits, dim=1).item())
 
     pred_label = id2label[pred_id]
-
     if isinstance(pred_label, str):
         pred_label = pred_label.lower().strip()
 
     pred_label = LABEL_NORMALIZATION.get(pred_label, pred_label)
     return pred_label
 
-def main():
+
+def run_final_evaluation():
     df = load_dataset()
 
     X = df[TEXT_COL]
@@ -116,13 +109,12 @@ def main():
     }
 
     os.makedirs("results", exist_ok=True)
-
     with open("results/final_app_results.json", "w") as f:
         json.dump(results, f, indent=2)
 
-    print("\n=== FINAL APPLICATION RESULTS ===")
-    print(json.dumps(results, indent=2))
-    print("\nSaved: results/final_app_results.json")
+    return results
+
 
 if __name__ == "__main__":
-    main()
+    results = run_final_evaluation()
+    print(results)
