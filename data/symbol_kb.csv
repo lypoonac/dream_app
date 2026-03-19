@@ -1,0 +1,986 @@
+symbol_name,traditional_summary_en,theme_tags,emotion_hints,stress_hint,source_origin
+snake,"May suggest hidden tension, threat, or transformation.","danger,uncertainty,transformation","fear,anxiety",moderate,zhougong
+bridge,"May suggest transition, instability, or crossing into a new phase.","transition,uncertainty,danger","fear,anxiety",moderate,zhougong
+water,"May suggest emotions, uncertainty, or emotional overflow.","uncertainty,transformation,loss_of_control","sadness,anxiety,confusion",moderate,zhougong
+teeth,"May suggest vulnerability, embarrassment, or loss of confidence.","social_judgment,loss_of_control","shame,anxiety,fear",high,zhougong
+house,"May suggest self, security, memory, or inner emotional state.","isolation,uncertainty","sadness,confusion",moderate,zhougong
+road,"May suggest direction, life path, or progress.","transition,blocked_progress","hope,anxiety",low,zhougong
+baby,"May suggest renewal, growth, or new beginnings.",transformation,"hope,joy",low,zhougong
+forest,"May suggest uncertainty, confusion, or hidden fear.","danger,uncertainty","fear,confusion",moderate,zhougong
+car,"May suggest control, momentum, or life direction.","loss_of_control,transition","fear,helplessness",high,zhougong
+flying,"May suggest freedom, escape, or transcendence.",transformation,"joy,relief",low,zhougong
+dragon,"May suggest honor, power, protection, or rising fortune.","power,fortune,protection,transformation","awe,hope,confidence",low,zhougong
+phoenix,"May suggest rebirth, harmony, prosperity, or auspicious change.","rebirth,prosperity,harmony,transformation","hope,joy,relief",low,zhougong
+tiger,"May suggest strength, rivalry, danger, or protective force.","danger,power,conflict,protection","fear,alertness,confidence",moderate,zhougong
+fish,"May suggest abundance, fertility, opportunity, or emotional movement.","prosperity,fertility,opportunity,emotion","hope,joy,anticipation",low,zhougong
+mountain,"May suggest obstacles, ambition, endurance, or elevated status.","challenge,achievement,endurance,aspiration","determination,anxiety,hope",moderate,zhougong
+rain,"May suggest cleansing, release, overwhelm, or emotional renewal.","release,cleansing,emotion,change","relief,sadness,calm",low,zhougong
+sun,"May suggest vitality, clarity, enlightenment, or changing fortune.","clarity,vitality,fortune,change","hope,confidence,anxiety",low,zhougong
+moon,"May suggest intuition, completion, family bonds, or feminine influence.","intuition,family,cyclical_change,mystery","calm,longing,uncertainty",low,zhougong
+river,"May suggest life flow, travel, wealth, or emotional passage.","flow,journey,emotion,prosperity","calm,hope,uncertainty",low,zhougong
+fire,"May suggest passion, transformation, warmth, or destructive conflict.","passion,transformation,danger,energy","anger,excitement,fear",moderate,zhougong
+wind,"May suggest change, messages, instability, or unseen forces.","change,news,uncertainty,movement","anticipation,anxiety,restlessness",moderate,zhougong
+tree,"May suggest growth, vitality, family continuity, or seasonal change.","growth,family,stability,life_cycle","hope,calm,sadness",low,zhougong
+flower,"May suggest beauty, romance, impermanence, or emotional flourishing.","romance,beauty,impermanence,growth","joy,longing,sadness",low,zhougong
+fruit,"May suggest reward, health, satisfaction, or ripening outcomes.","reward,health,abundance,fulfillment","joy,contentment,anticipation",low,zhougong
+gold,"May suggest wealth, value, success, or envy from others.","wealth,status,success,envy","hope,desire,anxiety",moderate,zhougong
+sword,"May suggest authority, conflict, protection, or decisive action.","authority,conflict,protection,power","anger,confidence,fear",moderate,zhougong
+mirror,"May suggest self-reflection, truth, illusion, or relationship strain.","self_reflection,truth,illusion,relationship","shame,clarity,anxiety",moderate,zhougong
+emperor,"May suggest authority, promotion, judgment, or powerful support.","authority,status,recognition,power","awe,hope,pressure",moderate,zhougong
+wedding,"May suggest union, celebration, commitment, or family transition.","union,celebration,commitment,transition","joy,hope,anxiety",low,zhougong
+death,"May suggest endings, rebirth, release, or major life transition.","ending,rebirth,transition,release","fear,relief,acceptance",moderate,zhougong
+ghost,"May suggest unresolved past issues, ancestral presence, or lingering fear.","past,ancestry,fear,unresolved_emotion","fear,sadness,unease",moderate,zhougong
+god,"May suggest blessing, protection, guidance, or moral judgment.","spirituality,protection,guidance,fortune","awe,hope,comfort",low,zhougong
+horse,"May suggest momentum, freedom, loyalty, or untamed energy.","freedom,movement,loyalty,energy","excitement,hope,restlessness",low,zhougong
+cat,"May suggest independence, deceit, intuition, or hidden threat.","independence,mystery,deception,uncertainty","curiosity,anxiety,fear",moderate,zhougong
+bird,"May suggest messages, freedom, harmony, or home-building.","freedom,message,harmony,aspiration","joy,hope,longing",low,zhougong
+dog,"May suggest loyalty, protection, alertness, or social bonds.","loyalty,protection,friendship,warning","comfort,confidence,alertness",low,zhougong
+insects,"May suggest small irritations, persistent worries, or creeping stress.","annoyance,stress,health_irritation,unease","disgust,anxiety,restlessness",moderate,zhougong
+spider,"May suggest entanglement, strategy, creativity, or subtle threat.","entanglement,creativity,control,danger","anxiety,wariness,focus",moderate,zhougong
+vegetables,"May suggest health, labor, nourishment, or practical rewards.","health,labor,nourishment,reward","contentment,calm,duty",low,zhougong
+drinking_water,"May suggest emotional clarity, replenishment, or fulfilled needs.","clarity,healing,fulfillment,emotion","relief,calm,hope",low,zhougong
+swimming,"May suggest navigating emotions, effort, resilience, or overwhelm.","emotion,effort,adaptation,challenge","anxiety,determination,relief",moderate,zhougong
+jumping,"May suggest risk-taking, bold movement, or crossing obstacles.","risk,advancement,transition,courage","excitement,anxiety,hope",moderate,zhougong
+running,"May suggest urgency, escape, pursuit, or ongoing pressure.","escape,urgency,stress,avoidance","fear,stress,restlessness",high,zhougong
+path,"May suggest steady progress, direction, or a chosen course.","direction,progress,stability,journey","hope,calm,anticipation",low,zhougong
+dancing,"May suggest celebration, emotional release, unity, or self-expression.","celebration,expression,harmony,release","joy,relief,freedom",low,zhougong
+crying,"May suggest emotional release, grief, loneliness, or hidden pain.","release,grief,loneliness,vulnerability","sadness,relief,anxiety",moderate,zhougong
+fighting,"May suggest inner conflict, rivalry, stress, or assertion of strength.","conflict,stress,assertion,rivalry","anger,fear,determination",high,zhougong
+winning,"May suggest success, recognition, or overcoming difficulty.","success,recognition,achievement,confidence","joy,relief,pride",low,zhougong
+losing_valuables,"May suggest insecurity, financial fear, or carelessness.","loss,insecurity,financial_stress,carelessness","anxiety,regret,fear",high,zhougong
+traveling,"May suggest change, exploration, uncertainty, or personal transition.","change,exploration,transition,journey","hope,anxiety,curiosity",moderate,zhougong
+boat,"May suggest emotional navigation, transition, or vulnerability to instability.","emotion,journey,transition,stability","calm,anxiety,hope",moderate,zhougong
+desert,"May suggest endurance, emptiness, deprivation, or spiritual testing.","endurance,scarcity,isolation,hardship","loneliness,determination,fatigue",moderate,zhougong
+ocean,"May suggest deep emotions, vastness, peace, or overwhelming forces.","deep_emotion,subconscious,vastness,uncertainty","calm,awe,anxiety",moderate,zhougong
+city,"May suggest social opportunity, complexity, ambition, or chaos.","society,opportunity,ambition,chaos","excitement,stress,curiosity",moderate,zhougong
+village,"May suggest roots, community support, simplicity, or isolation.","community,roots,simplicity,belonging","comfort,nostalgia,calm",low,zhougong
+farm,"May suggest productivity, nourishment, labor, or material security.","productivity,nourishment,labor,security","contentment,hope,duty",low,zhougong
+garden,"May suggest personal growth, beauty, privacy, or neglected potential.","growth,beauty,privacy,nurturing","joy,calm,longing",low,zhougong
+books,"May suggest learning, wisdom, memory, or preparation.","knowledge,wisdom,preparation,memory","curiosity,focus,hope",low,zhougong
+letters,"May suggest communication, news, secrets, or unresolved messages.","communication,news,secrets,connection","anticipation,anxiety,curiosity",moderate,zhougong
+jewelry,"May suggest value, status, beauty, or burdens of attachment.","wealth,status,beauty,attachment","desire,joy,anxiety",moderate,zhougong
+silver,"May suggest intuition, modest gain, reflection, or possible deception.","intuition,minor_gain,reflection,uncertainty","calm,hope,suspicion",low,zhougong
+red,"May suggest passion, danger, urgency, or heightened energy.","passion,danger,energy,warning","excitement,anger,fear",moderate,zhougong
+blue,"May suggest calm, trust, depth, or emotional reflection.","calm,trust,depth,reflection","peace,longing,serenity",low,zhougong
+green,"May suggest growth, healing, vitality, or envy.","growth,healing,vitality,envy","hope,calm,jealousy",low,zhougong
+yellow,"May suggest happiness, alertness, fragility, or caution.","happiness,caution,attention,fragility","joy,alertness,unease",low,zhougong
+black,"May suggest mystery, fear, hidden forces, or the unknown.","mystery,fear,unknown,shadow","fear,unease,curiosity",moderate,zhougong
+white,"May suggest purity, clarity, mourning, or new beginnings.","purity,clarity,beginning,spirituality","peace,hope,sadness",low,zhougong
+pregnancy,"May suggest creation, growth, anticipation, or emotional burden.","creation,growth,anticipation,responsibility","hope,anxiety,tenderness",moderate,zhougong
+family,"May suggest support, belonging, conflict, or inherited pressure.","family,support,conflict,belonging","comfort,anxiety,nostalgia",moderate,zhougong
+strangers,"May suggest unexpected help, uncertainty, or unfamiliar opportunities.","uncertainty,opportunity,social_contact,change","curiosity,anxiety,hope",moderate,zhougong
+monsters,"May suggest inner fears, overwhelming problems, or shadow aspects of self.","fear,shadow_self,threat,stress","fear,panic,helplessness",high,zhougong
+angels,"May suggest protection, comfort, moral guidance, or hope.","protection,guidance,spirituality,hope","comfort,hope,awe",low,zhougong
+lion,"May suggest strength, leadership, pride, or powerful opposition.","strength,leadership,power,conflict","confidence,fear,awe",moderate,zhougong
+elephant,"May suggest wisdom, memory, patience, or steady strength.","wisdom,memory,strength,stability","calm,respect,confidence",low,zhougong
+monkey,"May suggest mischief, cleverness, distraction, or deception.","mischief,intellect,deception,instability","amusement,wariness,anxiety",moderate,zhougong
+rabbit,"May suggest fertility, vulnerability, speed, or lucky escape.","fertility,vulnerability,speed,fortune","hope,tenderness,alertness",low,zhougong
+wolf,"May suggest betrayal, isolation, predatory danger, or survival instinct.","betrayal,isolation,danger,survival","fear,suspicion,determination",high,zhougong
+deer,"May suggest grace, gentleness, peace, or elusive opportunity.","grace,peace,gentleness,opportunity","calm,hope,tenderness",low,zhougong
+bear,"May suggest raw power, protection, retreat, or suppressed force.","power,protection,introspection,danger","awe,fear,stability",moderate,zhougong
+fox,"May suggest cunning, seduction, betrayal, or strategic intelligence.","cunning,deception,intelligence,betrayal","suspicion,curiosity,wariness",moderate,zhougong
+cow,"May suggest abundance, nurture, patience, or material support.","abundance,nurture,stability,labor","comfort,gratitude,calm",low,zhougong
+sheep,"May suggest docility, conformity, gentleness, or dependence on others.","docility,conformity,gentleness,dependency","calm,vulnerability,hesitation",low,zhougong
+thunder,"May suggest sudden shock, warning, authority, or divine displeasure.","warning,shock,power,spirituality","fear,alertness,awe",moderate,zhougong
+lightning,"May suggest sudden insight, destruction, revelation, or intense change.","revelation,shock,destruction,change","awe,fear,clarity",moderate,zhougong
+snow,"May suggest purity, distance, emotional coldness, or stillness.","purity,coldness,stillness,isolation","calm,sadness,numbness",moderate,zhougong
+fog,"May suggest confusion, obscurity, hidden truth, or uncertainty.","confusion,uncertainty,hidden_truth,disorientation","anxiety,confusion,hesitation",moderate,zhougong
+earthquake,"May suggest upheaval, instability, loss of foundation, or major disruption.","upheaval,instability,loss_of_control,change","fear,panic,insecurity",high,zhougong
+volcano,"May suggest explosive emotions, suppressed anger, or destructive release.","anger,explosion,suppression,destruction","anger,fear,tension",high,zhougong
+stars,"May suggest hope, destiny, guidance, or fading aspirations.","hope,destiny,guidance,change","wonder,longing,sadness",low,zhougong
+comet,"May suggest rare events, omens, disruption, or fateful change.","omen,rarity,change,uncertainty","awe,anxiety,anticipation",moderate,zhougong
+ring,"May suggest commitment, cycles, promises, or recurring patterns.","commitment,cycle,bond,relationship","hope,security,anxiety",low,zhougong
+hat,"May suggest identity, social role, authority, or self-presentation.","identity,authority,role,self_image","confidence,curiosity,pressure",low,zhougong
+umbrella,"May suggest protection, emotional shielding, or preparation for stress.","protection,defense,preparedness,security","relief,anxiety,caution",low,zhougong
+clock,"May suggest urgency, mortality, deadlines, or awareness of change.","time,urgency,mortality,pressure","anxiety,pressure,regret",high,zhougong
+ladder,"May suggest ambition, advancement, risk, or change in status.","advancement,aspiration,risk,status","hope,anxiety,determination",moderate,zhougong
+window,"May suggest perspective, possibility, observation, or emotional distance.","perspective,opportunity,awareness,distance","curiosity,hope,longing",low,zhougong
+bed,"May suggest rest, vulnerability, intimacy, or recovery.","rest,intimacy,vulnerability,recovery","comfort,desire,fatigue",low,zhougong
+chair,"May suggest stability, waiting, authority, or passivity.","stability,waiting,authority,rest","calm,patience,stagnation",low,zhougong
+table,"May suggest gathering, negotiation, family matters, or shared decisions.","gathering,decision,family,social_exchange","connection,anticipation,tension",low,zhougong
+whispers,"May suggest secrecy, gossip, hidden knowledge, or social anxiety.","secrets,gossip,uncertainty,social_tension","anxiety,curiosity,unease",moderate,zhougong
+nose_bleed,"May suggest shame, health strain, or loss of vitality.","health,shame,loss,stress","embarrassment,anxiety,fear",moderate,zhougong
+mouth,"May suggest communication, honesty, appetite, or deception.","communication,expression,deception,need","confidence,anxiety,desire",moderate,zhougong
+feet,"May suggest humility, grounding, journey, or vulnerability.","humility,journey,grounding,vulnerability","calm,uncertainty,exposure",low,zhougong
+arms,"May suggest embrace, protection, relationship, or personal strength.","relationship,protection,strength,connection","comfort,security,longing",low,zhougong
+legs,"May suggest movement, pursuit, urgency, or forward drive.","movement,pursuit,urgency,progress","restlessness,determination,anxiety",moderate,zhougong
+heart,"May suggest passion, anxiety, vitality, or emotional intensity.","emotion,passion,anxiety,vitality","love,fear,excitement",moderate,zhougong
+blood,"May suggest life force, family bonds, sacrifice, or injury.","vitality,family,sacrifice,injury","fear,intensity,loyalty",moderate,zhougong
+bones,"May suggest structure, weakness, injury, or foundational issues.","structure,vulnerability,health,foundation","fear,insecurity,pain",high,zhougong
+skin,"May suggest renewal, exposure, identity, or sensitivity.","renewal,exposure,identity,vulnerability","shame,relief,sensitivity",moderate,zhougong
+hiding,"May suggest avoidance, secrecy, fear, or self-protection.","avoidance,secrecy,fear,protection","fear,anxiety,withdrawal",moderate,zhougong
+searching,"May suggest longing, uncertainty, problem-solving, or loss.","quest,uncertainty,loss,desire","curiosity,anxiety,hope",moderate,zhougong
+treasure,"May suggest hidden value, talent, luck, or inner resources.","hidden_value,talent,wealth,discovery","joy,hope,excitement",low,zhougong
+arguing,"May suggest unresolved tension, frustration, or relationship strain.","conflict,tension,relationship_stress,expression","anger,anxiety,frustration",high,zhougong
+reconciling,"May suggest peace, forgiveness, healing, or restored connection.","peace,forgiveness,healing,relationship","relief,hope,warmth",low,zhougong
+studying,"May suggest preparation, self-improvement, pressure, or discipline.","learning,preparation,discipline,ambition","focus,anxiety,hope",moderate,zhougong
+teaching,"May suggest authority, guidance, responsibility, or sharing wisdom.","guidance,authority,wisdom,responsibility","confidence,duty,care",low,zhougong
+games,"May suggest play, competition, strategy, or avoidance of seriousness.","play,competition,strategy,escape","joy,excitement,anxiety",low,zhougong
+work,"May suggest duty, effort, ambition, or pressure to perform.","effort,duty,ambition,stress","determination,stress,fatigue",moderate,zhougong
+rest,"May suggest recovery, passivity, burnout, or needed pause.","recovery,pause,fatigue,renewal","relief,guilt,calm",low,zhougong
+king,"May suggest leadership, authority, judgment, or personal power.","authority,leadership,power,status","confidence,pressure,awe",moderate,zhougong
+queen,"May suggest feminine power, grace, nurturance, or sovereignty.","feminine_power,grace,authority,nurture","confidence,warmth,awe",low,zhougong
+soldiers,"May suggest conflict, discipline, conformity, or defense.","conflict,discipline,defense,pressure","fear,duty,tension",moderate,zhougong
+farmers,"May suggest labor, patience, harvest, or grounded living.","labor,patience,harvest,grounding","calm,duty,hope",low,zhougong
+merchants,"May suggest exchange, profit, negotiation, or material concern.","trade,profit,negotiation,opportunity","hope,calculation,anxiety",moderate,zhougong
+children,"May suggest innocence, joy, vulnerability, or untapped potential.","innocence,joy,vulnerability,potential","joy,tenderness,concern",low,zhougong
+elders,"May suggest wisdom, tradition, guidance, or family duty.","wisdom,tradition,guidance,family","respect,comfort,obligation",low,zhougong
+lovers,"May suggest romance, union, longing, or emotional intimacy.","romance,union,intimacy,desire","love,hope,longing",low,zhougong
+festivals,"May suggest abundance, celebration, community, or temporary excess.","celebration,abundance,community,joy","joy,excitement,belonging",low,zhougong
+funerals,"May suggest closure, transition, mourning, or long life through symbolic ending.","closure,ending,transition,mourning","sadness,relief,reflection",moderate,zhougong
+banquets,"May suggest social gain, indulgence, reward, or excess.","social_gain,abundance,indulgence,celebration","joy,desire,overwhelm",low,zhougong
+demons,"May suggest temptation, corruption, fear, or destructive impulses.","temptation,corruption,fear,shadow_self","fear,guilt,panic",high,zhougong
+heaven,"May suggest reward, transcendence, peace, or spiritual aspiration.","spirituality,reward,peace,aspiration","awe,peace,hope",low,zhougong
+hell,"May suggest suffering, guilt, warning, or emotional torment.","suffering,guilt,warning,punishment","fear,guilt,distress",high,zhougong
+prayers,"May suggest spiritual need, hope, surrender, or seeking guidance.","spirituality,hope,surrender,guidance","hope,humility,comfort",low,zhougong
+temple,"May suggest refuge, devotion, vows, or spiritual focus.","spirituality,refuge,devotion,reflection","peace,reverence,hope",low,zhougong
+palace,"May suggest luxury, ambition, status, or distance from ordinary life.","luxury,ambition,status,power","awe,desire,pressure",moderate,zhougong
+cave,"May suggest hidden feelings, retreat, secrecy, or deep subconscious material.","secrecy,retreat,subconscious,isolation","fear,curiosity,withdrawal",moderate,zhougong
+tower,"May suggest aspiration, isolation, perspective, or emotional distance.","aspiration,isolation,perspective,status","hope,loneliness,awe",moderate,zhougong
+gate,"May suggest opportunity, threshold, restriction, or life transition.","threshold,opportunity,barrier,transition","hope,anxiety,anticipation",moderate,zhougong
+wall,"May suggest protection, limits, emotional defenses, or separation.","defense,barrier,separation,security","caution,frustration,safety",moderate,zhougong
+smiling,"May suggest contentment, social ease, or possible concealment.","contentment,social_connection,appearance,deception","joy,comfort,suspicion",low,zhougong
+fear,"May suggest unresolved anxiety, threat sensitivity, or internal alarm.","anxiety,threat,stress,avoidance","fear,panic,unease",high,zhougong
+anger,"May suggest suppressed conflict, frustration, or need for assertion.","conflict,frustration,suppression,assertion","anger,tension,irritation",high,zhougong
+love,"May suggest fulfillment, attachment, longing, or emotional openness.","attachment,fulfillment,intimacy,connection","love,hope,vulnerability",low,zhougong
+hope,"May suggest optimism, resilience, future orientation, or emotional renewal.","optimism,resilience,future,renewal","hope,relief,anticipation",low,zhougong
+rainbow,"May suggest promise, hope, reconciliation, or positive transition after hardship.","hope,promise,reconciliation,transition","joy,relief,wonder",low,zhougong
+rice,"May suggest daily sustenance, domestic stability, or family provision.","nourishment,stability,family,daily_life","comfort,gratitude,calm",low,zhougong
+meat,"May suggest strength, appetite, indulgence, or material desire.","strength,indulgence,appetite,materiality","desire,satisfaction,guilt",moderate,zhougong
+wine,"May suggest celebration, pleasure, emotional release, or excess.","celebration,pleasure,release,excess","joy,relaxation,loss_of_control",moderate,zhougong
+ears,"May suggest sensitivity to rumor, listening, or social vigilance.","listening,gossip,awareness,social_tension","curiosity,anxiety,alertness",moderate,zhougong
+reading,"May suggest wisdom seeking, reflection, or intellectual growth.","knowledge,reflection,learning,growth","curiosity,focus,calm",low,zhougong
+writing,"May suggest expression, communication, memory, or desire to be understood.","expression,communication,memory,intention","focus,longing,clarity",low,zhougong
+clear_water,"May suggest purity, emotional clarity, healing, or fulfilled needs.","clarity,healing,emotion,purity","calm,relief,hope",low,zhougong
+storm,"May suggest turmoil, conflict, emotional upheaval, or sudden disruption.","turmoil,conflict,change,overwhelm","fear,anxiety,tension",high,zhougong
+eclipse,"May suggest obscured fortune, temporary loss of clarity, or hidden influences.","obscurity,change,fortune,uncertainty","unease,anxiety,longing",moderate,zhougong
+clouds,"May suggest passing thoughts, uncertainty, spiritual signs, or changing mood.","uncertainty,transition,spirituality,mood","calm,curiosity,unease",low,zhougong
+shadow,"May suggest hidden fear, unconscious material, danger, or unknown influences.","fear,unknown,subconscious,danger","fear,unease,curiosity",moderate,zhougong
+pregnant_body,"May suggest creation, anticipation, emotional burden, or family expansion.","creation,anticipation,family,growth","hope,anxiety,tenderness",moderate,zhougong
+stranger_help,"May suggest unexpected support, guidance, or opportunity from outside forces.","support,opportunity,guidance,change","relief,hope,curiosity",low,zhougong
+monster_chase,"May suggest overwhelming fear, pressure, avoidance, or unresolved inner conflict.","fear,avoidance,stress,shadow_self","panic,fear,helplessness",high,zhougong
+eagle,"May suggest ambition, vision, freedom, or rising above limitation.","ambition,freedom,vision,aspiration","hope,awe,confidence",low,zhougong
+owl,"May suggest wisdom, secrecy, omen, or awareness of hidden truth.","wisdom,omen,secrecy,night","curiosity,unease,reflection",moderate,zhougong
+peacock,"May suggest pride, beauty, display, or concern with appearance and status.","beauty,vanity,status,self_image","confidence,desire,insecurity",low,zhougong
+pigeon,"May suggest returning news, messages, peace, or home connection.","message,peace,return,home","hope,calm,anticipation",low,zhougong
+crow,"May suggest warning, bad news, mystery, or ominous awareness.","warning,news,mystery,omen","fear,unease,alertness",moderate,zhougong
+swan,"May suggest grace, purity, devotion, or emotional elegance.","grace,purity,devotion,beauty","calm,joy,longing",low,zhougong
+bee,"May suggest diligence, small pain, productivity, or social effort.","labor,productivity,pain,community","focus,irritation,duty",low,zhougong
+butterfly,"May suggest transformation, fragility, beauty, or emotional change.","transformation,beauty,fragility,change","hope,joy,tenderness",low,zhougong
+ant_colony,"May suggest collective labor, persistence, social duty, or accumulated stress.","labor,community,persistence,pressure","duty,stress,focus",moderate,zhougong
+scorpion,"May suggest sting, betrayal, hidden danger, or defensive aggression.","danger,betrayal,defense,threat","fear,wariness,anger",high,zhougong
+hail,"May suggest sudden damage, emotional shock, or harsh external conditions.","shock,damage,hardship,change","fear,stress,unease",moderate,zhougong
+dew,"May suggest freshness, tenderness, a fragile beginning, or brief renewal.","renewal,fresh_start,fragility,calm","hope,calm,tenderness",low,zhougong
+frost,"May suggest emotional coldness, delay, distance, or fragile conditions.","coldness,distance,delay,fragility","sadness,numbness,unease",moderate,zhougong
+tsunami,"May suggest overwhelming emotion, crisis, loss of control, or sudden upheaval.","overwhelm,crisis,emotion,loss_of_control","panic,fear,helplessness",high,zhougong
+meteor,"May suggest sudden change, omens, fleeting opportunity, or falling hopes.","omen,change,rarity,loss","awe,anxiety,longing",moderate,zhougong
+constellation,"May suggest guidance, destiny, pattern recognition, or higher meaning.","guidance,destiny,order,meaning","hope,wonder,calm",low,zhougong
+necklace,"May suggest bonds, attachment, value, or emotional ties.","bond,attachment,value,relationship","love,security,anxiety",low,zhougong
+bracelet,"May suggest beauty, commitment, constraint, or social belonging.","beauty,constraint,bond,status","joy,pressure,curiosity",low,zhougong
+earrings,"May suggest listening, adornment, attention, or sensitivity to words.","listening,beauty,attention,communication","curiosity,joy,alertness",low,zhougong
+crown,"May suggest authority, honor, recognition, or pressure of responsibility.","authority,honor,status,responsibility","awe,confidence,pressure",moderate,zhougong
+rope,"May suggest attachment, rescue, restriction, or a way out of difficulty.","attachment,restriction,rescue,escape","hope,anxiety,tension",moderate,zhougong
+chain,"May suggest bondage, obligation, connection, or difficulty breaking free.","bondage,obligation,connection,restriction","helplessness,pressure,fear",high,zhougong
+lock,"May suggest secrecy, security, blocked access, or emotional closure.","secrecy,security,barrier,closure","curiosity,frustration,unease",moderate,zhougong
+candle,"May suggest hope, spiritual light, fragility, or life force.","hope,spirituality,fragility,illumination","calm,hope,sadness",low,zhougong
+lamp,"May suggest insight, clarity, guidance, or a path through darkness.","clarity,guidance,illumination,awareness","relief,hope,focus",low,zhougong
+vase,"May suggest beauty, fragility, domestic peace, or emotional containment.","beauty,fragility,home,containment","calm,sadness,care",low,zhougong
+pot,"May suggest preparation, pressure building, nourishment, or domestic labor.","preparation,nourishment,pressure,home","anticipation,duty,tension",moderate,zhougong
+bowl,"May suggest abundance, receptivity, nourishment, or what one is able to hold.","abundance,receptivity,nourishment,fulfillment","gratitude,calm,contentment",low,zhougong
+lungs,"May suggest vitality, breath, anxiety regulation, or life energy.","vitality,breath,health,regulation","relief,anxiety,calm",moderate,zhougong
+liver,"May suggest anger, internal strain, stored emotion, or health warning.","anger,health,strain,suppression","anger,tension,unease",moderate,zhougong
+stomach,"May suggest hunger, unmet needs, instinct, or emotional emptiness.","need,hunger,vulnerability,instinct","anxiety,longing,fatigue",moderate,zhougong
+back,"May suggest support, betrayal, burdens, or what is carried unseen.","support,betrayal,burden,relationship","sadness,wariness,fatigue",moderate,zhougong
+neck,"May suggest stubbornness, tension, direction, or difficulty yielding.","tension,stubbornness,direction,control","frustration,stress,rigidity",moderate,zhougong
+fingers,"May suggest accusation, precision, blame, or fine control.","blame,control,precision,attention","anxiety,focus,shame",moderate,zhougong
+toes,"May suggest gradual progress, balance, vulnerability, or small movement forward.","progress,balance,vulnerability,journey","hope,hesitation,calm",low,zhougong
+brain,"May suggest intellect, overthinking, planning, or mental burden.","intellect,planning,overthinking,awareness","focus,anxiety,pressure",moderate,zhougong
+veins,"May suggest life force, emotional intensity, inheritance, or inner vitality.","vitality,intensity,family,life_force","fear,awe,alertness",moderate,zhougong
+muscles,"May suggest effort, strain, strength, or pressure to endure.","effort,strength,strain,endurance","determination,fatigue,tension",moderate,zhougong
+shouting,"May suggest urgency, anger, emotional overflow, or a need to be heard.","urgency,anger,expression,overwhelm","anger,stress,panic",high,zhougong
+singing,"May suggest expression, joy, release, or emotional communication.","expression,joy,release,communication","joy,relief,hope",low,zhougong
+silence,"May suggest peace, suppression, distance, or emotional isolation.","peace,suppression,isolation,reflection","calm,loneliness,unease",moderate,zhougong
+applause,"May suggest approval, recognition, social validation, or achievement.","approval,recognition,achievement,social_status","joy,pride,relief",low,zhougong
+booing,"May suggest rejection, shame, criticism, or fear of disapproval.","rejection,criticism,shame,social_judgment","shame,anxiety,fear",high,zhougong
+negotiation,"May suggest compromise, conflict resolution, exchange, or strategic balance.","compromise,exchange,conflict_resolution,strategy","focus,anxiety,hope",moderate,zhougong
+commanding,"May suggest authority, control, responsibility, or dominance.","authority,control,responsibility,power","confidence,pressure,tension",moderate,zhougong
+obeying,"May suggest submission, duty, dependence, or respect for order.","submission,duty,order,dependency","calm,pressure,hesitation",low,zhougong
+rebelling,"May suggest upheaval, self-assertion, conflict, or resistance to control.","upheaval,assertion,conflict,resistance","anger,freedom,stress",high,zhougong
+meditating,"May suggest inner peace, reflection, healing, or spiritual centering.","peace,reflection,healing,spirituality","calm,relief,clarity",low,zhougong
+priest,"May suggest moral guidance, spiritual authority, or need for counsel.","guidance,spirituality,authority,counsel","reverence,hope,comfort",low,zhougong
+monk,"May suggest renunciation, discipline, peace, or withdrawal from worldly pressure.","discipline,peace,withdrawal,spirituality","calm,detachment,reflection",low,zhougong
+warrior,"May suggest struggle, courage, defense, or conflict readiness.","struggle,courage,defense,conflict","determination,fear,anger",moderate,zhougong
+scholar,"May suggest wisdom, study, social advancement, or intellectual burden.","wisdom,study,advancement,intellect","focus,hope,pressure",low,zhougong
+artist,"May suggest creativity, self-expression, sensitivity, or emotional imagination.","creativity,expression,sensitivity,beauty","joy,longing,vulnerability",low,zhougong
+teenager,"May suggest rebellion, growth tension, identity formation, or emotional volatility.","growth,identity,rebellion,instability","confusion,anger,hope",moderate,zhougong
+adult,"May suggest responsibility, labor, maturity, or practical burdens.","responsibility,labor,maturity,duty","duty,stress,stability",moderate,zhougong
+old_man,"May suggest aging, wisdom, endings, or ancestral continuity.","wisdom,aging,ending,ancestry","respect,sadness,reflection",low,zhougong
+crowd,"May suggest social pressure, belonging, chaos, or collective emotion.","society,pressure,community,chaos","stress,curiosity,belonging",moderate,zhougong
+solitude,"May suggest reflection, loneliness, peace, or separation from others.","isolation,reflection,peace,separation","calm,loneliness,sadness",moderate,zhougong
+betrayal,"May suggest broken trust, social danger, emotional injury, or suspicion.","betrayal,trust_loss,injury,relationship","hurt,anger,suspicion",high,zhougong
+loyalty,"May suggest trust, protection, enduring bonds, or dependable support.","trust,protection,bond,stability","comfort,confidence,warmth",low,zhougong
+birthday,"May suggest renewal, aging, attention, or a new personal cycle.","renewal,cycle,identity,celebration","joy,reflection,hope",low,zhougong
+evil_spirits,"May suggest corruption, fear, temptation, or unseen harmful influence.","corruption,fear,temptation,threat","fear,panic,unease",high,zhougong
+mythical_creatures,"May suggest imagination, extraordinary forces, or symbolic inner power.","imagination,power,mystery,transformation","awe,curiosity,hope",low,zhougong
+paradise,"May suggest bliss, reward, peace, or longing for escape from hardship.","bliss,reward,peace,escape","peace,hope,longing",low,zhougong
+purgatory,"May suggest purification, waiting, guilt, or an in-between state of testing.","purification,waiting,guilt,transition","sadness,anxiety,reflection",moderate,zhougong
+chanting,"May suggest spiritual protection, focus, repetition, or calming discipline.","protection,focus,spirituality,discipline","calm,hope,reverence",low,zhougong
+curse,"May suggest harm, guilt, fear of misfortune, or toxic influence.","harm,guilt,misfortune,toxicity","fear,anxiety,distress",high,zhougong
+blessing,"May suggest favor, protection, grace, or positive turning of fortune.","favor,protection,grace,fortune","hope,relief,gratitude",low,zhougong
+indigo,"May suggest depth, introspection, mystery, or spiritual seriousness.","depth,introspection,mystery,spirituality","calm,curiosity,longing",low,zhougong
+violet,"May suggest spirituality, refinement, mystery, or elevated emotion.","spirituality,mystery,beauty,refinement","awe,calm,longing",low,zhougong
+beige,"May suggest neutrality, dryness, simplicity, or emotional restraint.","neutrality,simplicity,distance,restraint","calm,boredom,detachment",low,zhougong
+teal,"May suggest calm emotion, healing flow, balance, or soothing depth.","calm,healing,balance,emotion","peace,relief,serenity",low,zhougong
+magenta,"May suggest passion, vivid imagination, emotional intensity, or unusual energy.","passion,intensity,imagination,energy","excitement,longing,unease",moderate,zhougong
+monochrome,"May suggest dullness, emotional flattening, detachment, or narrowed perspective.","dullness,detachment,limitation,stillness","numbness,sadness,fatigue",moderate,zhougong
+bread,"May suggest comfort, sustenance, domestic security, or simple blessings.","comfort,sustenance,home,stability","gratitude,calm,warmth",low,zhougong
+spicy_food,"May suggest stimulation, excitement, irritation, or heightened appetite for experience.","stimulation,excitement,intensity,appetite","excitement,restlessness,desire",moderate,zhougong
+dessert,"May suggest indulgence, reward, pleasure, or emotional compensation.","reward,pleasure,indulgence,comfort","joy,desire,guilt",low,zhougong
+herbs,"May suggest hardship, medicine, bitterness, or healing through difficulty.","hardship,healing,medicine,endurance","fatigue,hope,unease",moderate,zhougong
+sacred_mountain,"May suggest pilgrimage, aspiration, reverence, or a difficult path toward meaning.","pilgrimage,aspiration,spirituality,challenge","awe,hope,determination",moderate,zhougong
+ruined_temple,"May suggest lost faith, disappointment, spiritual neglect, or broken vows.","lost_faith,neglect,disappointment,spirituality","sadness,unease,reflection",moderate,zhougong
+underground,"May suggest subconscious material, buried fears, secrecy, or hidden truths.","subconscious,secrecy,buried_emotion,hidden_truth","fear,curiosity,anxiety",moderate,zhougong
+locked_gate,"May suggest blocked opportunity, delay, exclusion, or emotional barriers.","barrier,delay,restriction,opportunity","frustration,anxiety,hope",moderate,zhougong
+fortified_wall,"May suggest strong defenses, emotional protection, separation, or fear of intrusion.","defense,protection,separation,boundary","safety,frustration,caution",moderate,zhougong
+contentment,"May suggest satisfaction, peace, acceptance, or emotional completion.","satisfaction,peace,acceptance,fulfillment","calm,gratitude,relief",low,zhougong
+despair,"May suggest emotional low point, hopelessness, or need for support and release.","hopelessness,emotional_pain,collapse,loss","sadness,helplessness,distress",high,zhougong
+excitement,"May suggest anticipation, emotional activation, opportunity, or instability.","anticipation,energy,opportunity,instability","joy,anxiety,restlessness",moderate,zhougong
+calmness,"May suggest balance, safety, recovery, or emotional steadiness.","balance,safety,recovery,steadiness","peace,relief,clarity",low,zhougong
+clarity,"May suggest understanding, truth, resolution, or mental peace.","understanding,truth,resolution,awareness","relief,focus,hope",low,zhougong
+regret,"May suggest reflection on mistakes, guilt, longing, or unfinished emotional business.","guilt,reflection,loss,past","sadness,guilt,longing",moderate,zhougong
+silver_dragon,"May suggest mystical protection, elevated fortune, or rare spiritual power.","protection,fortune,mysticism,power","awe,hope,confidence",low,zhougong
+fire_phoenix,"May suggest rebirth through suffering, transformation, or renewal after loss.","rebirth,transformation,renewal,trial","hope,awe,relief",moderate,zhougong
+coiled_snake,"May suggest dormant threat, hidden power, tension, or unreadable intention.","threat,tension,hidden_power,uncertainty","fear,wariness,anxiety",high,zhougong
+glowing_fish,"May suggest unusual opportunity, spiritual insight, or abundance with guidance.","opportunity,insight,abundance,mysticism","hope,wonder,joy",low,zhougong
+bleeding_teeth,"May suggest severe loss, shame, family stress, or anxiety about decline.","loss,shame,health,family_stress","fear,shame,panic",high,zhougong
+soaring_flight,"May suggest liberation, transcendence, confidence, or escape from limitation.","freedom,transcendence,confidence,escape","joy,relief,hope",low,zhougong
+endless_falling,"May suggest insecurity, helplessness, instability, or fear of losing control.","insecurity,helplessness,loss_of_control,instability","panic,fear,anxiety",high,zhougong
+drizzle,"May suggest gentle cleansing, mild sadness, soft transition, or emotional easing.","cleansing,sadness,transition,gentleness","calm,relief,longing",low,zhougong
+crescent_moon,"May suggest gradual growth, partial clarity, intuition, or a developing cycle.","growth,intuition,cycle,hope","calm,hope,longing",low,zhougong
+frozen_river,"May suggest stalled progress, emotional blockage, or paused life flow.","stagnation,emotional_block,delay,stillness","sadness,frustration,numbness",moderate,zhougong
+wildfire,"May suggest uncontrolled destruction, rage, rapid change, or consuming stress.","destruction,anger,uncontrolled_change,stress","fear,anger,panic",high,zhougong
+whirlwind,"May suggest chaos, confusion, rapid change, or emotional disorientation.","chaos,change,disorientation,instability","anxiety,fear,stress",high,zhougong
+dead_tree,"May suggest endings, loss of vitality, grief, or a stalled family line.","ending,loss,grief,stagnation","sadness,unease,fatigue",moderate,zhougong
+poison,"May suggest betrayal, contamination, toxicity, or hidden harm.","toxicity,betrayal,harm,contamination","fear,suspicion,distress",high,zhougong
+haunted_house,"May suggest unresolved trauma, memory, fear, or distress tied to the self.","trauma,memory,fear,self","fear,sadness,unease",high,zhougong
+iron_bridge,"May suggest durable transition, resilience, or a strong path across hardship.","transition,resilience,stability,connection","hope,confidence,relief",low,zhougong
+tyrant,"May suggest oppression, fear of authority, domination, or loss of autonomy.","oppression,authority,fear,control","fear,pressure,anger",high,zhougong
+stillbirth,"May suggest failed beginnings, grief, blocked creation, or loss of hoped-for growth.","loss,blocked_creation,grief,ending","sadness,helplessness,fear",high,zhougong
+vengeful_ghost,"May suggest revenge, unresolved resentment, haunting memory, or emotional debt.","revenge,resentment,past,haunting","fear,guilt,unease",high,zhougong
+wrathful_gods,"May suggest punishment, moral fear, cosmic judgment, or severe warning.","punishment,judgment,warning,spirituality","fear,awe,guilt",high,zhougong
+migration,"May suggest transition, separation, purposeful movement, or changing life seasons.","transition,separation,journey,change","longing,hope,uncertainty",moderate,zhougong
+schooling_fish,"May suggest unity, coordinated opportunity, collective flow, or social abundance.","unity,flow,community,opportunity","hope,calm,joy",low,zhougong
+capsized_boat,"May suggest emotional disaster, failed transition, or loss of stability.","disaster,emotion,instability,loss_of_control","panic,fear,helplessness",high,zhougong
+secret_garden,"May suggest private growth, hidden beauty, inner refuge, or protected longing.","privacy,growth,beauty,refuge","calm,longing,hope",low,zhougong
+forbidden_books,"May suggest dangerous knowledge, temptation, secrecy, or risky curiosity.","knowledge,temptation,secrecy,danger","curiosity,fear,anxiety",moderate,zhougong
+guiding_angels,"May suggest spiritual help, direction, comfort, or reassurance in difficulty.","guidance,protection,comfort,hope","hope,relief,awe",low,zhougong
+merciful_gods,"May suggest forgiveness, grace, relief from fear, or spiritual compassion.","forgiveness,grace,protection,spirituality","relief,hope,gratitude",low,zhougong
+fan,"May suggest cooling emotions, social grace, modest concealment, or flirtation.","cooling,grace,concealment,romance","calm,curiosity,lightness",low,zhougong
+funeral_procession,"May suggest closure, collective mourning, transition, or respect for endings.","closure,mourning,transition,ritual","sadness,reflection,acceptance",moderate,zhougong
+banquet_table,"May suggest shared reward, social opportunity, indulgence, or family dynamics.","community,reward,indulgence,family","joy,anticipation,overwhelm",low,zhougong
+festival_lanterns,"May suggest celebration, public joy, hopes, or fleeting brightness.","celebration,hope,community,impermanence","joy,wonder,longing",low,zhougong
+rice_bowl,"May suggest daily provision, household stability, gratitude, or modest abundance.","provision,stability,domesticity,abundance","comfort,gratitude,calm",low,zhougong
+grain_store,"May suggest reserves, preparedness, wealth security, or anxiety about scarcity.","security,preparedness,wealth,scarcity","relief,caution,hope",low,zhougong
+harvest_cart,"May suggest earned reward, movement of resources, or the results of sustained effort.","reward,labor,movement,abundance","satisfaction,hope,duty",low,zhougong
+plow,"May suggest hard work, beginning cultivation, patience, or practical effort.","labor,beginnings,patience,grounding","duty,focus,steadiness",low,zhougong
+field_path,"May suggest modest progress, routine direction, or a practical life course.","progress,direction,routine,journey","calm,hope,nostalgia",low,zhougong
+well,"May suggest hidden resources, deep emotion, ancestry, or inner replenishment.","resource,depth,ancestry,emotion","curiosity,calm,unease",moderate,zhougong
+bucket,"May suggest carrying emotional burden, household duty, or gathered resources.","burden,duty,resource,containment","duty,fatigue,calm",low,zhougong
+rope_bridge,"May suggest risky transition, instability, courage, or uncertain connection.","risk,transition,instability,courage","anxiety,determination,hope",high,zhougong
+stone_bridge,"May suggest reliable passage, enduring connection, or stable reconciliation.","stability,connection,reconciliation,durability","relief,hope,confidence",low,zhougong
+wooden_bridge,"May suggest practical transition, temporary support, or modest but useful connection.","transition,support,practicality,journey","hope,caution,calm",low,zhougong
+broken_bridge,"May suggest interrupted progress, failed connection, or difficulty crossing into a new phase.","blocked_progress,separation,transition,loss","frustration,sadness,anxiety",high,zhougong
+riverbank,"May suggest threshold, observation of emotion, or waiting before action.","threshold,emotion,patience,reflection","calm,hesitation,curiosity",low,zhougong
+waterfall,"May suggest powerful release, overwhelming feeling, or cleansing force.","release,emotion,power,cleansing","awe,relief,anxiety",moderate,zhougong
+spring_water,"May suggest renewal, health, pure emotion, or hopeful beginnings.","renewal,healing,purity,beginnings","hope,calm,refreshment",low,zhougong
+mud,"May suggest entanglement, impurity, delay, or difficulty moving freely.","entanglement,delay,impurity,obstacle","frustration,disgust,anxiety",moderate,zhougong
+lotus,"May suggest purity arising from difficulty, spiritual growth, or graceful resilience.","purity,resilience,spirituality,growth","peace,hope,reverence",low,zhougong
+reed,"May suggest flexibility, humility, adaptation, or vulnerability to pressure.","flexibility,humility,adaptation,vulnerability","calm,hesitation,unease",low,zhougong
+bamboo,"May suggest integrity, resilience, upright character, or quiet endurance.","integrity,resilience,endurance,character","calm,confidence,hope",low,zhougong
+pine_tree,"May suggest longevity, steadfastness, winter endurance, or noble constancy.","longevity,steadfastness,endurance,nobility","respect,calm,hope",low,zhougong
+willow_tree,"May suggest sorrow, gentleness, yielding, or emotional sensitivity.","sorrow,gentleness,adaptation,sensitivity","sadness,calm,longing",low,zhougong
+peach_blossom,"May suggest romance, youth, tender attraction, or fleeting beauty.","romance,youth,beauty,impermanence","joy,longing,tenderness",low,zhougong
+plum_blossom,"May suggest perseverance in hardship, quiet beauty, or winter hope.","perseverance,beauty,endurance,hope","hope,calm,respect",low,zhougong
+orchid,"May suggest refinement, hidden virtue, elegance, or noble feeling.","refinement,virtue,elegance,beauty","calm,admiration,longing",low,zhougong
+chrysanthemum,"May suggest autumn reflection, endurance, modest honor, or solitude.","reflection,endurance,honor,solitude","calm,nostalgia,sadness",low,zhougong
+fallen_petal,"May suggest impermanence, missed timing, gentle loss, or seasonal transition.","impermanence,loss,transition,beauty","sadness,longing,acceptance",low,zhougong
+thorn,"May suggest pain in closeness, defense, or hidden difficulty within beauty.","pain,defense,obstacle,relationship","wariness,sadness,anxiety",moderate,zhougong
+vine,"May suggest attachment, growth through support, entanglement, or dependence.","attachment,growth,entanglement,dependency","hope,anxiety,curiosity",moderate,zhougong
+moss,"May suggest age, quiet persistence, damp memory, or neglected places.","age,persistence,neglect,memory","nostalgia,calm,unease",low,zhougong
+seed,"May suggest hidden potential, beginnings, patience, or future outcomes.","potential,beginnings,patience,future","hope,anticipation,calm",low,zhougong
+sprout,"May suggest early growth, fragile success, or visible progress after waiting.","growth,beginnings,fragility,progress","hope,tenderness,relief",low,zhougong
+root,"May suggest origins, family grounding, hidden support, or deep attachment.","origins,grounding,family,support","comfort,nostalgia,stability",low,zhougong
+branch,"May suggest extension, family line, possibility, or a choice of direction.","family,choice,growth,extension","hope,curiosity,uncertainty",low,zhougong
+leaf,"May suggest seasonal change, life energy, or small signs of growth and decline.","seasonal_change,vitality,change,life_cycle","calm,nostalgia,hope",low,zhougong
+fallen_branch,"May suggest weakened support, broken plans, or family strain.","loss,support_failure,family,strain","sadness,anxiety,concern",moderate,zhougong
+fruit_basket,"May suggest gathered rewards, household abundance, or visible success.","reward,abundance,household,success","joy,gratitude,contentment",low,zhougong
+rotten_fruit,"May suggest spoiled opportunity, disappointment, or reward gone wrong.","disappointment,decay,loss,neglect","sadness,regret,unease",moderate,zhougong
+seedling_bed,"May suggest careful preparation, nurturing growth, or fragile projects.","preparation,nurturing,growth,fragility","hope,duty,care",low,zhougong
+mountain_peak,"May suggest achieved ambition, perspective, isolation, or earned honor.","achievement,perspective,ambition,honor","pride,awe,loneliness",moderate,zhougong
+mountain_pass,"May suggest a difficult route, strategic movement, or progress through hardship.","challenge,journey,strategy,endurance","determination,anxiety,hope",moderate,zhougong
+cliff,"May suggest danger, irreversible choice, or fear of losing footing.","danger,risk,decision,instability","fear,vertigo,anxiety",high,zhougong
+valley,"May suggest shelter, humility, lowered fortune, or recovery between trials.","shelter,humility,recovery,decline","calm,sadness,hope",low,zhougong
+cave_entrance,"May suggest approaching the unknown, hidden truth, or cautious retreat.","threshold,unknown,secrecy,retreat","curiosity,fear,hesitation",moderate,zhougong
+cavern,"May suggest deep unconscious material, isolation, or concealed danger.","subconscious,isolation,secrecy,danger","fear,curiosity,withdrawal",moderate,zhougong
+stalactites,"May suggest slow formation, suspended threat, or long-developed pressure.","time,pressure,threat,formation","unease,awe,patience",moderate,zhougong
+desert_dune,"May suggest shifting conditions, scarcity, or endurance in unstable terrain.","scarcity,instability,endurance,change","fatigue,determination,loneliness",moderate,zhougong
+oasis,"May suggest relief, unexpected support, or emotional replenishment after strain.","relief,support,replenishment,hope","relief,gratitude,hope",low,zhougong
+sandstorm,"May suggest confusion, harsh conditions, obscured direction, or mental overload.","confusion,hardship,obscurity,stress","anxiety,fatigue,fear",high,zhougong
+shoreline,"May suggest boundary between conscious and emotional life, or readiness for transition.","boundary,emotion,transition,awareness","calm,curiosity,anticipation",low,zhougong
+tide,"May suggest cyclical feeling, unavoidable change, or emotional rhythm.","cycle,emotion,change,inevitability","calm,unease,longing",low,zhougong
+wave,"May suggest surging emotion, recurring stress, or movement through feeling.","emotion,movement,stress,release","awe,anxiety,relief",moderate,zhougong
+whirlpool,"May suggest emotional entrapment, obsession, or being pulled off course.","entrapment,emotion,loss_of_control,obsession","fear,panic,helplessness",high,zhougong
+island,"May suggest protected solitude, separation, or a self-contained emotional world.","isolation,protection,solitude,retreat","calm,loneliness,curiosity",moderate,zhougong
+harbor,"May suggest safety after difficulty, rest, or a temporary refuge.","safety,rest,refuge,arrival","relief,calm,gratitude",low,zhougong
+ship,"May suggest major life passage, emotional transport, or exposure to uncertainty.","journey,emotion,transition,uncertainty","hope,anxiety,awe",moderate,zhougong
+sail,"May suggest direction through unseen forces, adaptability, or travel readiness.","direction,adaptation,journey,momentum","hope,curiosity,confidence",low,zhougong
+anchor,"May suggest stability, commitment, or difficulty moving on.","stability,commitment,security,stagnation","calm,security,hesitation",low,zhougong
+oar,"May suggest effortful progress, self-propelled change, or practical emotional navigation.","effort,progress,control,journey","determination,fatigue,hope",moderate,zhougong
+fisherman_net,"May suggest catching opportunity, entanglement, or deliberate effort for gain.","opportunity,effort,entanglement,profit","hope,focus,anxiety",moderate,zhougong
+harpoon,"May suggest direct pursuit, aggression, or focused effort toward a target.","pursuit,focus,aggression,precision","determination,anger,alertness",moderate,zhougong
+harvest_moon,"May suggest fullness, reward, timing, or ripened emotional understanding.","completion,reward,timing,reflection","gratitude,calm,longing",low,zhougong
+new_sunrise,"May suggest renewal, clarity, opportunity, or return of confidence.","renewal,clarity,opportunity,vitality","hope,relief,confidence",low,zhougong
+dusk,"May suggest endings, uncertainty, reflection, or diminished clarity.","ending,uncertainty,reflection,decline","sadness,unease,nostalgia",low,zhougong
+dawn,"May suggest emergence, hope, recovery, or a favorable beginning.","beginning,hope,recovery,light","hope,relief,calm",low,zhougong
+starfield,"May suggest expansive possibility, destiny, or contemplation of one's path.","destiny,possibility,guidance,contemplation","wonder,hope,longing",low,zhougong
+north_star,"May suggest stable guidance, moral direction, or reliable purpose.","guidance,stability,purpose,morality","hope,calm,confidence",low,zhougong
+shooting_star,"May suggest brief opportunity, wishful hope, or a rapidly changing fate.","opportunity,hope,change,transience","wonder,anticipation,longing",low,zhougong
+night_sky,"May suggest mystery, contemplation, hidden forces, or emotional depth.","mystery,contemplation,depth,unknown","calm,awe,unease",low,zhougong
+sunbeam,"May suggest focused blessing, insight, warmth, or hope breaking through difficulty.","blessing,insight,warmth,hope","relief,hope,joy",low,zhougong
+moonlight,"May suggest subtle intuition, romance, quiet sorrow, or reflective calm.","intuition,romance,reflection,calm","longing,peace,sadness",low,zhougong
+mist,"May suggest vagueness, transition, softened fear, or half-seen truth.","uncertainty,transition,hidden_truth,softness","unease,curiosity,hesitation",moderate,zhougong
+smoke,"May suggest concealment, aftermath, warning, or unclear cause of distress.","concealment,warning,aftermath,uncertainty","anxiety,alertness,confusion",moderate,zhougong
+ash,"May suggest aftermath, humility, loss, or transformation after destruction.","aftermath,loss,transformation,humility","sadness,reflection,acceptance",moderate,zhougong
+ember,"May suggest lingering passion, residual anger, or quiet hope not extinguished.","passion,anger,residue,hope","tension,longing,hope",moderate,zhougong
+hearth,"May suggest domestic warmth, family center, comfort, or protected intimacy.","warmth,domesticity,family,comfort","comfort,gratitude,safety",low,zhougong
+chimney,"May suggest release of pressure, household function, or signals from the home.","release,home,signal,function","calm,curiosity,relief",low,zhougong
+roof,"May suggest shelter, status of the household, or protection over the self.","shelter,household,protection,status","safety,concern,calm",low,zhougong
+door,"May suggest access, decision, hospitality, or movement into a new situation.","access,decision,threshold,transition","hope,curiosity,anxiety",moderate,zhougong
+doorway,"May suggest liminality, readiness, or hesitation before entering change.","threshold,transition,choice,hesitation","anticipation,anxiety,hope",moderate,zhougong
+courtyard,"May suggest family life, inner social space, or a semi-private emotional world.","family,community,domesticity,space","comfort,nostalgia,calm",low,zhougong
+corridor,"May suggest passage, delay, or transition between emotional states.","passage,delay,transition,uncertainty","hesitation,anxiety,curiosity",moderate,zhougong
+staircase,"May suggest gradual change in status, effortful progress, or emotional ascent.","advancement,effort,change,status","hope,anxiety,determination",moderate,zhougong
+balcony,"May suggest perspective, distance from events, or visible self-presentation.","perspective,distance,observation,self_image","curiosity,longing,calm",low,zhougong
+attic,"May suggest stored memories, neglected thoughts, or hidden family material.","memory,secrecy,storage,past","nostalgia,unease,curiosity",moderate,zhougong
+cellar,"May suggest buried emotion, hidden reserves, or fear stored below awareness.","subconscious,storage,fear,depth","fear,curiosity,anxiety",moderate,zhougong
+kitchen,"May suggest nourishment, transformation of resources, or family responsibility.","nourishment,transformation,domesticity,responsibility","comfort,duty,warmth",low,zhougong
+bedroom,"May suggest privacy, intimacy, rest, or vulnerability of the inner self.","privacy,intimacy,rest,vulnerability","comfort,longing,unease",low,zhougong
+threshold_stone,"May suggest a formal crossing, household boundary, or careful beginnings.","boundary,beginnings,household,transition","respect,hesitation,hope",low,zhougong
+garden_wall,"May suggest protected beauty, emotional boundaries, or curated inner life.","protection,beauty,boundary,privacy","calm,security,longing",low,zhougong
+window_lattice,"May suggest filtered perspective, cultural order, or partial access to possibility.","perspective,structure,limitation,possibility","curiosity,calm,hesitation",low,zhougong
+lantern,"May suggest guidance in darkness, celebration, or fragile but visible hope.","guidance,hope,celebration,illumination","relief,warmth,calm",low,zhougong
+torch,"May suggest active searching, danger nearby, or determination through darkness.","searching,danger,determination,illumination","alertness,hope,fear",moderate,zhougong
+bell,"May suggest warning, ritual attention, awakening, or announcement.","warning,ritual,announcement,awakening","alertness,reverence,unease",moderate,zhougong
+drum,"May suggest public signal, rising excitement, or collective pressure.","signal,excitement,community,pressure","anticipation,stress,energy",moderate,zhougong
+flute,"May suggest longing, refined emotion, romance, or distant memory.","romance,longing,refinement,memory","longing,calm,sadness",low,zhougong
+zither,"May suggest cultured feeling, introspection, harmony, or emotional subtlety.","harmony,introspection,refinement,emotion","calm,longing,focus",low,zhougong
+paintbrush,"May suggest intention, artistry, communication, or shaping reality through expression.","creativity,expression,intention,skill","focus,joy,hope",low,zhougong
+ink,"May suggest lasting words, memory, scholarship, or emotional seriousness.","memory,scholarship,expression,seriousness","focus,nostalgia,calm",low,zhougong
+scroll,"May suggest preserved wisdom, important message, or unfolding understanding.","wisdom,message,tradition,revelation","curiosity,reverence,hope",low,zhougong
+seal_stamp,"May suggest official recognition, closure, authority, or final decision.","authority,recognition,decision,validation","confidence,pressure,relief",moderate,zhougong
+document,"May suggest responsibility, agreement, judgment, or formal communication.","responsibility,agreement,communication,judgment","anxiety,focus,anticipation",moderate,zhougong
+map,"May suggest orientation, planning, destiny, or search for the right route.","orientation,planning,journey,strategy","hope,curiosity,anxiety",low,zhougong
+compass,"May suggest moral guidance, reliable direction, or need to correct course.","guidance,direction,correction,stability","relief,focus,hope",low,zhougong
+abacus,"May suggest calculation, practical judgment, trade concerns, or measured planning.","calculation,trade,planning,prudence","focus,anxiety,control",moderate,zhougong
+coin_pouch,"May suggest portable wealth, caution, or fear of loss and theft.","wealth,security,portability,loss","hope,anxiety,caution",moderate,zhougong
+jade,"May suggest virtue, protection, status, or treasured inner worth.","virtue,protection,status,value","admiration,calm,confidence",low,zhougong
+jade_pendant,"May suggest personal protection, inherited value, or moral identity.","protection,inheritance,identity,value","comfort,respect,hope",low,zhougong
+bronze,"May suggest durability, age, ritual weight, or practical strength.","durability,tradition,strength,materiality","respect,calm,gravity",low,zhougong
+iron,"May suggest hardness, endurance, defense, or inflexibility.","strength,endurance,defense,rigidity","confidence,tension,stability",moderate,zhougong
+silk,"May suggest refinement, luxury, social grace, or delicate presentation.","luxury,refinement,beauty,status","joy,desire,care",low,zhougong
+robe,"May suggest role, social identity, dignity, or responsibilities carried publicly.","identity,status,role,dignity","confidence,pressure,curiosity",low,zhougong
+sleeves,"May suggest hidden intention, reserve, modesty, or concealed emotion.","concealment,modesty,emotion,self_presentation","curiosity,calm,unease",low,zhougong
+belt,"May suggest self-control, readiness, restraint, or secured identity.","control,restraint,readiness,identity","focus,confidence,tension",low,zhougong
+shoe,"May suggest preparedness for a journey, social standing, or practical movement.","journey,preparedness,status,movement","hope,calm,readiness",low,zhougong
+sandals,"May suggest humility, simplicity, travel, or exposed vulnerability.","humility,simplicity,travel,vulnerability","calm,exposure,hope",low,zhougong
+boots,"May suggest toughness, endurance, protection, or readiness for rough conditions.","endurance,protection,journey,resilience","confidence,determination,alertness",low,zhougong
+cloak,"May suggest protection, secrecy, authority, or covering one's true state.","protection,secrecy,authority,concealment","safety,curiosity,unease",moderate,zhougong
+veil,"May suggest hidden truth, modesty, delay in revelation, or emotional distance.","hidden_truth,modesty,mystery,distance","curiosity,longing,uncertainty",moderate,zhougong
+needle,"May suggest precision, healing, small pain, or the need to mend something delicate.","precision,healing,mending,pain","focus,anxiety,care",moderate,zhougong
+thread,"May suggest connection, continuity, fragility, or patient repair.","connection,continuity,fragility,repair","hope,care,calm",low,zhougong
+loom,"May suggest weaving fate, patient construction, or interconnected life patterns.","fate,construction,patience,connection","focus,calm,hope",low,zhougong
+basket,"May suggest gathered resources, domestic care, or carrying responsibilities.","resources,domesticity,burden,care","gratitude,duty,calm",low,zhougong
+chest,"May suggest storage of value, secrets, inheritance, or guarded memory.","storage,value,secrets,inheritance","curiosity,security,unease",moderate,zhougong
+cabinet,"May suggest organized memory, domestic order, or hidden compartments of feeling.","order,memory,domesticity,secrecy","calm,curiosity,control",low,zhougong
+drawer,"May suggest small hidden matters, private habits, or accessible secrets.","secrecy,privacy,details,storage","curiosity,unease,calm",low,zhougong
+key,"May suggest access, solution, responsibility, or power to open what is closed.","access,solution,power,responsibility","hope,curiosity,pressure",moderate,zhougong
+lockbox,"May suggest guarded wealth, emotional reserve, or fear of exposure.","security,reserve,wealth,secrecy","anxiety,control,caution",moderate,zhougong
+needlework,"May suggest patient repair, domestic skill, or quiet effort to restore harmony.","repair,skill,patience,harmony","calm,focus,care",low,zhougong
+cauldron,"May suggest transformation, pressure, brewing conflict, or powerful creation.","transformation,pressure,creation,danger","awe,tension,anticipation",moderate,zhougong
+steam,"May suggest rising pressure, emotional release, or unseen heat beneath calm.","pressure,release,emotion,hidden_force","tension,relief,unease",moderate,zhougong
+steam_rice,"May suggest nourishment in preparation, family care, or ordinary blessing.","nourishment,preparation,family,comfort","warmth,gratitude,calm",low,zhougong
+tea,"May suggest calm conversation, ritual ease, hospitality, or reflective pause.","calm,ritual,hospitality,reflection","peace,comfort,clarity",low,zhougong
+teacup,"May suggest contained feeling, social delicacy, or a small personal comfort.","containment,comfort,sociality,delicacy","calm,care,contentment",low,zhougong
+teapot,"May suggest shared warmth, preparation for company, or emotional readiness.","warmth,preparation,sharing,domesticity","comfort,anticipation,calm",low,zhougong
+chopsticks,"May suggest skill, balance, nourishment, or disciplined handling of needs.","skill,balance,nourishment,discipline","focus,calm,readiness",low,zhougong
+knife,"May suggest separation, precision, threat, or decisive emotional cutting.","separation,precision,danger,decision","fear,focus,tension",moderate,zhougong
+cleaver,"May suggest forceful division, practical necessity, or harsh decisiveness.","force,division,necessity,decisiveness","alarm,determination,tension",moderate,zhougong
+spoon,"May suggest care, feeding, gentleness, or patient receiving.","care,nourishment,gentleness,receptivity","comfort,tenderness,calm",low,zhougong
+plate,"May suggest presentation, shared meal, or what is offered to others.","offering,sharing,sociality,fulfillment","anticipation,comfort,calm",low,zhougong
+crumbs,"May suggest leftovers, minor loss, or the remains of earlier comfort.","loss,remains,scarcity,memory","sadness,nostalgia,unease",low,zhougong
+wine_cup,"May suggest pleasure, social ritual, temptation, or emotional loosening.","pleasure,ritual,temptation,release","joy,desire,loss_of_control",moderate,zhougong
+vinegar,"May suggest sharpness, bitterness, preservation, or emotional sourness.","bitterness,preservation,sharpness,criticism","irritation,disgust,alertness",moderate,zhougong
+salt,"May suggest preservation, purity, hardship, or tears and labor.","preservation,purity,hardship,necessity","calm,bitterness,reflection",low,zhougong
+honey,"May suggest sweetness, reward, attraction, or pleasure with stickiness.","sweetness,reward,attraction,attachment","joy,desire,comfort",low,zhougong
+medicine,"May suggest healing, unpleasant necessity, or hope through discipline.","healing,necessity,discipline,recovery","hope,unease,relief",moderate,zhougong
+herbal_broth,"May suggest slow healing, family care, or remedy through patience.","healing,care,patience,domesticity","comfort,hope,calm",low,zhougong
+market,"May suggest exchange, opportunity, competition, or social complexity.","exchange,opportunity,competition,society","curiosity,stress,hope",moderate,zhougong
+market_stall,"May suggest practical trade, modest ambition, or reliance on public exchange.","trade,ambition,livelihood,community","hope,anxiety,duty",moderate,zhougong
+shop_sign,"May suggest identity in public life, commerce, or reputation.","identity,commerce,reputation,visibility","curiosity,pressure,hope",moderate,zhougong
+warehouse,"May suggest stored potential, material anxiety, or guarded prosperity.","storage,prosperity,preparedness,anxiety","hope,caution,control",moderate,zhougong
+merchant_caravan,"May suggest profit through movement, risk in exchange, or long-range opportunity.","profit,travel,risk,opportunity","hope,anxiety,anticipation",moderate,zhougong
+porters,"May suggest burden-sharing, labor, or reliance on practical support.","labor,support,burden,service","duty,gratitude,fatigue",low,zhougong
+tax_collector,"May suggest pressure, obligation, authority, or fear of loss through duty.","obligation,authority,loss,pressure","anxiety,resentment,fear",high,zhougong
+judge,"May suggest evaluation, moral reckoning, authority, or decision with consequence.","judgment,authority,morality,decision","awe,anxiety,pressure",moderate,zhougong
+verdict,"May suggest finality, consequence, recognition, or feared exposure.","finality,consequence,recognition,exposure","anxiety,relief,fear",high,zhougong
+prison,"May suggest restriction, guilt, trapped circumstances, or external control.","restriction,guilt,confinement,control","fear,helplessness,distress",high,zhougong
+chain_gate,"May suggest defended boundaries, controlled access, or institutional limitation.","barrier,control,security,restriction","frustration,anxiety,caution",moderate,zhougong
+soldier_helmet,"May suggest defense, role readiness, or pressure to confront conflict.","defense,role,conflict,preparedness","alertness,duty,stress",moderate,zhougong
+banner,"May suggest cause, recognition, collective identity, or ambition made visible.","identity,recognition,community,ambition","pride,hope,pressure",low,zhougong
+flag,"May suggest allegiance, declaration, public stance, or group belonging.","allegiance,identity,publicity,belonging","pride,pressure,confidence",low,zhougong
+shield,"May suggest protection, defense, caution, or emotional guardedness.","protection,defense,caution,boundary","safety,alertness,hesitation",low,zhougong
+spear,"May suggest direct conflict, focused aggression, or piercing insight.","conflict,focus,aggression,insight","alertness,anger,determination",moderate,zhougong
+arrow,"May suggest direction, intention, attack, or targeted communication.","direction,intention,attack,focus","anticipation,alertness,anxiety",moderate,zhougong
+bow,"May suggest restrained power, preparation, or potential awaiting release.","potential,preparation,control,power","focus,tension,confidence",moderate,zhougong
+quiver,"May suggest reserve capacity, preparedness, or ongoing readiness for challenge.","preparedness,reserve,defense,capacity","confidence,alertness,control",low,zhougong
+armor,"May suggest emotional protection, resilience, burden, or distance from vulnerability.","protection,resilience,burden,distance","safety,fatigue,guardedness",moderate,zhougong
+helmet,"May suggest mental defense, role assumption, or vigilance under pressure.","defense,vigilance,identity,pressure","alertness,pressure,confidence",moderate,zhougong
+horse_saddle,"May suggest readiness to move, control over momentum, or disciplined freedom.","readiness,control,movement,discipline","confidence,anticipation,focus",low,zhougong
+reins,"May suggest control, restraint, guidance, or fear of losing command.","control,restraint,guidance,authority","focus,anxiety,confidence",moderate,zhougong
+hoofprints,"May suggest passing power, traces of movement, or evidence of recent change.","movement,trace,change,evidence","curiosity,anticipation,unease",low,zhougong
+stable,"May suggest stored energy, readiness, care of strength, or contained freedom.","readiness,containment,care,power","calm,confidence,anticipation",low,zhougong
+stallion,"May suggest masculine vigor, ambition, untamed force, or proud momentum.","vigor,ambition,force,freedom","excitement,confidence,restlessness",moderate,zhougong
+mare,"May suggest loyalty, fertility, emotional movement, or nurturing strength.","fertility,loyalty,movement,nurture","tenderness,hope,calm",low,zhougong
+foal,"May suggest new vitality, fragile promise, or growth needing protection.","beginnings,vitality,fragility,growth","hope,tenderness,concern",low,zhougong
+mane,"May suggest pride, visible vitality, or expressive personal energy.","pride,vitality,self_expression,beauty","confidence,admiration,energy",low,zhougong
+fangs,"May suggest aggression, threat, instinct, or fear of being harmed.","threat,aggression,instinct,danger","fear,alertness,panic",high,zhougong
+claws,"May suggest defense, attack, grasping urgency, or painful attachment.","defense,attack,attachment,threat","fear,tension,wariness",moderate,zhougong
+fur,"May suggest warmth, instinctual comfort, or closeness to animal nature.","warmth,instinct,comfort,protection","comfort,curiosity,calm",low,zhougong
+feathers,"May suggest message, elevation, softness, or traces of a departed presence.","message,elevation,softness,trace","wonder,longing,calm",low,zhougong
+nest,"May suggest home building, vulnerability, family care, or preparation for growth.","home,family,care,preparation","tenderness,comfort,hope",low,zhougong
+egg,"May suggest fragile potential, incubation, secrecy, or future life.","potential,fragility,secrecy,beginnings","hope,care,anticipation",low,zhougong
+shell,"May suggest protection, vulnerability once broken, or remains of a transition.","protection,vulnerability,transition,remains","calm,unease,reflection",low,zhougong
+horns,"May suggest defense, pride, stubbornness, or visible power.","defense,pride,stubbornness,power","confidence,wariness,tension",moderate,zhougong
+tusk,"May suggest age, force, memory, or difficult but noble strength.","strength,memory,endurance,nobility","respect,awe,determination",low,zhougong
+pawprint,"May suggest instinctive presence, hidden pursuit, or unseen companionship.","instinct,presence,pursuit,companionship","curiosity,unease,comfort",low,zhougong
+tail,"May suggest balance, instinct, emotional signaling, or lingering attachment.","balance,instinct,emotion,attachment","curiosity,calm,wariness",low,zhougong
+scales,"May suggest protection, coldness, hidden danger, or resilient boundaries.","protection,coldness,danger,resilience","fear,curiosity,unease",moderate,zhougong
+shell_armor,"May suggest guarded sensitivity, slow endurance, or defensive withdrawal.","defense,endurance,withdrawal,sensitivity","caution,calm,hesitation",low,zhougong
+antlers,"May suggest branching power, noble display, or cyclical renewal of strength.","power,display,renewal,nobility","awe,confidence,hope",low,zhougong
+hoof,"May suggest grounded movement, endurance, or impact on one's path.","movement,endurance,grounding,impact","determination,calm,focus",low,zhougong
+beak,"May suggest sharp communication, picking at details, or decisive action.","communication,precision,decisiveness,alertness","focus,wariness,curiosity",low,zhougong
+wings,"May suggest escape, blessing, aspiration, or the wish to rise above conditions.","escape,aspiration,freedom,protection","hope,relief,wonder",low,zhougong
+talons,"May suggest powerful grasp, threat from above, or fierce determination.","threat,power,grasp,determination","fear,alertness,focus",moderate,zhougong
+hoofbeat,"May suggest approaching change, urgency, or news arriving with force.","change,urgency,arrival,movement","anticipation,alertness,anxiety",moderate,zhougong
+howl,"May suggest loneliness, warning, call for connection, or instinctive fear.","loneliness,warning,instinct,call","fear,longing,unease",moderate,zhougong
+roar_echo,"May suggest magnified threat, authority, or conflict reverberating through life.","threat,authority,conflict,resonance","fear,awe,tension",high,zhougong
+purr,"May suggest comfort, subtle pleasure, trust, or soothing companionship.","comfort,trust,pleasure,companionship","calm,warmth,contentment",low,zhougong
+hiss,"May suggest hostility, warning, hidden tension, or need for distance.","warning,hostility,tension,defense","fear,wariness,anxiety",moderate,zhougong
+web_corner,"May suggest neglected space, subtle entanglement, or patient strategy.","entanglement,neglect,strategy,secrecy","unease,curiosity,anxiety",moderate,zhougong
+hive,"May suggest organized labor, social order, productivity, or collective pressure.","labor,order,community,productivity","focus,duty,stress",moderate,zhougong
+cocoon,"May suggest transformation in seclusion, waiting, or hidden preparation.","transformation,seclusion,preparation,waiting","hope,patience,uncertainty",low,zhougong
+sting,"May suggest sharp hurt, insult, betrayal, or small but memorable injury.","hurt,betrayal,pain,warning","anger,anxiety,unease",moderate,zhougong
+fang_mark,"May suggest emotional wound, violation, or lingering danger after contact.","injury,danger,aftermath,violation","fear,distress,wariness",high,zhougong
+hoof_trail,"May suggest guided direction, steady movement, or following powerful influences.","direction,movement,trace,influence","hope,curiosity,focus",low,zhougong
+butterfly_wing,"May suggest delicacy, transformation, or beauty too easily damaged.","fragility,transformation,beauty,sensitivity","tenderness,sadness,hope",low,zhougong
+monkey_tail,"May suggest playfulness, distraction, or trouble caused by cleverness.","mischief,distraction,cleverness,instability","amusement,annoyance,wariness",low,zhougong
+rabbit_burrow,"May suggest refuge, fear-driven retreat, or hidden fertility and comfort.","refuge,fear,home,fertility","comfort,anxiety,tenderness",low,zhougong
+wolf_pack,"May suggest social threat, hierarchy, loyalty under pressure, or survival struggle.","threat,hierarchy,loyalty,survival","fear,alertness,determination",high,zhougong
+fox_den,"May suggest secret plans, clever hiding, or danger cloaked in charm.","secrecy,cunning,retreat,deception","curiosity,suspicion,unease",moderate,zhougong
+bear_cave,"May suggest retreat, latent power, or a need for protected withdrawal.","retreat,power,protection,introspection","calm,awe,hesitation",moderate,zhougong
+deer_path,"May suggest gentle opportunity, elusive progress, or peace through attentiveness.","opportunity,gentleness,progress,peace","hope,calm,curiosity",low,zhougong
+lion_mane,"May suggest charisma, authority, visible strength, or pride.","authority,strength,charisma,pride","confidence,awe,pressure",moderate,zhougong
+elephant_track,"May suggest memory's trace, slow but certain progress, or inherited weight.","memory,progress,endurance,inheritance","respect,calm,gravity",low,zhougong
+ox_cart,"May suggest practical progress, laborious movement, or material burden carried steadily.","labor,progress,burden,stability","duty,fatigue,hope",low,zhougong
+goat,"May suggest persistence, sure footing, sacrifice, or striving on difficult ground.","persistence,sacrifice,challenge,humility","determination,calm,unease",low,zhougong
+rooster,"May suggest vigilance, announcement, masculine display, or dawn-like awakening.","vigilance,announcement,display,awakening","alertness,confidence,anticipation",low,zhougong
+hen,"May suggest domestic care, fertility, routine provision, or humble family protection.","care,fertility,domesticity,protection","comfort,tenderness,calm",low,zhougong
+goose,"May suggest message-bearing travel, pair bonds, or seasonal movement.","message,travel,bond,seasonal_change","longing,hope,calm",low,zhougong
+duck,"May suggest adaptation across emotional surfaces, ordinary luck, or family movement.","adaptation,emotion,family,practicality","calm,curiosity,comfort",low,zhougong
+sparrow,"May suggest small joys, chatter, ordinary news, or social lightness.","joy,news,sociality,smallness","lightness,curiosity,hope",low,zhougong
+crane,"May suggest longevity, spiritual elegance, distance, or noble aspiration.","longevity,spirituality,elegance,aspiration","peace,awe,hope",low,zhougong
+swallow,"May suggest returning home, seasonal hope, or reunion after absence.","return,hope,home,reunion","joy,longing,relief",low,zhougong
+hawk,"May suggest sharp perception, ambition, or threat from a dominant figure.","perception,ambition,threat,focus","alertness,confidence,fear",moderate,zhougong
+raven,"May suggest deep omen, intelligence, mystery, or attraction to darker knowledge.","omen,intelligence,mystery,warning","unease,curiosity,awe",moderate,zhougong
+dove,"May suggest peace, reconciliation, innocence, or gentle emotional healing.","peace,reconciliation,innocence,healing","calm,hope,tenderness",low,zhougong
+mantis,"May suggest stillness before action, predatory attention, or spiritual alertness.","stillness,focus,threat,alertness","wariness,focus,curiosity",moderate,zhougong
+dragonfly,"May suggest brief transformation, agility, or delicate motion across emotion.","transformation,agility,lightness,emotion","joy,curiosity,calm",low,zhougong
+firefly,"May suggest fleeting hope, small guidance, or beauty in darkness.","hope,guidance,fragility,night","wonder,calm,longing",low,zhougong
+locusts,"May suggest collective stress, devouring pressure, or fear of depletion.","stress,scarcity,collective_threat,depletion","anxiety,fear,distress",high,zhougong
+worm,"May suggest decay, hidden labor, humility, or discomfort with the lowly.","decay,humility,hidden_labor,discomfort","disgust,unease,reflection",moderate,zhougong
+centipede,"May suggest many small anxieties, creeping threat, or complex irritation.","anxiety,threat,complexity,irritation","fear,disgust,stress",high,zhougong
+beetle,"May suggest resilience, burden-bearing, or persistence through rough conditions.","resilience,burden,persistence,protection","determination,calm,unease",low,zhougong
+snail,"May suggest slow progress, self-protection, or vulnerability carried carefully.","slow_progress,protection,vulnerability,patience","calm,frustration,care",low,zhougong
+tortoise,"May suggest longevity, stable defense, wisdom, or progress without haste.","longevity,defense,wisdom,stability","calm,confidence,patience",low,zhougong
+frog,"May suggest transition, fertility, damp emotion, or sudden leaps in fortune.","transition,fertility,emotion,change","curiosity,hope,unease",low,zhougong
+toad,"May suggest hidden wealth, ugliness concealing value, or stagnant emotional places.","hidden_value,wealth,stagnation,appearance","curiosity,disgust,hope",moderate,zhougong
+turtle_shell,"May suggest prophecy, protection, ancient wisdom, or cautious retreat.","protection,wisdom,divination,retreat","reverence,calm,curiosity",low,zhougong
+crab,"May suggest sideways progress, defensiveness, or irritability around vulnerability.","defense,indirect_progress,irritability,vulnerability","wariness,frustration,unease",moderate,zhougong
+shrimp,"May suggest nervous energy, small gains, or modest but quick opportunity.","small_gain,energy,opportunity,modesty","curiosity,alertness,hope",low,zhougong
+shellfish,"May suggest hidden nourishment, guarded value, or feelings protected by hardness.","hidden_value,nourishment,protection,emotion","calm,curiosity,care",low,zhougong
+coral,"May suggest slow beauty, underwater growth, or fragile complexity beneath calm.","beauty,growth,complexity,subconscious","wonder,calm,care",low,zhougong
+pearl,"May suggest hidden worth, refinement born of irritation, or treasured emotional insight.","hidden_value,refinement,insight,beauty","admiration,hope,calm",low,zhougong
+jade_ring,"May suggest faithful bond, noble commitment, or valued continuity.","bond,commitment,virtue,continuity","hope,security,admiration",low,zhougong
+bronze_mirror,"May suggest honest self-examination, ancestral judgment, or reflective memory.","self_reflection,truth,ancestry,memory","clarity,unease,reflection",moderate,zhougong
+hairpin,"May suggest feminine identity, social presentation, or union and attachment.","identity,beauty,union,self_presentation","joy,longing,care",low,zhougong
+comb,"May suggest order, grooming, self-image, or untangling difficult thoughts.","order,self_image,care,untangling","calm,focus,vanity",low,zhougong
+needle_case,"May suggest preparedness for repair, careful work, or guarded precision.","preparedness,repair,precision,care","focus,calm,caution",low,zhougong
+scissors,"May suggest severing ties, decisive change, or practical cutting away.","separation,decision,change,utility","anxiety,relief,determination",moderate,zhougong
+thread_spool,"May suggest continuity, stored connection, or work still to be done.","continuity,connection,preparation,labor","calm,focus,hope",low,zhougong
+curtain,"May suggest privacy, concealment, delay in seeing truth, or emotional shielding.","privacy,concealment,delay,shielding","curiosity,unease,safety",moderate,zhougong
+mat,"May suggest humility, rest, domestic simplicity, or sacred threshold space.","humility,rest,domesticity,simplicity","calm,comfort,grounding",low,zhougong
+pillow,"May suggest comfort, dreams, intimacy, or private emotional softness.","comfort,dreams,intimacy,softness","peace,longing,restfulness",low,zhougong
+blanket,"May suggest protection, warmth, concealment, or need for reassurance.","protection,warmth,concealment,reassurance","comfort,safety,fatigue",low,zhougong
+screen,"May suggest filtered visibility, social decorum, or partial concealment.","concealment,decorum,boundary,perspective","curiosity,calm,hesitation",low,zhougong
+matting,"May suggest simple living, woven support, or ordinary domestic order.","simplicity,support,domesticity,order","calm,nostalgia,contentment",low,zhougong
+pavilion,"May suggest temporary elegance, meeting place, or exposed beauty.","elegance,meeting,beauty,transience","joy,longing,calm",low,zhougong
+pagoda,"May suggest spiritual ascent, layered wisdom, or distant sacred aspiration.","spirituality,aspiration,wisdom,elevation","reverence,hope,awe",low,zhougong
+altar,"May suggest offering, obligation, sacred attention, or moral seriousness.","offering,spirituality,obligation,reverence","reverence,hope,guilt",moderate,zhougong
+incense,"May suggest prayer, purification, remembrance, or subtle spiritual communication.","prayer,purification,remembrance,spirituality","peace,reverence,longing",low,zhougong
+incense_ash,"May suggest spent devotion, memory of prayer, or humility after intensity.","remembrance,humility,aftermath,spirituality","sadness,peace,reflection",low,zhougong
+offering_bowl,"May suggest reciprocity with the sacred, giving, or accepting loss for meaning.","offering,reciprocity,loss,spirituality","reverence,hope,acceptance",low,zhougong
+temple_steps,"May suggest gradual approach to insight, humility, or effort toward refuge.","effort,spirituality,approach,humility","hope,reverence,determination",low,zhougong
+monastery_gate,"May suggest disciplined threshold, peace behind restraint, or chosen withdrawal.","discipline,threshold,peace,withdrawal","calm,hesitation,hope",low,zhougong
+prayer_beads,"May suggest repetition, focus, comfort, or counting through uncertainty.","focus,comfort,ritual,uncertainty","calm,hope,grounding",low,zhougong
+oracle_bones,"May suggest ancient guidance, fear of fate, or need for signs.","divination,fate,guidance,ancestry","awe,anxiety,curiosity",moderate,zhougong
+talisman,"May suggest protection, belief, or dependence on symbolic safety.","protection,belief,safety,spirituality","comfort,hope,anxiety",low,zhougong
+amulet,"May suggest personal safeguarding, inherited blessing, or portable reassurance.","protection,inheritance,reassurance,fortune","comfort,hope,confidence",low,zhougong
+ritual_drum,"May suggest communal invocation, rising power, or seriousness of intention.","ritual,power,community,intention","awe,anticipation,focus",moderate,zhougong
+gong,"May suggest decisive awakening, public signal, or unavoidable attention.","awakening,signal,attention,finality","alertness,awe,unease",moderate,zhougong
+temple_bell,"May suggest spiritual calling, mourning, or clarity arriving through sound.","spirituality,calling,mourning,clarity","peace,reverence,sadness",low,zhougong
+scripture,"May suggest moral instruction, guidance, or pressure to live rightly.","guidance,morality,wisdom,responsibility","hope,reverence,pressure",low,zhougong
+vow,"May suggest commitment, restraint, sacred promise, or future duty.","commitment,restraint,promise,duty","hope,pressure,resolve",moderate,zhougong
+pilgrimage_road,"May suggest meaningful hardship, faith-led movement, or long inner work.","faith,journey,hardship,meaning","determination,hope,fatigue",moderate,zhougong
+sacrifice_altar,"May suggest exchange, painful offering, or transformation through loss.","sacrifice,transformation,loss,spirituality","guilt,reverence,fear",high,zhougong
+blessing_hand,"May suggest protection, approval, healing, or accepted worth.","protection,approval,healing,grace","comfort,hope,relief",low,zhougong
+oracle_text,"May suggest cryptic guidance, uncertain fate, or hidden instruction.","guidance,fate,mystery,interpretation","curiosity,anxiety,reverence",moderate,zhougong
+ancestor_tablet,"May suggest family duty, memory, ancestral influence, or inherited expectation.","family,ancestry,duty,memory","respect,nostalgia,pressure",moderate,zhougong
+ancestral_hall,"May suggest lineage, collective identity, or emotional weight of tradition.","lineage,tradition,identity,family","respect,comfort,pressure",moderate,zhougong
+grave_mound,"May suggest remembrance, closure, inherited sorrow, or resting place of the past.","remembrance,closure,past,ancestry","sadness,peace,reflection",moderate,zhougong
+tombstone,"May suggest named endings, memory preserved, or concern with legacy.","memory,ending,legacy,identity","sadness,reflection,unease",moderate,zhougong
+burial_clothes,"May suggest mortality awareness, ritual seriousness, or surrender to transition.","mortality,ritual,transition,surrender","fear,acceptance,sadness",moderate,zhougong
+mourning_clothes,"May suggest grief, filial duty, emotional restraint, or public sorrow.","grief,duty,restraint,ritual","sadness,obligation,reflection",moderate,zhougong
+coffin,"May suggest final closure, fear of endings, or symbolic transformation of an old self.","closure,ending,transformation,mortality","fear,reflection,acceptance",high,zhougong
+incense_smoke,"May suggest prayers rising, fading memory, or spiritual contact across distance.","prayer,memory,spirituality,transition","peace,longing,reverence",low,zhougong
+funeral_banner,"May suggest public mourning, family duty, or acknowledgment of irreversible change.","mourning,family,ritual,change","sadness,respect,acceptance",moderate,zhougong
+wedding_chamber,"May suggest union, intimacy, family expectation, or transition into shared life.","union,intimacy,family,transition","joy,anxiety,longing",low,zhougong
+bridal_veil,"May suggest anticipation, modest concealment, or threshold before revelation.","anticipation,concealment,union,threshold","hope,anxiety,tenderness",low,zhougong
+wedding_cup,"May suggest shared destiny, commitment, or ceremonial union of lives.","commitment,union,ritual,relationship","joy,hope,security",low,zhougong
+bridal_sedan,"May suggest formal transition, public recognition of union, or life-course movement.","transition,recognition,marriage,status","joy,anticipation,pressure",low,zhougong
+red_thread,"May suggest destined bond, unseen connection, or fateful relationship tie.","destiny,connection,relationship,fate","hope,longing,wonder",low,zhougong
+love_token,"May suggest affection, remembrance, promise, or attachment to a bond.","affection,promise,memory,attachment","love,longing,hope",low,zhougong
+marriage_contract,"May suggest obligation, formal union, or anxiety about commitment.","commitment,obligation,union,formality","hope,pressure,anxiety",moderate,zhougong
+matchmaker,"May suggest social mediation, arranged connection, or influence over intimate fate.","mediation,relationship,society,fate","curiosity,hope,pressure",low,zhougong
+cradle,"May suggest protection of beginnings, family nurture, or tender responsibility.","nurture,beginnings,family,protection","tenderness,hope,care",low,zhougong
+swaddling_cloth,"May suggest vulnerability, care, or the need to protect fragile growth.","care,vulnerability,beginnings,protection","tenderness,concern,hope",low,zhougong
+milk,"May suggest nurture, dependence, maternal care, or simple sustenance.","nurture,dependence,care,sustenance","comfort,tenderness,calm",low,zhougong
+midwife,"May suggest transition assistance, birth of new conditions, or guided change.","guidance,birth,transition,support","hope,anxiety,relief",moderate,zhougong
+womb,"May suggest origin, hidden creation, protection, or emotional containment.","origin,creation,protection,containment","tenderness,hope,calm",low,zhougong
+umbilical_cord,"May suggest attachment, dependence, life connection, or difficulty separating.","attachment,dependence,life_connection,separation","tenderness,anxiety,security",moderate,zhougong
+nursery,"May suggest future planning, family hope, or concern for what is still developing.","future,family,care,anticipation","hope,tenderness,anxiety",low,zhougong
+schoolroom,"May suggest discipline, social learning, evaluation, or early pressure.","learning,discipline,evaluation,society","focus,anxiety,hope",moderate,zhougong
+inkstone,"May suggest scholarly discipline, preparation, or enduring mental effort.","discipline,study,preparation,endurance","focus,pressure,calm",low,zhougong
+exam_paper,"May suggest judgment, readiness, fear of failure, or ambition tested.","judgment,ambition,pressure,evaluation","anxiety,focus,hope",high,zhougong
+scholar_hat,"May suggest merit, aspiration, learned identity, or social advancement.","merit,aspiration,identity,status","hope,pressure,confidence",moderate,zhougong
+lectern,"May suggest public knowledge, guidance, or pressure to speak wisely.","guidance,knowledge,public_role,authority","focus,pressure,confidence",moderate,zhougong
+classmates,"May suggest comparison, companionship, competition, or shared growth.","comparison,companionship,competition,growth","curiosity,anxiety,belonging",low,zhougong
+master_teacher,"May suggest discipline, moral correction, or guidance from authority.","discipline,guidance,authority,morality","respect,pressure,hope",moderate,zhougong
+sealed_exam_results,"May suggest suspense, delayed judgment, or fear of revealed worth.","suspense,judgment,delay,recognition","anxiety,anticipation,fear",high,zhougong
+library_shelf,"May suggest stored wisdom, memory, or the weight of accumulated learning.","wisdom,memory,learning,structure","curiosity,calm,pressure",low,zhougong
+brushstroke,"May suggest intention made visible, imperfect expression, or unique personal mark.","expression,intention,identity,art","focus,hope,vulnerability",low,zhougong
+poem,"May suggest refined feeling, coded message, or emotional truth in indirect form.","emotion,message,refinement,truth","longing,calm,curiosity",low,zhougong
+storyteller,"May suggest interpretation, memory shaping, or need to make meaning from events.","meaning,memory,communication,identity","curiosity,comfort,reflection",low,zhougong
+theater_stage,"May suggest social performance, exposure, drama, or public identity.","performance,exposure,identity,drama","anticipation,anxiety,excitement",moderate,zhougong
+mask,"May suggest concealment, role-playing, emotional defense, or uncertain identity.","concealment,identity,defense,deception","curiosity,anxiety,unease",moderate,zhougong
+costume,"May suggest temporary role, transformation, or uncertainty about authentic self.","role,transformation,identity,appearance","curiosity,freedom,anxiety",low,zhougong
+audience,"May suggest scrutiny, recognition, belonging, or fear of judgment.","scrutiny,recognition,society,judgment","anxiety,pride,pressure",moderate,zhougong
+drama_script,"May suggest predetermined roles, unfolding conflict, or awareness of social narrative.","role,conflict,narrative,fate","curiosity,pressure,reflection",moderate,zhougong
+puppet,"May suggest lack of autonomy, influence by others, or social performance without freedom.","control,dependency,performance,powerlessness","helplessness,unease,frustration",high,zhougong
+strings,"May suggest subtle control, hidden influence, attachment, or manipulation.","control,influence,attachment,manipulation","anxiety,wariness,helplessness",moderate,zhougong
+drumbeat,"May suggest urgency, collective movement, or building emotional momentum.","urgency,community,momentum,signal","anticipation,stress,energy",moderate,zhougong
+festival_mask,"May suggest joyful concealment, social freedom, or unstable identity in celebration.","celebration,concealment,identity,freedom","joy,curiosity,unease",low,zhougong
+parade,"May suggest public display, social belonging, or pressure to move with the crowd.","display,community,movement,conformity","excitement,pressure,belonging",moderate,zhougong
+torch_procession,"May suggest collective purpose, ritual seriousness, or charged social movement.","ritual,community,purpose,charge","awe,anticipation,unease",moderate,zhougong
+street_corner,"May suggest choice, public encounter, or turning point in ordinary life.","choice,encounter,transition,public_life","curiosity,anticipation,uncertainty",low,zhougong
+alley,"May suggest secrecy, danger, private routes, or marginal emotional territory.","secrecy,danger,detour,hidden_path","fear,curiosity,unease",moderate,zhougong
+city_gate,"May suggest entry into opportunity, public judgment, or crossing into broader life.","opportunity,threshold,society,transition","hope,pressure,anticipation",moderate,zhougong
+watchtower,"May suggest vigilance, distant observation, or isolation through responsibility.","vigilance,observation,isolation,responsibility","alertness,loneliness,control",moderate,zhougong
+palace_hall,"May suggest power, ceremony, ambition, or pressure under authority.","power,ceremony,ambition,authority","awe,pressure,hope",moderate,zhougong
+throne,"May suggest ultimate authority, burden of rule, or desire for recognition.","authority,status,burden,recognition","awe,confidence,pressure",moderate,zhougong
+scepter,"May suggest sanctioned power, command, or visible legitimacy.","power,legitimacy,authority,control","confidence,awe,pressure",moderate,zhougong
+crown_prince,"May suggest succession anxiety, rising status, or pressure of expectation.","succession,status,expectation,ambition","hope,pressure,anxiety",moderate,zhougong
+court_official,"May suggest bureaucracy, recognition, ambition, or fear of judgment by institutions.","bureaucracy,recognition,ambition,judgment","pressure,hope,anxiety",moderate,zhougong
+memorial_tablet,"May suggest official record, lasting judgment, or concern with reputation after action.","memory,judgment,reputation,legacy","reflection,pressure,unease",moderate,zhougong
+petition,"May suggest appeal, dependence on higher power, or hope through formal request.","appeal,hope,authority,dependency","anxiety,hope,humility",moderate,zhougong
+decree,"May suggest unavoidable change, command from above, or clarity through imposed order.","authority,change,command,order","pressure,clarity,anxiety",moderate,zhougong
+seal_document,"May suggest final confirmation, legal binding, or irreversible agreement.","finality,agreement,authority,commitment","pressure,relief,anxiety",moderate,zhougong
+messenger,"May suggest urgent news, external influence, or change arriving quickly.","news,change,communication,arrival","anticipation,anxiety,curiosity",moderate,zhougong
+post_horse,"May suggest fast message, urgent movement, or time-sensitive change.","urgency,message,movement,change","anxiety,anticipation,alertness",moderate,zhougong
+carriage,"May suggest status-bound movement, guided transition, or dependence on social structure.","status,transition,movement,dependence","hope,pressure,curiosity",moderate,zhougong
+wheel,"May suggest cycles, momentum, fate, or recurring conditions in life.","cycle,momentum,fate,change","reflection,hope,unease",low,zhougong
+axle,"May suggest central support, hidden strain, or what keeps movement coherent.","support,strain,structure,movement","concern,focus,stability",moderate,zhougong
+roadside_inn,"May suggest temporary refuge, travel fatigue, or encounters during transition.","refuge,travel,encounter,rest","relief,curiosity,fatigue",low,zhougong
+mile_marker,"May suggest measurable progress, patience, or awareness of remaining distance.","progress,measurement,journey,patience","hope,fatigue,determination",low,zhougong
+crossroads,"May suggest major choice, conflicting paths, or uncertainty about direction.","choice,uncertainty,direction,transition","anxiety,hope,hesitation",moderate,zhougong
+detour,"May suggest delay, adaptation, or wisdom gained through an indirect route.","delay,adaptation,journey,learning","frustration,hope,patience",low,zhougong
+footprints,"May suggest guidance, memory of presence, or evidence of prior passage.","guidance,memory,presence,journey","curiosity,comfort,unease",low,zhougong
+sandals_left_behind,"May suggest abandonment, humility, or transition out of an old phase.","abandonment,transition,humility,loss","sadness,relief,reflection",low,zhougong
+walking_stick,"May suggest support, aging, endurance, or guided progress through difficulty.","support,endurance,aging,guidance","respect,hope,fatigue",low,zhougong
+bundle,"May suggest personal burden, possessions, or compacted responsibility carried alone.","burden,possessions,responsibility,journey","duty,fatigue,anxiety",moderate,zhougong
+traveler_cloak,"May suggest self-protection in uncertainty, distance from home, or readiness for change.","protection,travel,uncertainty,readiness","caution,hope,loneliness",low,zhougong
+mountain_temple,"May suggest hard-won refuge, spiritual aspiration, or peace attained through effort.","refuge,spirituality,effort,aspiration","peace,hope,reverence",low,zhougong
+storm_cloud,"May suggest approaching trouble, emotional pressure, or warning before upheaval.","warning,pressure,upheaval,emotion","anxiety,alertness,fear",moderate,zhougong
+lightning_strike,"May suggest sudden revelation, shock, or destruction that changes a path instantly.","revelation,shock,destruction,change","awe,fear,clarity",high,zhougong
+thunder_roll,"May suggest distant warning, authority approaching, or prolonged unease.","warning,authority,unease,approach","fear,alertness,anxiety",moderate,zhougong
+rain_puddle,"May suggest leftover emotion, minor obstacle, or reflection after disturbance.","emotion,aftermath,reflection,obstacle","calm,unease,curiosity",low,zhougong
+floodplain,"May suggest vulnerability to overflow, fertile risk, or repeated emotional surges.","vulnerability,emotion,overflow,fertility","anxiety,hope,wariness",moderate,zhougong
+snowdrift,"May suggest accumulated coldness, delayed movement, or silent emotional burden.","coldness,delay,burden,stillness","sadness,fatigue,numbness",moderate,zhougong
+icicle,"May suggest suspended threat, emotional cold sharpness, or brittle beauty.","coldness,threat,fragility,beauty","unease,awe,detachment",moderate,zhougong
+frozen_lake,"May suggest hidden depth beneath stillness, emotional pause, or risky calm.","stillness,hidden_depth,emotion,risk","calm,unease,hesitation",moderate,zhougong
+avalanche,"May suggest sudden collapse, overwhelming force, or accumulated pressure released.","collapse,overwhelm,pressure,disaster","panic,fear,helplessness",high,zhougong
+earth_crack,"May suggest instability, broken foundation, or rupture in assumed security.","instability,foundation,rupture,security","fear,insecurity,anxiety",high,zhougong
+lava,"May suggest molten anger, irreversible change, or dangerous power moving slowly.","anger,destruction,power,change","fear,awe,tension",high,zhougong
+smoldering_ground,"May suggest hidden danger, unresolved conflict, or heat not fully extinguished.","hidden_danger,conflict,residue,tension","unease,alertness,anxiety",moderate,zhougong
+rainbow_bridge,"May suggest hopeful transition, reconciliation, or passage after hardship.","hope,transition,reconciliation,promise","relief,joy,wonder",low,zhougong
+clear_horizon,"May suggest future possibility, mental clarity, or relief from confusion.","possibility,clarity,future,relief","hope,calm,confidence",low,zhougong
+echo,"May suggest repetition, memory returning, or consequences of one's own voice.","memory,repetition,consequence,reflection","curiosity,unease,reflection",low,zhougong
+dripping_water,"May suggest persistent feeling, slow erosion, or stress from small repetition.","persistence,emotion,erosion,stress","irritation,anxiety,fatigue",moderate,zhougong
+water_clock,"May suggest time measured by slow loss, patience, or awareness of gradual change.","time,patience,measurement,change","reflection,calm,unease",low,zhougong
+sundial,"May suggest visible timing, fate under heaven, or clarity about seasonal cycles.","time,fate,clarity,cycle","calm,focus,acceptance",low,zhougong
+hourglass,"May suggest urgency, finite opportunity, or the draining of strength and chances.","time,urgency,loss,opportunity","anxiety,focus,pressure",moderate,zhougong
+calendar_scroll,"May suggest planned timing, auspicious dates, or concern about proper order.","time,planning,ritual,order","focus,hope,pressure",low,zhougong
+clock_bell,"May suggest deadlines, reminders, or unavoidable attention to the passing hour.","time,warning,attention,urgency","alertness,anxiety,pressure",moderate,zhougong
+shadow_lengthening,"May suggest aging, ending energy, or realization that a phase is declining.","aging,decline,time,awareness","sadness,reflection,unease",low,zhougong
+frost_window,"May suggest emotional distance, seasonal hardship, or beauty in cold restraint.","coldness,hardship,restraint,beauty","sadness,calm,detachment",low,zhougong
+dew_drop,"May suggest brief purity, fragile blessing, or a chance that soon evaporates.","fragility,purity,transience,blessing","wonder,hope,tenderness",low,zhougong
+hailstones,"May suggest sharp setbacks, sudden harshness, or small repeated injuries.","setback,harshness,injury,repetition","alarm,frustration,stress",moderate,zhougong
+monsoon_rain,"May suggest overwhelming emotion, seasonal necessity, or abundance mixed with strain.","emotion,abundance,overwhelm,cycle","anxiety,relief,fatigue",moderate,zhougong
+dry_well,"May suggest depleted feeling, lost support, or fear that inner resources are gone.","depletion,loss,scarcity,inner_life","sadness,anxiety,emptiness",high,zhougong
+overflowing_well,"May suggest surprising reserves, emotional excess, or abundance difficult to contain.","abundance,overflow,emotion,resource","relief,unease,gratitude",moderate,zhougong
+water_jug,"May suggest preserved vitality, domestic responsibility, or carrying emotional sustenance.","sustenance,domesticity,burden,care","calm,duty,comfort",low,zhougong
+broken_jug,"May suggest wasted effort, loss of emotional containment, or household disruption.","loss,containment_failure,domesticity,disruption","sadness,frustration,anxiety",moderate,zhougong
+well_rope,"May suggest access to deep feeling, labor to draw support, or connection to reserves.","depth,effort,resource,connection","hope,focus,fatigue",low,zhougong
+pulley,"May suggest leverage, cooperation, or practical means to lift a burden.","support,mechanism,effort,problem_solving","relief,focus,confidence",low,zhougong
+millstone,"May suggest repetitive labor, grinding pressure, or steady transformation through effort.","labor,pressure,repetition,transformation","fatigue,duty,acceptance",moderate,zhougong
+watermill,"May suggest productive use of emotional flow, livelihood, or cyclical work.","productivity,cycle,emotion,livelihood","calm,focus,hope",low,zhougong
+mill_wheel,"May suggest recurring circumstances, momentum, or the usefulness of repetition.","cycle,momentum,labor,structure","reflection,calm,acceptance",low,zhougong
+forge,"May suggest intense transformation, skill under heat, or character shaped by ordeal.","transformation,skill,pressure,endurance","determination,stress,hope",moderate,zhougong
+anvil,"May suggest endurance under repeated force, work discipline, or hard lessons.","endurance,discipline,pressure,craft","focus,fatigue,resilience",moderate,zhougong
+hammer,"May suggest forceful action, constructive effort, or blunt emotional expression.","force,construction,action,expression","determination,anger,focus",moderate,zhougong
+tongs,"May suggest careful handling of danger, emotional distance, or practical control.","control,danger,precision,distance","caution,focus,unease",low,zhougong
+bellows,"May suggest fanning intensity, fueling ambition, or escalating conflict deliberately.","intensity,ambition,conflict,energy","tension,focus,urgency",moderate,zhougong
+blacksmith,"May suggest self-making, disciplined labor, or identity forged through hardship.","craft,identity,labor,transformation","respect,determination,focus",low,zhougong
+metal_sparks,"May suggest brief inspiration, conflict friction, or dangerous excitement.","inspiration,friction,danger,energy","alertness,excitement,unease",moderate,zhougong
+gold_ingot,"May suggest concentrated wealth, reward, or temptation toward material fixation.","wealth,reward,temptation,status","desire,hope,greed",moderate,zhougong
+silver_ingot,"May suggest moderate prosperity, stored value, or practical financial hope.","wealth,security,practicality,hope","relief,hope,caution",low,zhougong
+copper_coin,"May suggest small gains, daily trade, or modest but real value.","small_gain,trade,value,practicality","contentment,focus,hope",low,zhougong
+coin_stack,"May suggest accumulation, discipline, or anxiety about preserving gains.","accumulation,security,wealth,control","hope,anxiety,satisfaction",moderate,zhougong
+empty_purse,"May suggest insecurity, dependence, or fear of diminished options.","scarcity,dependence,loss,anxiety","fear,stress,helplessness",high,zhougong
+borrowed_money,"May suggest temporary relief, obligation, or hidden pressure beneath gain.","relief,obligation,debt,pressure","hope,anxiety,shame",moderate,zhougong
+debt_note,"May suggest lingering obligation, moral pressure, or future burden attached to the present.","obligation,pressure,future_burden,accountability","anxiety,guilt,stress",high,zhougong
+pawnshop,"May suggest sacrifice of value for survival, regret, or temporary rescue at a cost.","sacrifice,survival,regret,tradeoff","sadness,relief,pressure",moderate,zhougong
+merchant_scale,"May suggest fairness, judgment, exchange balance, or moral accounting.","balance,judgment,trade,morality","focus,unease,clarity",low,zhougong
+weights,"May suggest measurable responsibility, fairness, or burdens that can be counted.","responsibility,balance,burden,measurement","focus,duty,calm",low,zhougong
+ledger_book,"May suggest accountability, memory of transactions, or emotional scorekeeping.","accountability,memory,trade,judgment","anxiety,focus,control",moderate,zhougong
+warehouse_key,"May suggest access to stored prosperity, responsibility, or guarded opportunity.","access,prosperity,responsibility,security","hope,pressure,caution",low,zhougong
+grain_tax,"May suggest forced loss, civic duty, or resentment at unequal burdens.","loss,duty,authority,resource","resentment,anxiety,duty",moderate,zhougong
+tribute_gifts,"May suggest obligation upward, strategic generosity, or the cost of favor.","obligation,generosity,status,politics","pressure,hope,calculation",moderate,zhougong
+customs_gate,"May suggest scrutiny, delay, or testing before entry into opportunity.","scrutiny,delay,threshold,opportunity","anxiety,anticipation,frustration",moderate,zhougong
+market_haggling,"May suggest negotiation, uncertainty of worth, or social friction around gain.","negotiation,value,friction,opportunity","tension,focus,hope",moderate,zhougong
+auction_block,"May suggest competition, public valuation, or fear of losing by waiting.","competition,valuation,urgency,publicity","anxiety,excitement,pressure",moderate,zhougong
+treasure_map,"May suggest hidden opportunity, risky pursuit, or faith in signs of reward.","opportunity,search,risk,hope","hope,curiosity,greed",moderate,zhougong
+hidden_cache,"May suggest secret reserves, private strengths, or fear of discovery.","secrecy,resource,security,hidden_strength","relief,caution,unease",low,zhougong
+buried_gold,"May suggest dormant potential, secret wealth, or value unavailable for present use.","potential,wealth,secrecy,delay","hope,frustration,curiosity",low,zhougong
+safe_passage,"May suggest relief after danger, divine favor, or confidence restored through survival.","relief,safety,protection,journey","gratitude,calm,hope",low,zhougong
+checkpoint,"May suggest examination, delay, or legitimacy tested by authority.","scrutiny,authority,delay,legitimacy","anxiety,focus,frustration",moderate,zhougong
+passport_scroll,"May suggest permission, identity confirmation, or conditional freedom of movement.","identity,permission,travel,authority","hope,anxiety,readiness",moderate,zhougong
+travel_permit,"May suggest dependence on approval, access through order, or constrained mobility.","approval,access,authority,travel","pressure,hope,frustration",moderate,zhougong
+border_marker,"May suggest limits, identity distinction, or awareness of forbidden crossing.","boundary,identity,restriction,choice","caution,curiosity,anxiety",moderate,zhougong
+frontier,"May suggest danger and opportunity together, expansion, or testing of courage.","opportunity,risk,expansion,courage","excitement,anxiety,determination",moderate,zhougong
+trail_marker,"May suggest guidance, signs from predecessors, or reassurance on a hard path.","guidance,journey,tradition,reassurance","hope,calm,focus",low,zhougong
+stone_steps,"May suggest steady ascent, old discipline, or progress made one effort at a time.","progress,discipline,effort,stability","determination,calm,fatigue",low,zhougong
+mountain_switchback,"May suggest indirect progress, necessary patience, or frustration with slow ascent.","patience,indirect_progress,challenge,endurance","frustration,hope,focus",moderate,zhougong
+rope_ladder,"May suggest precarious advancement, temporary support, or ambition with risk.","advancement,risk,support,ambition","anxiety,determination,hope",high,zhougong
+wooden_scaffold,"May suggest work in progress, unstable support, or visible construction of status.","construction,instability,support,effort","caution,hope,stress",moderate,zhougong
+watchman,"May suggest vigilance, lonely responsibility, or suspicion maintained for safety.","vigilance,responsibility,isolation,security","alertness,fatigue,unease",moderate,zhougong
+night_watch,"May suggest burdened alertness, hidden threats, or duty while others rest.","duty,vigilance,threat,isolation","anxiety,fatigue,focus",moderate,zhougong
+signal_fire,"May suggest emergency communication, warning, or rapid spread of alarming news.","warning,communication,urgency,threat","alertness,fear,stress",high,zhougong
+beacon_tower,"May suggest guidance from afar, official warning, or hope visible in darkness.","guidance,warning,protection,distance","relief,alertness,hope",low,zhougong
+messenger_bag,"May suggest important news carried personally, duty, or burden of communication.","communication,duty,burden,news","anticipation,pressure,focus",moderate,zhougong
+sealed_letter,"May suggest hidden information, suspense, or emotionally charged communication.","secrecy,message,suspense,relationship","curiosity,anxiety,hope",moderate,zhougong
+open_letter,"May suggest revealed truth, exposure, or direct communication impossible to ignore.","revelation,communication,clarity,exposure","relief,anxiety,focus",moderate,zhougong
+broken_seal,"May suggest violated trust, premature revelation, or crossed boundaries.","betrayal,revelation,boundary,trust","anger,anxiety,distress",high,zhougong
+wax_tablet,"May suggest temporary record, revisable plans, or practical memory.","memory,planning,revision,practicality","focus,calm,control",low,zhougong
+scribal_table,"May suggest official documentation, intellectual labor, or concern with exact words.","documentation,labor,precision,authority","focus,pressure,discipline",low,zhougong
+brush_rest,"May suggest pause in expression, restraint, or gathering thought before speaking.","restraint,pause,expression,reflection","calm,hesitation,focus",low,zhougong
+ink_splash,"May suggest accidental exposure, emotional spillover, or mistakes that leave marks.","accident,exposure,expression,mistake","embarrassment,frustration,unease",moderate,zhougong
+torn_scroll,"May suggest broken agreement, damaged knowledge, or loss of narrative continuity.","loss,knowledge,rupture,communication","sadness,anxiety,confusion",moderate,zhougong
+blank_scroll,"May suggest possibility, uncertainty, or pressure to define one's own future.","possibility,uncertainty,creation,future","hope,anxiety,focus",low,zhougong
+red_ink,"May suggest correction, warning, authority, or emotionally charged judgment.","judgment,warning,authority,correction","anxiety,pressure,alertness",moderate,zhougong
+calligraphy,"May suggest disciplined self-expression, cultivated identity, or beauty through control.","expression,discipline,identity,beauty","calm,focus,pride",low,zhougong
+chalk_mark,"May suggest temporary guidance, rough planning, or something not yet finalized.","guidance,planning,temporary,transition","focus,uncertainty,calm",low,zhougong
+stone_inscription,"May suggest permanence, legacy, or truth fixed beyond easy revision.","permanence,legacy,truth,authority","reverence,pressure,clarity",low,zhougong
+public_notice,"May suggest reputation, exposure, or the impact of official declarations.","publicity,authority,reputation,information","anxiety,curiosity,pressure",moderate,zhougong
+name_plaque,"May suggest identity recognized, judged, or preserved in social memory.","identity,reputation,recognition,memory","pride,anxiety,reflection",low,zhougong
+family_register,"May suggest lineage, legitimacy, belonging, or pressure from inherited structure.","lineage,identity,belonging,duty","comfort,pressure,nostalgia",moderate,zhougong
+genealogy_tree,"May suggest ancestry, branching destiny, or awareness of family patterns.","ancestry,family,pattern,identity","reflection,comfort,pressure",low,zhougong
+inheritance_chest,"May suggest received burdens and benefits, family value, or unresolved legacy.","inheritance,value,burden,legacy","hope,pressure,curiosity",moderate,zhougong
+dowry_box,"May suggest arranged expectations, transactional intimacy, or family strategy in union.","marriage,expectation,family,transaction","anxiety,hope,pressure",moderate,zhougong
+heirloom,"May suggest continuity, memory, obligation, or value preserved across generations.","continuity,memory,obligation,value","nostalgia,respect,pressure",low,zhougong
+ancestral_portrait,"May suggest scrutiny from the past, family pride, or inherited standards.","ancestry,judgment,identity,legacy","respect,pressure,nostalgia",moderate,zhougong
+mourning_band,"May suggest visible grief, social acknowledgment of loss, or identity marked by sorrow.","grief,identity,ritual,loss","sadness,acceptance,solemnity",moderate,zhougong
+white_robe,"May suggest mourning, purity, surrender, or emotional seriousness.","mourning,purity,ritual,seriousness","sadness,peace,detachment",low,zhougong
+grave_grass,"May suggest neglected memory, ongoing mourning, or life returning over loss.","memory,loss,time,renewal","sadness,reflection,calm",low,zhougong
+funeral_drum,"May suggest collective sorrow, finality, or public acknowledgment of death.","mourning,finality,ritual,community","sadness,awe,acceptance",moderate,zhougong
+bier,"May suggest carrying the weight of endings, communal duty, or formal transition.","ending,duty,ritual,community","sadness,responsibility,acceptance",moderate,zhougong
+memorial_offering,"May suggest remembrance, unresolved love, or obligation to the departed.","remembrance,love,duty,ritual","sadness,reverence,longing",low,zhougong
+spirit_tablet,"May suggest continuing presence of ancestors, duty, or concern with unseen influence.","ancestry,duty,spirituality,presence","reverence,unease,comfort",moderate,zhougong
+ghost_lantern,"May suggest uncertain guidance, mourning, or signs from what is gone.","guidance,spirit,mourning,mystery","unease,longing,curiosity",moderate,zhougong
+cemetery_path,"May suggest reflective passage, confrontation with endings, or inherited quiet sorrow.","reflection,ending,ancestry,journey","sadness,peace,unease",low,zhougong
+burial_mound,"May suggest hidden history, sealed grief, or rest that still influences the present.","history,grief,rest,legacy","reflection,sadness,curiosity",moderate,zhougong
+ritual_paper,"May suggest symbolic release, offerings to absence, or communication with the unseen.","ritual,release,spirituality,memory","reverence,sadness,peace",low,zhougong
+burning_offering,"May suggest sacrifice, transformation through surrender, or urgent appeal beyond the visible.","sacrifice,transformation,appeal,spirituality","awe,hope,grief",moderate,zhougong
+incense_coil,"May suggest slow devotion, sustained prayer, or measured spiritual endurance.","devotion,time,spirituality,endurance","peace,focus,reverence",low,zhougong
+temple_courtyard,"May suggest ordered peace, communal reverence, or a pause from worldly pressure.","peace,community,order,spirituality","calm,reverence,relief",low,zhougong
+prayer_mat,"May suggest humility, repetition, or finding stability through ritual practice.","humility,stability,ritual,focus","peace,focus,hope",low,zhougong
+sacred_spring,"May suggest cleansing, healing, or grace emerging from hidden depths.","healing,purity,grace,depth","relief,hope,reverence",low,zhougong
+ablution_basin,"May suggest purification before transition, moral cleansing, or readiness.","purification,transition,readiness,ritual","calm,hope,focus",low,zhougong
+monk_robe,"May suggest renunciation, simplicity, or peace gained through restraint.","renunciation,simplicity,discipline,peace","calm,detachment,hope",low,zhougong
+nun_veil,"May suggest devotion, withdrawn identity, or chosen boundaries around desire.","devotion,boundary,restraint,identity","peace,hesitation,restraint",low,zhougong
+temple_lamp,"May suggest enduring faith, watchful calm, or protected light in difficulty.","faith,protection,hope,endurance","peace,hope,reassurance",low,zhougong
+sanctuary,"May suggest refuge, forgiveness, or a place where harsh judgment is suspended.","refuge,forgiveness,protection,peace","relief,gratitude,hope",low,zhougong
+pilgrim_staff,"May suggest humble perseverance, guided hardship, or spiritual travel.","pilgrimage,endurance,guidance,humility","determination,hope,fatigue",low,zhougong
+votive_tablet,"May suggest promised devotion, gratitude, or bargaining with fate.","devotion,gratitude,fate,promise","hope,reverence,anxiety",low,zhougong
+holy_thread,"May suggest spiritual protection, vows, or invisible safeguarding ties.","protection,vow,spirituality,connection","comfort,hope,reverence",low,zhougong
+ceremonial_sword,"May suggest authority sanctified by ritual, defense of order, or grave responsibility.","authority,ritual,defense,responsibility","awe,pressure,focus",moderate,zhougong
+ritual_chalice,"May suggest sacred sharing, blessing, or solemn emotional communion.","blessing,sharing,ritual,communion","reverence,peace,hope",low,zhougong
+priest_bell,"May suggest spiritual attention, warning against impurity, or cleansing sound.","attention,purification,warning,ritual","reverence,alertness,peace",low,zhougong
+oracle_shell,"May suggest uncertain signs, fate sought indirectly, or fragile prophecy.","divination,fate,mystery,guidance","curiosity,anxiety,reverence",moderate,zhougong
+augury_birds,"May suggest reading patterns in chance, hope for guidance, or fear of ominous signs.","omens,guidance,pattern,uncertainty","curiosity,anxiety,awe",moderate,zhougong
+divining_rods,"May suggest searching for hidden truth, practical spirituality, or uncertain method.","search,truth,spirituality,uncertainty","focus,hope,doubt",low,zhougong
+eclipse,"May suggest interruption of order, fear, awe, or temporary obscuring of certainty.","disruption,awe,fear,uncertainty","fear,awe,anxiety",high,zhougong
+comet,"May suggest rare omen, disruptive fame, or sudden events beyond ordinary control.","omen,disruption,fame,change","awe,anxiety,anticipation",moderate,zhougong
+planet_conjunction,"May suggest alignment, destiny, unusual timing, or major pattern recognition.","alignment,destiny,timing,pattern","wonder,hope,reverence",low,zhougong
+constellation_map,"May suggest cosmic order, life patterning, or searching for meaning in distance.","order,meaning,destiny,guidance","wonder,calm,curiosity",low,zhougong
+astrolabe,"May suggest calculation of fate, learned navigation, or reason applied to uncertainty.","calculation,guidance,knowledge,uncertainty","focus,hope,control",low,zhougong
+star_chart,"May suggest planned destiny, mapping possibilities, or anxiety about reading signs correctly.","destiny,planning,signs,uncertainty","curiosity,anxiety,hope",low,zhougong
+sun_disk,"May suggest sovereign vitality, clarity, or power too strong to look at directly.","power,clarity,vitality,authority","confidence,awe,pressure",moderate,zhougong
+moon_disk,"May suggest cyclical feeling, gentle authority, or hidden influence over moods.","cycle,emotion,influence,calm","calm,longing,reflection",low,zhougong
+halo,"May suggest blessing, elevated status, or idealization that separates one from ordinary life.","blessing,status,idealization,spirituality","awe,hope,distance",low,zhougong
+aurora,"May suggest rare beauty, spiritual sign, or hope arising unexpectedly in darkness.","wonder,hope,rarity,spirituality","awe,joy,calm",low,zhougong
+mirage,"May suggest false promise, desire projected outward, or confusion between wish and reality.","illusion,desire,confusion,hope","longing,frustration,unease",moderate,zhougong
+echoing_hall,"May suggest amplified emotions, words returning, or loneliness in grandeur.","emotion,repetition,loneliness,space","unease,reflection,awe",low,zhougong
+whisper,"May suggest secrecy, intimacy, rumor, or truth spoken indirectly.","secrecy,intimacy,rumor,communication","curiosity,trust,unease",low,zhougong
+shout,"May suggest loss of control, urgent need to be heard, or conflict escalating publicly.","conflict,urgency,expression,publicity","anger,stress,panic",high,zhougong
+song,"May suggest emotional expression, shared memory, or healing through voice.","expression,memory,healing,community","joy,longing,peace",low,zhougong
+lullaby,"May suggest comfort, maternal protection, or desire to soothe fear and unrest.","comfort,protection,maternal,rest","peace,tenderness,sadness",low,zhougong
+battle_horn,"May suggest mobilization, conflict, or preparation before a difficult confrontation.","conflict,warning,mobilization,readiness","alertness,fear,determination",high,zhougong
+trumpet_call,"May suggest announcement, honor, or unavoidable change entering public awareness.","announcement,honor,change,publicity","anticipation,pressure,awe",moderate,zhougong
+gong_strike,"May suggest final notice, spiritual interruption, or a moment impossible to ignore.","attention,finality,spirituality,warning","alertness,awe,unease",moderate,zhougong
+silence_after_noise,"May suggest emptiness, relief, shock, or the aftermath of emotional intensity.","aftermath,relief,emptiness,reflection","relief,unease,calm",low,zhougong
+market_noise,"May suggest overstimulation, opportunity mixed with stress, or social complexity.","overstimulation,opportunity,society,stress","stress,curiosity,energy",moderate,zhougong
+temple_chant,"May suggest soothing order, spiritual repetition, or merging oneself into discipline.","order,spirituality,repetition,discipline","peace,reverence,focus",low,zhougong
+wind_chime,"May suggest subtle messages, passing change, or quiet reassurance from the environment.","message,change,subtlety,reassurance","calm,curiosity,comfort",low,zhougong
+dripping_cave,"May suggest slow emotional accumulation, ancient patience, or lonely inward reflection.","patience,accumulation,solitude,depth","calm,unease,reflection",low,zhougong
+rustle_leaves,"May suggest approaching presence, minor anxiety, or gentle communication from the unseen.","presence,anxiety,subtle_message,nature","curiosity,unease,calm",low,zhougong
+creaking_door,"May suggest reluctant transition, age, or warning that something hidden is opening.","transition,warning,age,secrecy","unease,curiosity,anxiety",moderate,zhougong
+footstep_behind,"May suggest pursuit, conscience, or awareness of unseen attention.","pursuit,conscience,attention,threat","fear,anxiety,alertness",high,zhougong
+heartbeat,"May suggest bodily truth, fear, desire, or awareness of life under pressure.","life,emotion,fear,desire","anxiety,longing,focus",moderate,zhougong
+breath_cloud,"May suggest life in cold conditions, visible fragility, or temporary presence.","fragility,life,coldness,presence","calm,unease,reflection",low,zhougong
+sigh,"May suggest resignation, longing, or release of emotion too small for speech.","resignation,longing,release,emotion","sadness,relief,weariness",low,zhougong
+laughter,"May suggest release, social belonging, or avoidance of deeper seriousness.","release,belonging,joy,deflection","joy,relief,unease",low,zhougong
+weeping,"May suggest grief, emotional cleansing, or inability to contain inner pain.","grief,release,emotion,vulnerability","sadness,relief,distress",moderate,zhougong
+tears_on_sleeve,"May suggest hidden sorrow, private mourning, or evidence of emotion after restraint.","sorrow,privacy,restraint,evidence","sadness,shame,relief",low,zhougong
+blush,"May suggest shame, attraction, or unwanted visibility of inner feeling.","shame,attraction,visibility,vulnerability","embarrassment,longing,anxiety",low,zhougong
+pale_face,"May suggest fear, illness, or emotional depletion showing outwardly.","fear,illness,depletion,exposure","anxiety,weakness,alarm",moderate,zhougong
+fever","May suggest inner conflict, illness, or transformation through bodily crisis.","illness,conflict,transformation,heat","distress,anxiety,fatigue",high,zhougong
+bandage,"May suggest healing in progress, visible wound, or imperfect recovery.","healing,wound,recovery,vulnerability","hope,unease,care",low,zhougong
+scar,"May suggest past pain integrated into identity, memory, or strength after harm.","memory,identity,recovery,pain","reflection,resilience,sadness",low,zhougong
+bruise,"May suggest recent hurt, hidden impact, or tenderness where pressure fell.","hurt,aftermath,vulnerability,impact","sadness,anger,unease",moderate,zhougong
+limp,"May suggest impaired progress, adaptation, or humility forced by weakness.","weakness,adaptation,progress,humility","frustration,care,patience",moderate,zhougong
+crutch,"May suggest dependence, temporary support, or wisdom in accepting aid.","support,dependence,recovery,humility","relief,embarrassment,gratitude",low,zhougong
+ointment,"May suggest soothing remedy, care, or healing through gentle attention.","healing,care,relief,gentleness","comfort,hope,calm",low,zhougong
+herb_bundle,"May suggest traditional healing, preparation, or reliance on old knowledge.","healing,tradition,preparation,wisdom","hope,comfort,focus",low,zhougong
+mortar_pestle,"May suggest transformation through grinding effort, practical medicine, or patient preparation.","transformation,healing,effort,preparation","focus,hope,fatigue",low,zhougong
+doctor_bag,"May suggest expert help, diagnosis, or anxiety waiting for necessary intervention.","help,diagnosis,authority,healing","hope,anxiety,relief",moderate,zhougong
+pulse_reading,"May suggest subtle truth, diagnosis, or fear that hidden imbalance will be found.","diagnosis,truth,body,imbalance","anxiety,curiosity,hope",moderate,zhougong
+healing_tonic,"May suggest restoration, bitter help, or commitment to slow recovery.","healing,restoration,discipline,patience","hope,disgust,relief",low,zhougong
+surgical_knife,"May suggest painful precision, decisive removal, or necessary intervention.","precision,pain,intervention,decision","fear,hope,tension",high,zhougong
+recovery_bed,"May suggest vulnerability, dependence, or needed stillness after upheaval.","recovery,vulnerability,rest,dependence","relief,fatigue,unease",low,zhougong
+sickroom,"May suggest isolation, bodily truth, or family care under strain.","illness,care,isolation,truth","sadness,comfort,anxiety",moderate,zhougong
+funeral_herbs,"May suggest final care, respect for the dead, or healing mixed with grief.","mourning,care,ritual,healing","sadness,reverence,peace",low,zhougong
+birth_stool,"May suggest difficult emergence, pain tied to creation, or primal transition.","birth,transition,pain,creation","fear,hope,strain",high,zhougong
+labor_pains,"May suggest necessary suffering before new life, or stress preceding a major breakthrough.","suffering,breakthrough,birth,transition","pain,hope,anxiety",high,zhougong
+newborn_cry,"May suggest arrival, fragile life, or emotional urgency tied to beginnings.","beginnings,fragility,life,urgency","tenderness,anxiety,joy",moderate,zhougong
+milk_bowl,"May suggest simple nurture, dependence, or quiet care that sustains growth.","nurture,care,dependence,sustenance","comfort,tenderness,peace",low,zhougong
+nursing_mother,"May suggest self-giving care, obligation, or intimacy through nourishment.","care,intimacy,sacrifice,nourishment","tenderness,fatigue,peace",low,zhougong
+baby_shoes,"May suggest future steps, parental hope, or concern about fragile beginnings.","future,hope,beginnings,care","hope,tenderness,anxiety",low,zhougong
+playroom,"May suggest innocence, disorder, or emotional truths expressed through play.","innocence,play,emotion,disorder","joy,nostalgia,unease",low,zhougong
+toy_drum,"May suggest imitation of power, childhood noise, or early social signaling.","childhood,expression,power,play","joy,curiosity,energy",low,zhougong
+kite_string,"May suggest guidance to something aspiring upward, or fear of losing hold.","aspiration,control,connection,freedom","hope,anxiety,joy",low,zhougong
+spinning_top,"May suggest unstable energy, childhood delight, or loss of balance through motion.","play,instability,energy,cycle","joy,dizziness,unease",low,zhougong
+marble_game,"May suggest competition in miniature, luck, or small stakes mirroring larger desires.","competition,luck,play,skill","focus,amusement,hope",low,zhougong
+school_bell,"May suggest duty, routine, or transition between freedom and discipline.","discipline,time,transition,routine","focus,pressure,readiness",low,zhougong
+copybook,"May suggest imitation, learning through repetition, or concern with correctness.","learning,repetition,discipline,correctness","focus,anxiety,hope",low,zhougong
+chalkboard,"May suggest visible lessons, public mistakes, or mental work made external.","learning,exposure,clarity,discipline","focus,anxiety,curiosity",low,zhougong
+ink_stained_fingers,"May suggest scholarly effort, messy learning, or evidence of committed work.","study,effort,evidence,learning","focus,pride,fatigue",low,zhougong
+missed_answer,"May suggest self-doubt, judgment, or awareness of unpreparedness.","failure,judgment,self_doubt,learning","anxiety,shame,frustration",moderate,zhougong
+passed_exam,"May suggest earned recognition, relief after pressure, or upward mobility.","success,recognition,relief,advancement","joy,relief,pride",low,zhougong
+rank_list,"May suggest comparison, ambition, and social worth publicly measured.","comparison,ambition,status,judgment","anxiety,pride,pressure",moderate,zhougong
+merit_badge,"May suggest reward for discipline, social approval, or pressure to maintain standing.","reward,approval,discipline,status","pride,pressure,hope",low,zhougong
+teacher_rod,"May suggest correction, fear-based discipline, or authority enforcing growth.","discipline,authority,fear,correction","anxiety,obedience,resentment",moderate,zhougong
+library_ladder,"May suggest ambitious learning, reaching for higher knowledge, or risk in aspiration.","learning,aspiration,risk,effort","hope,focus,unease",low,zhougong
+scholar_stone,"May suggest contemplation, stillness, or cultivation of inner refinement.","contemplation,refinement,stillness,study","peace,focus,reverence",low,zhougong
+reading_nook,"May suggest private refuge in knowledge, introspection, or protective withdrawal.","refuge,knowledge,introspection,privacy","calm,comfort,curiosity",low,zhougong
+study_lamp,"May suggest sustained effort, late striving, or hope preserved through work.","effort,hope,study,endurance","focus,fatigue,determination",low,zhougong
+midnight_study,"May suggest sacrifice for advancement, strain, or determination beyond comfort.","sacrifice,study,strain,ambition","fatigue,hope,pressure",moderate,zhougong
+burned_midnight_oil,"May suggest overexertion, diligence, or achievement purchased with rest.","overwork,diligence,ambition,cost","fatigue,pride,stress",moderate,zhougong
+debate_hall,"May suggest contest of ideas, reputation through speech, or fear of being outmatched.","competition,reputation,speech,learning","anxiety,focus,ambition",moderate,zhougong
+lecture_scroll,"May suggest formal instruction, moral teaching, or need to receive guidance.","guidance,learning,morality,authority","respect,focus,calm",low,zhougong
+student_bench,"May suggest humility, apprenticeship, or waiting one's turn to advance.","humility,learning,patience,position","calm,hope,obedience",low,zhougong
+quill_case,"May suggest preparedness for expression, guarded thoughts, or valued skill.","expression,preparedness,skill,care","focus,confidence,calm",low,zhougong
+inkstone_water,"May suggest potential thought not yet darkened into words, or preparation for effort.","potential,preparation,expression,discipline","calm,focus,anticipation",low,zhougong
+seal_wax,"May suggest commitment, finality, or controlled release of important communication.","finality,control,message,authority","focus,pressure,certainty",low,zhougong
+red_string_knot,"May suggest durable bond, entanglement, or destiny tightened by circumstance.","bond,destiny,attachment,entanglement","hope,anxiety,longing",moderate,zhougong
+wedding_lantern,"May suggest joy, public blessing, or social expectation around union.","joy,union,community,expectation","joy,hope,pressure",low,zhougong
+bridal_chair,"May suggest formal transition, anxiety in ceremony, or movement into a new role.","transition,ceremony,role,marriage","anticipation,anxiety,hope",moderate,zhougong
+betrothal_gift,"May suggest promise, family alliance, or affection formalized through exchange.","promise,alliance,marriage,exchange","hope,pressure,tenderness",low,zhougong
+matchmaking_scroll,"May suggest mediated destiny, social interference, or dependence on approval in love.","destiny,sociality,marriage,approval","hope,anxiety,pressure",moderate,zhougong
+shared_pillow,"May suggest intimacy, domestic union, or unresolved closeness.","intimacy,union,domesticity,relationship","tenderness,longing,unease",low,zhougong
+marriage_bed,"May suggest consummation, vulnerability, family expectation, or private truth of union.","intimacy,vulnerability,marriage,family","desire,anxiety,tenderness",moderate,zhougong
+red_candles,"May suggest celebration, fertility, or heightened emotion in ceremonial union.","celebration,fertility,ritual,passion","joy,hope,desire",low,zhougong
+double_happiness_sign,"May suggest auspicious union, social blessing, or pressure to fulfill marital ideals.","marriage,blessing,expectation,joy","joy,hope,pressure",low,zhougong
+bridal_shoes,"May suggest readiness for marriage, fate of the path ahead, or delicate beginnings.","marriage,journey,readiness,beginning","hope,anxiety,tenderness",low,zhougong
+hair_binding,"May suggest commitment, maturity, or identity altered through union.","commitment,maturity,identity,union","hope,pressure,solemnity",low,zhougong
+wedding_music,"May suggest public joy, ceremonial emotion, or pressure beneath festivity.","celebration,ceremony,emotion,publicity","joy,anticipation,pressure",low,zhougong
+new_household,"May suggest domestic beginnings, responsibility, or building shared stability.","domesticity,beginnings,responsibility,stability","hope,anxiety,determination",low,zhougong
+firstborn","May suggest legacy, pressure, and hope concentrated in one symbolic beginning.","legacy,hope,pressure,family","tenderness,anxiety,pride",moderate,zhougong
+family_hearth,"May suggest continuity, domestic security, or the emotional center of kinship.","family,security,warmth,continuity","comfort,gratitude,calm",low,zhougong
+shared_table,"May suggest agreement, household harmony, or tensions revealed over daily life.","family,harmony,conflict,domesticity","comfort,unease,belonging",low,zhougong
+empty_chair,"May suggest absence, grief, estrangement, or a place kept in memory.","absence,grief,memory,estrangement","sadness,longing,reflection",moderate,zhougong
+quarrel_table,"May suggest family tension, conflict over resources, or intimacy sharpened into argument.","family,conflict,resources,intimacy","anger,stress,sadness",moderate,zhougong
+elders_seat,"May suggest hierarchy, tradition, or responsibility to honor precedence.","hierarchy,tradition,respect,duty","respect,pressure,obedience",low,zhougong
+inheritance_dispute,"May suggest family conflict, materialized grief, or old wounds reopening around value.","family,conflict,wealth,legacy","anger,sadness,stress",high,zhougong
+siblings,"May suggest companionship, rivalry, or parallel destinies shaped by one household.","family,companionship,rivalry,identity","comfort,jealousy,nostalgia",low,zhougong
+cousin_reunion,"May suggest extended belonging, comparison, or old roles reawakened by family presence.","family,belonging,comparison,memory","comfort,awkwardness,nostalgia",low,zhougong
+ancestor_feast,"May suggest gratitude, ritual continuity, or exchange between living and dead.","ritual,gratitude,ancestry,continuity","reverence,comfort,sadness",low,zhougong
+family_lanterns,"May suggest household joy, generational hope, or fragile brightness in kinship.","family,hope,celebration,fragility","joy,nostalgia,hope",low,zhougong
+house_registry,"May suggest belonging, obligation, or the formal structure of domestic life.","belonging,order,duty,identity","security,pressure,focus",low,zhougong
+property_marker,"May suggest boundaries, ownership, or conflict over what one can claim.","ownership,boundary,security,conflict","anxiety,defensiveness,focus",moderate,zhougong
+tenant_room,"May suggest instability, dependence, or making home under another's conditions.","instability,dependence,domesticity,adaptation","unease,gratitude,humility",moderate,zhougong
+vacant_house,"May suggest abandonment, waiting potential, or sadness inhabiting a place.","abandonment,potential,sadness,space","loneliness,curiosity,unease",moderate,zhougong
+ruined_house,"May suggest family decline, loss of security, or visible consequences of neglect.","loss,decline,security,neglect","sadness,fear,regret",high,zhougong
+fresh_paint,"May suggest renewal, presentation, or covering over older damage.","renewal,appearance,repair,concealment","hope,unease,optimism",low,zhougong
+roof_tiles,"May suggest household order, protection, or concerns about structural stability.","protection,structure,household,security","calm,concern,stability",low,zhougong
+leaking_roof,"May suggest persistent stress, domestic vulnerability, or small failures becoming urgent.","stress,vulnerability,domesticity,erosion","anxiety,frustration,fatigue",moderate,zhougong
+foundation_stone,"May suggest long-term stability, first principles, or concern with underlying truth.","stability,foundation,truth,planning","confidence,focus,calm",low,zhougong
+courtyard_tree,"May suggest family growth, continuity, or visible change at the center of home.","family,growth,continuity,domesticity","comfort,nostalgia,hope",low,zhougong
+sweeping_broom,"May suggest cleansing, domestic duty, or desire to remove stale influences.","cleansing,duty,order,renewal","calm,focus,relief",low,zhougong
+dust_pan,"May suggest gathering remnants, humble maintenance, or handling what has been shed.","maintenance,humility,cleanup,aftermath","calm,acceptance,focus",low,zhougong
+wash_basin,"May suggest daily renewal, care of appearance, or cleansing emotional residue.","renewal,care,purity,domesticity","calm,comfort,relief",low,zhougong
+soap,"May suggest purification, removing guilt, or fear of stain and contamination.","purification,guilt,cleanliness,anxiety","relief,unease,focus",low,zhougong
+laundry_line,"May suggest exposure of private matters, cleansing, or routine domestic transparency.","exposure,cleaning,routine,domesticity","calm,embarrassment,relief",low,zhougong
+folded_clothes,"May suggest order restored, self-presentation prepared, or peace through neatness.","order,preparation,identity,calm","contentment,focus,security",low,zhougong
+mended_clothes,"May suggest frugality, resilience, or dignity preserved through repair.","repair,resilience,frugality,dignity","hope,humility,calm",low,zhougong
+patched_robe,"May suggest humble endurance, visible hardship, or wisdom detached from luxury.","humility,endurance,hardship,detachment","respect,sadness,calm",low,zhougong
+torn_sleeve,"May suggest conflict, grief, or a visible sign of emotional strain.","grief,conflict,exposure,strain","sadness,shock,anxiety",moderate,zhougong
+muddy_shoes,"May suggest hard travel, moral stain, or progress made through messy conditions.","travel,stain,effort,hardship","fatigue,unease,determination",low,zhougong
+polished_shoes,"May suggest readiness, ambition, or concern with social appearance.","readiness,ambition,appearance,status","confidence,hope,pressure",low,zhougong
+hat_stand,"May suggest public identity set aside, transition to private self, or waiting roles.","identity,transition,privacy,role","calm,reflection,relief",low,zhougong
+official_hat,"May suggest office, burden of status, or anxiety about duty and scrutiny.","status,duty,authority,judgment","pressure,pride,anxiety",moderate,zhougong
+farmer_hat,"May suggest practical labor, humility, and resilience under changing weather.","labor,humility,endurance,practicality","calm,duty,resilience",low,zhougong
+straw_cloak,"May suggest simple protection, poverty, or adaptation to exposed conditions.","protection,poverty,adaptation,humility","calm,hardship,acceptance",low,zhougong
+rain_hat,"May suggest preparedness, caution, or emotional shielding while moving through trouble.","protection,caution,journey,emotion","confidence,wariness,calm",low,zhougong
+woven_basket,"May suggest interdependence, domestic care, or carrying many small needs together.","interdependence,care,domesticity,burden","comfort,duty,calm",low,zhougong
+basket_lid,"May suggest concealment, preservation, or temporary closure over valuable contents.","concealment,preservation,security,containment","caution,comfort,curiosity",low,zhougong
+fish_basket,"May suggest perishable gain, livelihood, or reward that must be used quickly.","livelihood,reward,urgency,resource","hope,anxiety,focus",moderate,zhougong
+rice_sack,"May suggest material security, household burden, or visible provision.","security,provision,burden,household","relief,duty,gratitude",low,zhougong
+salt_bag,"May suggest necessity, preservation, or austere resources sustaining life.","necessity,preservation,resource,austerity","calm,gratitude,hardship",low,zhougong
+spice_pouch,"May suggest enhancement, temptation, or subtle influences changing ordinary life.","temptation,enhancement,subtlety,desire","curiosity,desire,anticipation",low,zhougong
+perfume_bottle,"May suggest attraction, vanity, memory through scent, or hidden intention.","attraction,vanity,memory,intention","desire,nostalgia,curiosity",low,zhougong
+scent_trail,"May suggest pursuit, memory, or attraction guided by subtle feeling rather than sight.","pursuit,memory,attraction,intuition","curiosity,longing,unease",low,zhougong
+flower_garland,"May suggest honor, celebration, or a beauty meant to be worn briefly.","honor,celebration,beauty,transience","joy,pride,longing",low,zhougong
+wreath,"May suggest remembrance, cyclical completion, or honor offered to absence.","remembrance,cycle,honor,loss","sadness,reverence,peace",low,zhougong
+garlanded_door,"May suggest welcome, auspicious arrival, or public marking of celebration.","welcome,celebration,threshold,auspiciousness","joy,anticipation,comfort",low,zhougong
+flower_market,"May suggest beauty traded, romance commercialized, or fleeting pleasures available.","beauty,romance,trade,impermanence","joy,longing,unease",low,zhougong
+orchard","May suggest long-term cultivation, patient reward, or family prosperity rooted in care.","cultivation,reward,patience,prosperity","hope,gratitude,calm",low,zhougong
+blighted_orchard,"May suggest failed promise, collective loss, or worry over declining fortune.","loss,decline,failed_potential,fortune","sadness,anxiety,regret",high,zhougong
+vineyard,"May suggest pleasure from labor, ripening success, or intoxication tied to harvest.","reward,pleasure,labor,abundance","joy,gratitude,temptation",low,zhougong
+olive_branch,"May suggest peace offered, reconciliation, or fragile end to conflict.","peace,reconciliation,hope,gesture","relief,hope,hesitation",low,zhougong
+laurel_crown,"May suggest earned honor, recognition, or pressure to sustain victory.","honor,recognition,victory,status","pride,pressure,joy",low,zhougong
+thistle,"May suggest resilience in harsh places, irritation, or beauty protected by hardship.","resilience,hardship,defense,beauty","respect,irritation,hope",low,zhougong
+cactus_flower,"May suggest unexpected tenderness in defended life, or beauty amid scarcity.","beauty,resilience,scarcity,protection","wonder,hope,tenderness",low,zhougong
+herb_garden,"May suggest practical healing, daily care, or growth that serves rather than dazzles.","healing,care,practicality,growth","calm,gratitude,focus",low,zhougong
+vegetable_patch,"May suggest modest sustenance, routine effort, or grounded domestic prosperity.","sustenance,routine,labor,domesticity","comfort,duty,calm",low,zhougong
+scarecrow,"May suggest empty authority, protective deception, or loneliness in exposed duty.","protection,deception,loneliness,vigilance","unease,sadness,curiosity",low,zhougong
+planted_rows,"May suggest order, discipline, and confidence that patient work will return results.","order,discipline,patience,investment","focus,hope,calm",low,zhougong
+fallow_field,"May suggest rest, postponed productivity, or necessary emptiness before renewal.","rest,delay,renewal,potential","calm,frustration,hope",low,zhougong
+irrigation_channel,"May suggest directed emotion, managed resources, or planned support for growth.","resource,emotion,planning,support","focus,hope,calm",low,zhougong
+flooded_paddy,"May suggest abundance with vulnerability, or productivity dependent on unstable conditions.","abundance,vulnerability,dependence,labor","hope,anxiety,gratitude",moderate,zhougong
+rice_shoots,"May suggest fragile livelihood, steady growth, or hope in ordinary provisions.","growth,livelihood,fragility,hope","hope,care,calm",low,zhougong
+harvest_sickle,"May suggest completion, cutting away, or reward inseparable from ending.","completion,ending,reward,labor","satisfaction,sadness,focus",low,zhougong
+grain_winnowing,"May suggest separation of useful from useless, discernment, or refinement through sorting.","discernment,refinement,separation,labor","focus,clarity,patience",low,zhougong
+threshing_floor,"May suggest hard processing, communal labor, or truth revealed by impact.","labor,community,truth,processing","fatigue,focus,acceptance",moderate,zhougong
+barn_door,"May suggest access to reserves, guarded livelihood, or practical security.","security,livelihood,access,protection","relief,caution,calm",low,zhougong
+haystack,"May suggest stored work, hidden things, or humble abundance in rough form.","storage,abundance,humility,secrecy","comfort,curiosity,calm",low,zhougong
+pitchfork,"May suggest rough labor, defense of territory, or anger put into practical tools.","labor,defense,anger,practicality","tension,determination,focus",moderate,zhougong
+watering_can,"May suggest deliberate nurturing, emotional investment, or care for slow growth.","care,nurturing,investment,growth","hope,tenderness,focus",low,zhougong
+garden_gate,"May suggest entry into cultivated intimacy, or boundaries around beauty and peace.","boundary,beauty,entry,privacy","curiosity,peace,hope",low,zhougong
+hedge_maze,"May suggest confusion within cultivated life, indirect truth, or playful difficulty.","confusion,play,search,boundary","curiosity,frustration,unease",moderate,zhougong
+rose_bush,"May suggest love mixed with pain, cultivated beauty, or guarded vulnerability.","love,pain,beauty,vulnerability","longing,wariness,tenderness",low,zhougong
+sunflower,"May suggest devotion, visible optimism, or dependence on an external source of light.","devotion,optimism,orientation,dependence","joy,hope,vulnerability",low,zhougong
+wildflowers,"May suggest spontaneous joy, modest beauty, or value outside formal control.","joy,beauty,freedom,modesty","lightness,hope,peace",low,zhougong
+garden_pond,"May suggest curated emotion, reflective calm, or beauty held within boundaries.","emotion,reflection,calm,boundary","peace,curiosity,serenity",low,zhougong
+stepping_stones,"May suggest manageable progress, careful crossing, or trust in small supports.","progress,caution,support,journey","hope,focus,calm",low,zhougong
+bridge_rail,"May suggest guarded transition, support along danger, or rules that make crossing possible.","support,boundary,transition,safety","relief,caution,confidence",low,zhougong
+boatman,"May suggest help through uncertainty, paid guidance, or emotional dependence on another.","guidance,journey,dependence,transition","hope,anxiety,gratitude",moderate,zhougong
+ferry_boat,"May suggest temporary passage, shared vulnerability, or crossing between life phases.","transition,shared_fate,journey,vulnerability","anxiety,hope,relief",moderate,zhougong
+mooring_post,"May suggest temporary stability, pause before movement, or attachment to a place.","stability,pause,attachment,rest","calm,hesitation,security",low,zhougong
+dock_rope,"May suggest restrained movement, secure connection, or fear of drifting away.","restraint,connection,security,dependence","calm,anxiety,relief",low,zhougong
+lighthouse,"May suggest distant guidance, safety in danger, or hope maintained by constancy.","guidance,safety,hope,constancy","relief,hope,awe",low,zhougong
+reef,"May suggest hidden danger beneath calm surfaces, or damage from unseen obstacles.","hidden_danger,obstacle,uncertainty,injury","fear,wariness,anxiety",moderate,zhougong
+capsized_boat,"May suggest sudden reversal, emotional overwhelm, or failure of a support system.","reversal,overwhelm,loss,instability","panic,fear,distress",high,zhougong
+lifebuoy,"May suggest rescue, external help, or a last chance offered in crisis.","rescue,help,hope,crisis","relief,hope,desperation",moderate,zhougong
+shipwreck,"May suggest catastrophic loss, lessons from ambition, or survival after collapse.","loss,collapse,survival,warning","fear,sadness,awe",high,zhougong
+driftwood,"May suggest survival after upheaval, remnant identity, or value altered by forces beyond control.","survival,aftermath,identity,adaptation","sadness,acceptance,curiosity",low,zhougong
+message_in_bottle,"May suggest distant communication, hope against odds, or loneliness seeking response.","communication,hope,loneliness,distance","longing,hope,uncertainty",low,zhougong
+sea_shell,"May suggest memory of distant emotion, hidden beauty, or listening for old echoes.","memory,beauty,emotion,distance","calm,longing,curiosity",low,zhougong
+net_mending,"May suggest repair of livelihood, recovery after loss, or patient fixing of what catches opportunity.","repair,livelihood,patience,recovery","hope,focus,care",low,zhougong
+bait_hook,"May suggest temptation, strategy, or fear of being caught by desire.","temptation,strategy,danger,desire","wariness,curiosity,anxiety",moderate,zhougong
+harbor_master,"May suggest regulation, permission, or authority over movement and arrival.","authority,order,access,movement","pressure,focus,obedience",low,zhougong
+captains_log,"May suggest record of trials, leadership memory, or accountability under uncertainty.","leadership,memory,accountability,journey","focus,pressure,reflection",low,zhougong
+storm_sail,"May suggest adaptation under threat, disciplined courage, or reduced ambition for survival.","adaptation,courage,survival,discipline","determination,anxiety,hope",moderate,zhougong
+compass_needle,"May suggest inner guidance, correction, or anxiety when direction wavers.","guidance,correction,orientation,uncertainty","focus,hope,unease",low,zhougong
+sea_mist,"May suggest uncertain navigation, emotional obscurity, or beauty that conceals risk.","uncertainty,emotion,beauty,risk","calm,unease,curiosity",moderate,zhougong
+tide_pool,"May suggest small contained worlds, leftover emotion, or hidden life in retreat.","emotion,containment,discovery,aftermath","curiosity,peace,reflection",low,zhougong
+deep_current,"May suggest unseen forces moving life beneath surface intention.","hidden_force,emotion,movement,fate","unease,awe,curiosity",moderate,zhougong
+shore_birds,"May suggest signs of nearby land, transitional hope, or messages at emotional boundaries.","guidance,transition,hope,boundary","relief,curiosity,hope",low,zhougong
+sunken_treasure,"May suggest lost value recoverable only through danger and depth.","value,loss,depth,recovery","hope,greed,anxiety",moderate,zhougong
+diving_bell,"May suggest exploration of depths with protection, or cautious approach to inner danger.","exploration,protection,depth,caution","curiosity,unease,focus",moderate,zhougong
+pearl_diver,"May suggest reward through risk, descent into pressure, or seeking beauty in difficult depths.","risk,reward,depth,beauty","hope,anxiety,determination",moderate,zhougong
+winter_storehouse,"May suggest prudence, planning, or security built before hardship arrives.","prudence,security,planning,resource","relief,focus,confidence",low,zhougong
+firewood_stack,"May suggest preparation, warmth anticipated, or labor stored against future need.","preparation,warmth,labor,security","comfort,focus,hope",low,zhougong
+kindling,"May suggest small beginnings of energy, readiness to ignite, or vulnerability to spark.","beginnings,energy,potential,vulnerability","anticipation,hope,unease",low,zhougong
+match_flame,"May suggest quick ignition, fragile possibility, or sudden escalation.","ignition,fragility,change,energy","anticipation,anxiety,hope",moderate,zhougong
+extinguished_lamp,"May suggest lost hope, interruption, or need to relight purpose after discouragement.","loss,interruption,hope,renewal","sadness,unease,determination",moderate,zhougong
+smoke_hole,"May suggest release path, pressure venting, or social signs from domestic life.","release,pressure,domesticity,signal","relief,curiosity,calm",low,zhougong
+cold_hearth,"May suggest loneliness, neglect, or a household lacking warmth and connection.","loneliness,neglect,domesticity,loss","sadness,coldness,emptiness",moderate,zhougong
+warm_bread,"May suggest nourishment, comfort, or reward from simple labor.","nourishment,comfort,reward,domesticity","comfort,gratitude,peace",low,zhougong
+oven,"May suggest transformation through heat, domestic productivity, or hidden intensity producing sustenance.","transformation,domesticity,heat,productivity","comfort,focus,unease",low,zhougong
+bread_knife,"May suggest division of blessings, practical sharing, or careful apportionment.","sharing,division,provision,practicality","focus,gratitude,caution",low,zhougong
+crumb_trail,"May suggest guidance from remnants, carelessness, or being followed by traces left behind.","guidance,carelessness,trace,pursuit","curiosity,unease,reflection",low,zhougong
+butter_churn,"May suggest patience in transformation, repetitive work, or richness earned slowly.","transformation,repetition,labor,reward","focus,fatigue,contentment",low,zhougong
+cheese_wheel,"May suggest stored nourishment, maturity, or value that improves with time.","nourishment,maturity,time,resource","comfort,gratitude,patience",low,zhougong
+smokehouse,"May suggest preservation through austerity, practical foresight, or things hardened to last.","preservation,foresight,austerity,endurance","calm,focus,security",low,zhougong
+pantry_shelf,"May suggest modest abundance, domestic order, or relief through visible provision.","abundance,order,provision,domesticity","comfort,gratitude,calm",low,zhougong
+pickle_jar,"May suggest preservation of what might spoil, or emotional adaptation into a sharper form.","preservation,adaptation,resource,change","curiosity,gratitude,unease",low,zhougong
+empty_bowl,"May suggest need, humility, receptivity, or hunger for care and meaning.","need,humility,receptivity,hunger","longing,sadness,hope",moderate,zhougong
+overflowing_plate,"May suggest generosity, excess, or blessing difficult to manage modestly.","abundance,generosity,excess,blessing","joy,gratitude,unease",low,zhougong
+shared_loaf,"May suggest fellowship, practical love, or peace made through simple sharing.","fellowship,sharing,peace,care","comfort,gratitude,belonging",low,zhougong
+guest_cup,"May suggest hospitality, social caution, or relationship offered a formal space.","hospitality,relationship,formality,care","warmth,curiosity,restraint",low,zhougong
+feast_leftovers,"May suggest past abundance, delayed gratitude, or what remains after celebration fades.","aftermath,abundance,memory,decline","nostalgia,gratitude,sadness",low,zhougong
+serving_tray,"May suggest service, presentation, or carrying offerings to others.","service,presentation,care,obligation","focus,duty,grace",low,zhougong
+kitchen_smoke,"May suggest active household life, hidden labor, or stress beneath nourishment.","domesticity,labor,pressure,nourishment","comfort,fatigue,unease",low,zhougong
+cooking_pot,"May suggest slow combination, family provision, or emotions simmering together.","provision,combination,emotion,domesticity","comfort,anticipation,unease",low,zhougong
+boiling_pot,"May suggest rising tension, abundance in preparation, or pressure near overflow.","pressure,anticipation,abundance,emotion","anxiety,hope,urgency",moderate,zhougong
+spilled_soup,"May suggest waste, accident, or emotional nourishment lost through haste.","waste,accident,loss,domesticity","frustration,sadness,anxiety",moderate,zhougong
