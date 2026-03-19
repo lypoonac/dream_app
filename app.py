@@ -23,11 +23,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 # Replace this with your actual Hugging Face model repo
-MODEL_REPO = "peterjerry111/dream-stress-classifier"
+MODEL_REPO = "your-username/dream-stress-classifier"
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
-MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
@@ -54,37 +53,33 @@ def tokenize_simple(text):
 def load_data():
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
-    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
-        df_model1[col] = df_model1[col].apply(clean_text)
+        if col in df_model1.columns:
+            df_model1[col] = df_model1[col].apply(clean_text)
 
-    df_model1["stress_label"] = df_model1["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model1 = df_model1[
-        df_model1["stress_label"].isin({"low", "medium", "high"})
-    ].drop_duplicates().reset_index(drop=True)
-    df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
-    df_model1["theme_list"] = df_model1["theme_labels"].apply(split_tags)
-    df_model1["symbol_list"] = df_model1["symbol_labels"].apply(split_tags)
+    if "stress_label" in df_model1.columns:
+        df_model1["stress_label"] = df_model1["stress_label"].str.lower().replace({"moderate": "medium"})
+        df_model1 = df_model1[
+            df_model1["stress_label"].isin({"low", "medium", "high"})
+        ].drop_duplicates().reset_index(drop=True)
+
+    df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags) if "emotion_labels" in df_model1.columns else [[] for _ in range(len(df_model1))]
+    df_model1["theme_list"] = df_model1["theme_labels"].apply(split_tags) if "theme_labels" in df_model1.columns else [[] for _ in range(len(df_model1))]
+    df_model1["symbol_list"] = df_model1["symbol_labels"].apply(split_tags) if "symbol_labels" in df_model1.columns else [[] for _ in range(len(df_model1))]
 
     for col in ["stress_label", "emotion_labels", "dominant_emotion", "recommendation_text"]:
-        df_model2[col] = df_model2[col].apply(clean_text)
+        if col in df_model2.columns:
+            df_model2[col] = df_model2[col].apply(clean_text)
 
-    df_model2["stress_label"] = df_model2["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model2 = df_model2[
-        df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})
-    ].drop_duplicates().reset_index(drop=True)
-    df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
+    if "stress_label" in df_model2.columns:
+        df_model2["stress_label"] = df_model2["stress_label"].str.lower().replace({"moderate": "medium"})
+        df_model2 = df_model2[
+            df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})
+        ].drop_duplicates().reset_index(drop=True)
 
-    for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
-        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
-
-    df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
-    df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
-    df_model2_bkup["related_list"] = df_model2_bkup["related_recommendations"].apply(
-        lambda x: [i.strip() for i in clean_text(x).split("|") if i.strip()]
-    )
+    df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags) if "emotion_labels" in df_model2.columns else [[] for _ in range(len(df_model2))]
 
     for col in [
         "symbol_name",
@@ -94,20 +89,22 @@ def load_data():
         "stress_hint",
         "source_origin",
     ]:
-        df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
+        if col in df_symbol_kb.columns:
+            df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
+        else:
+            df_symbol_kb[col] = ""
 
     df_symbol_kb["symbol_name"] = df_symbol_kb["symbol_name"].str.lower()
     df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(
         lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
+    ) if "theme_tags" in df_symbol_kb.columns else [[] for _ in range(len(df_symbol_kb))]
     df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(
         lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
+    ) if "emotion_hints" in df_symbol_kb.columns else [[] for _ in range(len(df_symbol_kb))]
 
     symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
-    symbol_reco_dict = {row["symbol_name"]: row for _, row in df_model2_bkup.iterrows()}
 
-    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict
+    return df_model1, df_model2, df_symbol_kb, symbol_kb_dict
 
 
 @st.cache_resource
@@ -118,7 +115,7 @@ def load_model():
     return tokenizer, model
 
 
-df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()
+df_model1, df_model2, df_symbol_kb, symbol_kb_dict = load_data()
 stress_tokenizer, stress_model = load_model()
 
 
@@ -188,7 +185,7 @@ def infer_emotions_themes_symbols(text):
 
     direct_symbols = detect_symbols(
         text,
-        set(df_symbol_kb["symbol_name"].tolist()) | set(df_model2_bkup["symbol_name"].tolist())
+        set(df_symbol_kb["symbol_name"].tolist())
     )
 
     for s in direct_symbols:
@@ -241,8 +238,8 @@ def summarize_symbols_naturally(symbols):
 
     for sym in symbols[:3]:
         if sym in symbol_kb_dict:
-            summary = symbol_kb_dict[sym]["traditional_summary_en"]
-            summary = summary.replace("May suggest ", "").strip()
+            summary = symbol_kb_dict[sym].get("traditional_summary_en", "")
+            summary = str(summary).replace("May suggest ", "").strip()
             summary = summary.rstrip(".")
             symbol_lines.append((sym.replace("_", " "), summary))
 
@@ -260,7 +257,12 @@ def build_interpretation_paragraph(stress, emotions, themes, symbols):
 
     symbol_info = summarize_symbols_naturally(symbols)
     if symbol_info:
-        symbol_texts = [f"{name} often point to {meaning}" for name, meaning in symbol_info[:2]]
+        symbol_texts = []
+        for name, meaning in symbol_info[:2]:
+            if meaning:
+                symbol_texts.append(f"{name} often point to {meaning}")
+            else:
+                symbol_texts.append(f"{name} may carry personal symbolic meaning")
         symbol_part = "In this kind of dream, " + " and ".join(symbol_texts) + "."
     else:
         symbol_part = ""
@@ -282,13 +284,6 @@ def build_interpretation_paragraph(stress, emotions, themes, symbols):
 def build_recommendation_paragraph(stress, emotions, symbols):
     base_rec = retrieve_recommendation(stress, emotions)
 
-    extra = []
-    for sym in symbols[:2]:
-        if sym in symbol_reco_dict:
-            sym_rec = symbol_reco_dict[sym]["default_recommendation"]
-            if sym_rec and sym_rec not in extra:
-                extra.append(sym_rec)
-
     if stress == "high":
         support_line = (
             "If this dream matches how you have been feeling lately, it may help to slow down, "
@@ -303,11 +298,13 @@ def build_recommendation_paragraph(stress, emotions, symbols):
             "This can be a good moment to keep things steady, listen to yourself, and move gently with what feels meaningful."
         )
 
-    final_parts = [base_rec, support_line]
-    if extra:
-        final_parts.append(extra[0])
+    symbol_support = ""
+    if symbols:
+        top_symbol = symbols[0].replace("_", " ")
+        symbol_support = f"You may also want to reflect on what the symbol '{top_symbol}' personally means to you right now."
 
-    return " ".join(final_parts).strip()
+    final_parts = [base_rec, support_line, symbol_support]
+    return " ".join([p for p in final_parts if p]).strip()
 
 
 def analyze_dream(dream_text):
@@ -330,7 +327,7 @@ def analyze_dream(dream_text):
 
 
 st.title("🌙 Dream Analyzer")
-st.write("Pipeline 1 uses a fine-tuned model for stress classification. Pipeline 2 uses a non-fine-tuned symbolic interpretation pipeline.")
+st.write("Pipeline 1 uses a fine-tuned model for stress classification. Pipeline 2 uses retrieval and symbolic interpretation.")
 
 with st.expander("About the pipelines"):
     st.markdown("""
