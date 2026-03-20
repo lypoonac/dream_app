@@ -281,26 +281,22 @@ def build_dream_interpretation_prompt(dream_text, stress, emotions):
     emotions_text = ", ".join(emotions[:5]) if emotions else "unclear emotions"
 
     prompt = f"""
-You are writing a short dream interpretation.
+Write a concise and supportive dream interpretation.
 
-Task:
-Write a natural dream interpretation based on the dream narrative, stress level, and emotions.
+Requirements:
+- Use the user's original dream content.
+- Integrate the emotional and risk indicators provided.
+- Keep it to 1 or 2 short sentences.
+- Sound warm, reflective, and supportive.
+- Interpret the dream gently in terms of emotional meaning.
+- Do not give direct advice or action steps.
+- Do not mention AI, model, prompt, analysis, classifier, dataset, or pipeline.
+- Do not explicitly say "risk indicators" in the output.
+- Avoid robotic or repetitive wording.
 
-Rules:
-- Write exactly 2 sentences.
-- Sound like a human dream interpreter.
-- Focus on symbolism, inner feelings, and possible emotional meaning.
-- Be thoughtful, reflective, and easy to understand.
-- Do not give advice.
-- Do not mention stress classification, model, AI, analysis, prompt, or dataset.
-- Do not use bullet points.
-- Do not sound robotic or repetitive.
-- Use tentative interpretation words such as "may", "could", "might", or "suggests".
-- Make it sound like dream interpretation, not a recommendation.
-
-Dream narrative: {dream_text}
-Stress level: {stress}
-Emotions: {emotions_text}
+Dream content: {dream_text}
+Risk level: {stress}
+Emotional indicators: {emotions_text}
 
 Dream interpretation:
 """.strip()
@@ -311,27 +307,27 @@ Dream interpretation:
 def postprocess_interpretation(text):
     text = text.strip()
 
-    bad_prefixes = [
+    prefixes = [
         "dream interpretation:",
         "interpretation:",
         "response:",
         "answer:",
     ]
     lower_text = text.lower()
-    for prefix in bad_prefixes:
+    for prefix in prefixes:
         if lower_text.startswith(prefix):
             text = text[len(prefix):].strip()
             break
 
     text = re.sub(r"\s+", " ", text).strip()
 
-    if len(text) > 0:
+    if text:
         text = text[0].upper() + text[1:]
 
     return text
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=90):
+def generate_text(prompt, tokenizer, model, max_new_tokens=80):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
@@ -345,7 +341,7 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=90):
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=True,
-            temperature=0.7,
+            temperature=0.6,
             top_p=0.9,
             num_beams=1,
             no_repeat_ngram_size=3,
@@ -377,7 +373,7 @@ def analyze_dream(
         interpretation_prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=90,
+        max_new_tokens=80,
     )
 
     dream_interpretation = postprocess_interpretation(dream_interpretation)
