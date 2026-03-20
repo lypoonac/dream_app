@@ -103,12 +103,12 @@ st.markdown(
         }
         .highlight-block {
             background-color: #ffeb3b;
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-radius: 8px;
             display: block;
             color: #222222;
             font-weight: 500;
-            line-height: 1.6;
+            line-height: 1.7;
         }
         div.stButton > button {
             background-color: #00008F;
@@ -172,8 +172,6 @@ def load_data():
         df_model1["stress_label"].isin({"low", "medium", "high"})
     ].drop_duplicates().reset_index(drop=True)
     df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
-    df_model1["theme_list"] = df_model1["theme_labels"].apply(split_tags)
-    df_model1["symbol_list"] = df_model1["symbol_labels"].apply(split_tags)
 
     for col in ["stress_label", "emotion_labels", "dominant_emotion", "recommendation_text"]:
         if col not in df_model2.columns:
@@ -181,10 +179,7 @@ def load_data():
         df_model2[col] = df_model2[col].apply(clean_text)
 
     df_model2["stress_label"] = df_model2["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model2 = df_model2[
-        df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})
-    ].drop_duplicates().reset_index(drop=True)
-    df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
+    df_model2 = df_model2.drop_duplicates().reset_index(drop=True)
 
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         if col not in df_symbol_kb.columns:
@@ -192,9 +187,6 @@ def load_data():
         df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
 
     df_symbol_kb["symbol_name"] = df_symbol_kb["symbol_name"].str.lower()
-    df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(
-        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
     df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(
         lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
     )
@@ -227,8 +219,7 @@ def predict_stress(text, tokenizer, model):
 
     with torch.no_grad():
         outputs = model(**inputs)
-        probs = torch.softmax(outputs.logits, dim=1)[0].detach().cpu().numpy()
-        pred = int(np.argmax(probs))
+        pred = int(torch.argmax(outputs.logits, dim=1).item())
 
     return ID2LABEL[pred]
 
@@ -267,17 +258,12 @@ def infer_emotions(text, df_model1, df_symbol_kb):
     matches = find_similar_examples(text, df_model1, top_k=5)
 
     emotions = []
-
     for row in matches:
         emotions.extend(row["emotion_list"])
 
     emotions = pd.Series(emotions).value_counts().head(5).index.tolist() if emotions else []
 
-    direct_symbols = detect_symbols(
-        text,
-        set(df_symbol_kb["symbol_name"].tolist())
-    )
-
+    direct_symbols = detect_symbols(text, set(df_symbol_kb["symbol_name"].tolist()))
     if direct_symbols:
         symbol_emotions = []
         matched_symbol_rows = df_symbol_kb[df_symbol_kb["symbol_name"].isin(direct_symbols)]
@@ -291,58 +277,61 @@ def infer_emotions(text, df_model1, df_symbol_kb):
     return emotions
 
 
-def retrieve_reference_text(pred_stress, inferred_emotions, df_model2):
-    stress_map = {
-        "low": ["low"],
-        "medium": ["medium"],
-        "high": ["high", "very_high"],
-    }
-
-    stress_candidates = stress_map.get(pred_stress, ["medium"])
-    subset = df_model2[df_model2["stress_label"].isin(stress_candidates)].copy()
-
-    if subset.empty:
-        return ""
-
-    emo_set = set(inferred_emotions)
-    scored = []
-
-    for _, row in subset.iterrows():
-        overlap = len(emo_set.intersection(set(row["emotion_list"])))
-        score = overlap + (1 if row["dominant_emotion"] in emo_set else 0)
-        scored.append((score, row))
-
-    scored = sorted(scored, key=lambda x: x[0], reverse=True)
-    return scored[0][1]["recommendation_text"] if scored else ""
-
-
-def build_dream_insight_prompt(dream_text, stress, emotions, reference_text):
-    emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
+def build_dream_interpretation_prompt(dream_text, stress, emotions):
+    emotions_text = ", ".join(emotions[:5]) if emotions else "unclear emotions"
 
     prompt = f"""
-Write one short dream insight in an interpretation style.
+You are writing a short dream interpretation.
+
+Task:
+Write a natural dream interpretation based on the dream narrative, stress level, and emotions.
 
 Rules:
-- Keep it to one or two sentences.
-- Make it reflective, gentle, and natural.
-- Focus on possible meaning or emotional significance in the dream.
-- Do not give advice or action steps.
-- Do not mention AI, analysis, model, classifier, dataset, or prompt.
-- Do not sound clinical.
-- Do not say "this means for sure"; keep it interpretive and tentative.
-- Keep it concise.
+- Write exactly 2 sentences.
+- Sound like a human dream interpreter.
+- Focus on symbolism, inner feelings, and possible emotional meaning.
+- Be thoughtful, reflective, and easy to understand.
+- Do not give advice.
+- Do not mention stress classification, model, AI, analysis, prompt, or dataset.
+- Do not use bullet points.
+- Do not sound robotic or repetitive.
+- Use tentative interpretation words such as "may", "could", "might", or "suggests".
+- Make it sound like dream interpretation, not a recommendation.
 
-Dream text: {dream_text}
-Predicted stress level: {stress}
-Inferred emotions: {emotions_text}
-Reference style text: {reference_text}
+Dream narrative: {dream_text}
+Stress level: {stress}
+Emotions: {emotions_text}
 
-Dream insight:
+Dream interpretation:
 """.strip()
+
     return prompt
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=80):
+def postprocess_interpretation(text):
+    text = text.strip()
+
+    bad_prefixes = [
+        "dream interpretation:",
+        "interpretation:",
+        "response:",
+        "answer:",
+    ]
+    lower_text = text.lower()
+    for prefix in bad_prefixes:
+        if lower_text.startswith(prefix):
+            text = text[len(prefix):].strip()
+            break
+
+    text = re.sub(r"\s+", " ", text).strip()
+
+    if len(text) > 0:
+        text = text[0].upper() + text[1:]
+
+    return text
+
+
+def generate_text(prompt, tokenizer, model, max_new_tokens=90):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
@@ -355,18 +344,14 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=80):
         output_ids = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            do_sample=False,
-            num_beams=4,
-            early_stopping=True,
+            do_sample=True,
+            temperature=0.7,
+            top_p=0.9,
+            num_beams=1,
             no_repeat_ngram_size=3,
         )
 
     text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
-
-    for prefix in ["Dream insight:", "Insight:", "Response:", "Answer:"]:
-        if text.startswith(prefix):
-            text = text[len(prefix):].strip()
-
     return text
 
 
@@ -377,33 +362,31 @@ def analyze_dream(
     gen_tokenizer,
     gen_model,
     df_model1,
-    df_model2,
     df_symbol_kb,
 ):
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
 
-    reference_text = retrieve_reference_text(stress, emotions, df_model2)
-
-    insight_prompt = build_dream_insight_prompt(
+    insight_prompt = build_dream_interpretation_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        reference_text=reference_text,
     )
 
-    dream_insight = generate_text(
+    dream_interpretation = generate_text(
         insight_prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=80,
+        max_new_tokens=90,
     )
+
+    dream_interpretation = postprocess_interpretation(dream_interpretation)
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "emotions": emotions,
-        "dream_insight": dream_insight,
+        "dream_interpretation": dream_interpretation,
     }
 
 
@@ -427,7 +410,7 @@ if os.path.exists(LOGO_PATH):
                 <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
                     A prototype wellness support tool that analyzes dream narratives to surface
-                    possible stress signals, emotional patterns, and dream insights.
+                    possible stress signals, emotional patterns, and dream interpretation.
                 </div>
             </div>
             """,
@@ -440,7 +423,7 @@ else:
             <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool that analyzes dream narratives to surface
-                possible stress signals, emotional patterns, and dream insights.
+                possible stress signals, emotional patterns, and dream interpretation.
             </div>
         </div>
         """,
@@ -455,7 +438,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the generated dream insight.<br>
+            4. Read the generated dream interpretation.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
@@ -482,7 +465,6 @@ if st.button("Analyze Dream"):
                 gen_tokenizer=gen_tokenizer,
                 gen_model=gen_model,
                 df_model1=df_model1,
-                df_model2=df_model2,
                 df_symbol_kb=df_symbol_kb,
             )
 
@@ -490,7 +472,7 @@ if st.button("Analyze Dream"):
 
         stress_text = html.escape(result["stress_level"].upper())
         emotions_text = html.escape(", ".join(result["emotions"]) if result["emotions"] else "None")
-        dream_insight_text = html.escape(result["dream_insight"])
+        interpretation_text = html.escape(result["dream_interpretation"])
 
         col1, col2 = st.columns(2)
 
@@ -513,9 +495,9 @@ if st.button("Analyze Dream"):
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Dream Insight")
+        st.subheader("Dream Interpretation")
         st.markdown(
-            f"<div class='highlight-block'>{dream_insight_text}</div>",
+            f"<div class='highlight-block'>{interpretation_text}</div>",
             unsafe_allow_html=True
         )
         st.markdown("</div>", unsafe_allow_html=True)
