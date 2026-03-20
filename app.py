@@ -76,11 +76,11 @@ st.markdown(
             margin-bottom: 1rem;
         }
         .result-card {
-            background: #fff9c4;
+            background: #ffffff;
             border-radius: 16px;
             padding: 1rem 1.2rem;
-            border: 1px solid #f4e287;
-            box-shadow: 0 4px 16px rgba(120, 100, 0, 0.08);
+            border: 1px solid #dbe4f3;
+            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
             margin-bottom: 1rem;
         }
         .section-title {
@@ -367,14 +367,14 @@ def analyze_dream(
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
 
-    insight_prompt = build_dream_interpretation_prompt(
+    interpretation_prompt = build_dream_interpretation_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
     )
 
     dream_interpretation = generate_text(
-        insight_prompt,
+        interpretation_prompt,
         gen_tokenizer,
         gen_model,
         max_new_tokens=90,
