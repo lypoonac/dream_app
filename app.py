@@ -6,7 +6,11 @@ import pandas as pd
 import torch
 import streamlit as st
 
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
+)
 
 st.set_page_config(
     page_title="AI Dream Analyzer for AXA: Early Stress Detection",
@@ -25,13 +29,16 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
+MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
-LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
+MODEL2_HF_NAME = "google/flan-t5-base"
+
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
 st.markdown(
@@ -143,22 +150,17 @@ def tokenize_simple(text):
 
 @st.cache_data
 def load_data():
-    missing_files = []
+    missing = []
+    for p in [MODEL1_PATH, MODEL2_PATH, MODEL2_BKUP_PATH, SYMBOL_KB_PATH]:
+        if not os.path.exists(p):
+            missing.append(p)
 
-    if not os.path.exists(MODEL1_PATH):
-        missing_files.append(MODEL1_PATH)
-    if not os.path.exists(MODEL2_PATH):
-        missing_files.append(MODEL2_PATH)
-    if not os.path.exists(SYMBOL_KB_PATH):
-        missing_files.append(SYMBOL_KB_PATH)
-
-    if missing_files:
-        raise FileNotFoundError(
-            "Missing required data files:\n" + "\n".join(missing_files)
-        )
+    if missing:
+        raise FileNotFoundError("Missing required files:\n" + "\n".join(missing))
 
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
+    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
@@ -185,6 +187,17 @@ def load_data():
     ].drop_duplicates().reset_index(drop=True)
     df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
 
+    for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
+        if col not in df_model2_bkup.columns:
+            raise ValueError(f"Column '{col}' missing from model2_train.csv.bkup.csv")
+        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
+
+    df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
+    df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
+    df_model2_bkup["related_list"] = df_model2_bkup["related_recommendations"].apply(
+        lambda x: [i.strip() for i in clean_text(x).split("|") if i.strip()]
+    )
+
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         if col not in df_symbol_kb.columns:
             raise ValueError(f"Column '{col}' missing from symbol_kb.csv")
@@ -199,16 +212,22 @@ def load_data():
     )
 
     symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
+    symbol_reco_dict = {row["symbol_name"]: row for _, row in df_model2_bkup.iterrows()}
 
-    return df_model1, df_model2, df_symbol_kb, symbol_kb_dict
+    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict
 
 
 @st.cache_resource
-def load_model1():
-    tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
-    model.eval()
-    return tokenizer, model
+def load_models():
+    stress_tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
+    stress_model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
+    stress_model.eval()
+
+    gen_tokenizer = AutoTokenizer.from_pretrained(MODEL2_HF_NAME)
+    gen_model = AutoModelForSeq2SeqLM.from_pretrained(MODEL2_HF_NAME).to(DEVICE)
+    gen_model.eval()
+
+    return stress_tokenizer, stress_model, gen_tokenizer, gen_model
 
 
 def predict_stress(text, tokenizer, model):
@@ -259,7 +278,7 @@ def find_similar_examples(text, df_model1, top_k=5):
     return [row for _, row in scores]
 
 
-def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb):
+def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb, df_model2_bkup):
     matches = find_similar_examples(text, df_model1, top_k=5)
 
     emotions = []
@@ -277,7 +296,7 @@ def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb):
 
     direct_symbols = detect_symbols(
         text,
-        set(df_symbol_kb["symbol_name"].tolist())
+        set(df_symbol_kb["symbol_name"].tolist()) | set(df_model2_bkup["symbol_name"].tolist())
     )
 
     for s in direct_symbols:
@@ -316,83 +335,125 @@ def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
     return scored[0][1]["recommendation_text"]
 
 
-def natural_stress_phrase(stress):
-    mapping = {
-        "low": "fairly calm or reflective",
-        "medium": "emotionally unsettled",
-        "high": "highly stressed or overwhelmed",
-    }
-    return mapping.get(stress, "emotionally activated")
+def build_interpretation_prompt(dream_text, stress, emotions, themes, symbols, symbol_kb_dict):
+    emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
+    themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
+    symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
 
-
-def summarize_symbols_naturally(symbols, symbol_kb_dict):
-    symbol_lines = []
-
+    symbol_meanings = []
     for sym in symbols[:3]:
         if sym in symbol_kb_dict:
-            summary = symbol_kb_dict[sym]["traditional_summary_en"]
-            summary = summary.replace("May suggest ", "").strip()
-            summary = summary.rstrip(".")
-            symbol_lines.append((sym.replace("_", " "), summary))
+            meaning = clean_text(symbol_kb_dict[sym]["traditional_summary_en"])
+            if meaning:
+                symbol_meanings.append(f"{sym.replace('_', ' ')}: {meaning}")
 
-    return symbol_lines
+    symbol_meanings_text = " | ".join(symbol_meanings) if symbol_meanings else "no extra symbol meanings"
+
+    prompt = f"""
+Answer in 3 to 5 sentences only.
+
+Task: Write a short dream interpretation in clear, natural English.
+
+Rules:
+- Be calm, supportive, and human-friendly.
+- Do not repeat the instructions.
+- Do not copy the prompt.
+- Do not say "Task", "Rules", or "Dream".
+- Do not predict the future.
+- Do not claim supernatural certainty.
+- Focus on psychological and symbolic meaning.
+
+Dream text: {dream_text}
+Predicted stress level: {stress}
+Inferred emotions: {emotions_text}
+Inferred themes: {themes_text}
+Inferred symbols: {symbols_text}
+Symbol meanings: {symbol_meanings_text}
+
+Interpretation:
+""".strip()
+    return prompt
 
 
-def build_interpretation_paragraph(stress, emotions, themes, symbols, symbol_kb_dict):
-    stress_phrase = natural_stress_phrase(stress)
-    intro = f"This dream may reflect a mind that feels {stress_phrase} right now."
+def build_recommendation_prompt(dream_text, stress, emotions, themes, symbols, retrieved_recommendation):
+    emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
+    themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
+    symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
 
-    emo_part = (
-        f"Feelings like {', '.join(emotions[:3])} seem to be close to the surface."
-        if emotions else ""
+    prompt = f"""
+Answer in 2 to 4 sentences only.
+
+Task: Write a short supportive recommendation based on the dream analysis.
+
+Rules:
+- Be gentle, practical, and emotionally supportive.
+- Do not repeat the instructions.
+- Do not copy the prompt.
+- Do not give medical, legal, or dangerous advice.
+- Do not mention AI or model names.
+- Use the suggested recommendation if it fits naturally.
+
+Dream text: {dream_text}
+Predicted stress level: {stress}
+Inferred emotions: {emotions_text}
+Inferred themes: {themes_text}
+Inferred symbols: {symbols_text}
+Suggested recommendation: {retrieved_recommendation}
+
+Recommendation:
+""".strip()
+    return prompt
+
+
+def generate_text(prompt, tokenizer, model, max_new_tokens=120):
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512,
+    )
+    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        output_ids = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            num_beams=4,
+            early_stopping=True,
+            no_repeat_ngram_size=3,
+        )
+
+    text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
+
+    for prefix in ["Interpretation:", "Recommendation:", "Answer:"]:
+        if text.startswith(prefix):
+            text = text[len(prefix):].strip()
+
+    return text
+
+
+def analyze_dream(
+    dream_text,
+    stress_tokenizer,
+    stress_model,
+    gen_tokenizer,
+    gen_model,
+    df_model1,
+    df_model2,
+    df_model2_bkup,
+    df_symbol_kb,
+    symbol_kb_dict,
+):
+    stress, probs = predict_stress(dream_text, stress_tokenizer, stress_model)
+    emotions, themes, symbols = infer_emotions_themes_symbols(
+        dream_text, df_model1, df_symbol_kb, df_model2_bkup
     )
 
-    symbol_info = summarize_symbols_naturally(symbols, symbol_kb_dict)
-    if symbol_info:
-        symbol_texts = [f"{name} often point to {meaning}" for name, meaning in symbol_info[:2]]
-        symbol_part = "In this kind of dream, " + " and ".join(symbol_texts) + "."
-    else:
-        symbol_part = ""
+    retrieved_recommendation = retrieve_recommendation(stress, emotions, df_model2)
 
-    theme_part = (
-        f"The overall pattern suggests themes around {', '.join(themes[:3]).replace('_', ' ')}."
-        if themes else ""
-    )
-
-    closing = (
-        "Rather than predicting something literal, the dream is more likely showing how your mind "
-        "is processing pressure, change, or unresolved feelings."
-    )
-
-    parts = [intro, emo_part, symbol_part, theme_part, closing]
-    return " ".join([p for p in parts if p]).strip()
-
-
-def build_recommendation_paragraph(stress, emotions, df_model2):
-    base_rec = retrieve_recommendation(stress, emotions, df_model2)
-
-    if stress == "high":
-        support_line = (
-            "If this dream matches how you have been feeling lately, it may help to slow down, "
-            "reduce stimulation, and focus only on the next manageable step."
-        )
-    elif stress == "medium":
-        support_line = (
-            "It may help to simplify your day, check in with your emotions, and avoid forcing clarity too quickly."
-        )
-    else:
-        support_line = (
-            "This can be a good moment to keep things steady, listen to yourself, and move gently with what feels meaningful."
-        )
-
-    return f"{base_rec} {support_line}".strip()
-
-
-def analyze_dream(dream_text, tokenizer, model, df_model1, df_model2, df_symbol_kb, symbol_kb_dict):
-    stress, probs = predict_stress(dream_text, tokenizer, model)
-    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text, df_model1, df_symbol_kb)
-
-    interpretation = build_interpretation_paragraph(
+    interpretation_prompt = build_interpretation_prompt(
+        dream_text=dream_text,
         stress=stress,
         emotions=emotions,
         themes=themes,
@@ -400,10 +461,27 @@ def analyze_dream(dream_text, tokenizer, model, df_model1, df_model2, df_symbol_
         symbol_kb_dict=symbol_kb_dict,
     )
 
-    recommendation = build_recommendation_paragraph(
+    recommendation_prompt = build_recommendation_prompt(
+        dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        df_model2=df_model2,
+        themes=themes,
+        symbols=symbols,
+        retrieved_recommendation=retrieved_recommendation,
+    )
+
+    interpretation = generate_text(
+        interpretation_prompt,
+        gen_tokenizer,
+        gen_model,
+        max_new_tokens=120,
+    )
+
+    recommendation = generate_text(
+        recommendation_prompt,
+        gen_tokenizer,
+        gen_model,
+        max_new_tokens=100,
     )
 
     return {
@@ -413,37 +491,51 @@ def analyze_dream(dream_text, tokenizer, model, df_model1, df_model2, df_symbol_
         "emotions": emotions,
         "themes": themes,
         "symbols": symbols,
+        "retrieved_recommendation": retrieved_recommendation,
         "interpretation": interpretation,
         "recommendation": recommendation,
     }
 
 
 try:
-    df_model1, df_model2, df_symbol_kb, symbol_kb_dict = load_data()
-    stress_tokenizer, stress_model = load_model1()
+    df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()
+    stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 except Exception as e:
-    st.error("Failed to load required files or model.")
+    st.error("Failed to load required files or models.")
     st.exception(e)
     st.stop()
 
 
-header_col1, header_col2 = st.columns([1, 4])
-
-with header_col1:
-    if os.path.exists(LOGO_PATH):
+if os.path.exists(LOGO_PATH):
+    header_col1, header_col2 = st.columns([1, 4])
+    with header_col1:
         st.image(LOGO_PATH, width=140)
-
-with header_col2:
+    with header_col2:
+        st.markdown(
+            """
+            <div class="brand-card">
+                <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
+                <div class="sub-title">
+                    A prototype wellness support tool combining transformer-based stress detection
+                    with Hugging Face interpretation generation.
+                </div>
+                <span class="badge badge-blue">Model 1: Stress Classifier</span>
+                <span class="badge badge-red">Model 2: FLAN-T5 Generator</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+else:
     st.markdown(
         """
         <div class="brand-card">
             <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool combining transformer-based stress detection
-                with symbolic dream interpretation and recommendation retrieval.
+                with Hugging Face interpretation generation.
             </div>
-            <span class="badge badge-blue">Model 1: Hugging Face Stress Classifier</span>
-            <span class="badge badge-red">Model 2: Symbolic Interpretation Pipeline</span>
+            <span class="badge badge-blue">Model 1: Stress Classifier</span>
+            <span class="badge badge-red">Model 2: FLAN-T5 Generator</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -456,9 +548,9 @@ st.markdown(
         <div class="small-muted">
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
-            3. Review the predicted stress level, detected emotions, themes, and symbols.<br>
-            4. Read the generated interpretation and recommendation for early reflection.<br>
-            5. This tool is for wellness support and early awareness, not medical diagnosis.
+            3. Review the predicted stress level, inferred emotions, themes, and symbols.<br>
+            4. Read the generated interpretation and recommendation.<br>
+            5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
     """,
@@ -467,20 +559,23 @@ st.markdown(
 
 with st.expander("About the two models"):
     st.markdown(
-        """
+        f"""
 **Model 1 — Stress Detection**
-- Hugging Face model: `peterjerry111/dream-stress-classifier`
+- Hugging Face model: `{MODEL1_HF_NAME}`
 - Predicts stress level: `low`, `medium`, `high`
 
-**Model 2 — Interpretation Pipeline**
-- Retrieval from similar dream examples
-- Symbol knowledge base lookup
-- Emotion/theme/symbol inference
-- Recommendation retrieval
-- Natural language paragraph construction
+**Model 2 — Interpretation and Recommendation Generation**
+- Hugging Face model: `{MODEL2_HF_NAME}`
+- Generates interpretation and recommendation text from structured prompts
+
+**Support Data**
+- `model1_train.csv`
+- `model2_train.csv`
+- `model2_train.csv.bkup.csv`
+- `symbol_kb.csv`
 
 **Note**
-- This app is designed for reflective and supportive use.
+- This app is for supportive reflection only.
 - It is not a substitute for professional mental health care.
         """
     )
@@ -499,10 +594,13 @@ if st.button("Analyze Dream"):
         with st.spinner("Analyzing your dream..."):
             result = analyze_dream(
                 dream_text=dream_text.strip(),
-                tokenizer=stress_tokenizer,
-                model=stress_model,
+                stress_tokenizer=stress_tokenizer,
+                stress_model=stress_model,
+                gen_tokenizer=gen_tokenizer,
+                gen_model=gen_model,
                 df_model1=df_model1,
                 df_model2=df_model2,
+                df_model2_bkup=df_model2_bkup,
                 df_symbol_kb=df_symbol_kb,
                 symbol_kb_dict=symbol_kb_dict,
             )
@@ -525,7 +623,7 @@ if st.button("Analyze Dream"):
 
         with col2:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
-            st.subheader("Detected Features")
+            st.subheader("Inferred Features")
             st.write("**Emotions:**", ", ".join(result["emotions"]) if result["emotions"] else "None")
             st.write("**Themes:**", ", ".join(result["themes"]) if result["themes"] else "None")
             st.write("**Symbols:**", ", ".join(result["symbols"]) if result["symbols"] else "None")
@@ -540,3 +638,7 @@ if st.button("Analyze Dream"):
         st.subheader("Recommendation")
         st.write(result["recommendation"])
         st.markdown("</div>", unsafe_allow_html=True)
+
+        with st.expander("Model 2 supporting context"):
+            st.write("**Retrieved recommendation seed:**", result["retrieved_recommendation"])
+            st.write("**Model 2:**", MODEL2_HF_NAME)
