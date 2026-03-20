@@ -145,7 +145,7 @@ def split_tags(x):
 
 
 def tokenize_simple(text):
-    return re.findall(r"[a-zA-Z_]+", str(text).lower())
+    return re.findall(r"[a-zA-Z]+", str(text).lower())
 
 
 def normalize_symbol(text):
@@ -153,6 +153,21 @@ def normalize_symbol(text):
     text = re.sub(r"[^a-z0-9\s/&'-]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
+
+
+def split_into_sentences(text):
+    text = clean_text(text)
+    if not text:
+        return []
+    parts = re.split(r"(?<=[.!?])\s+", text)
+    return [p.strip() for p in parts if p.strip()]
+
+
+def extract_first_sentence(text):
+    sentences = split_into_sentences(text)
+    if sentences:
+        return sentences[0]
+    return clean_text(text)
 
 
 @st.cache_data
@@ -175,9 +190,7 @@ def load_data():
         df_model1[col] = df_model1[col].apply(clean_text)
 
     df_model1["stress_label"] = df_model1["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model1 = df_model1[
-        df_model1["stress_label"].isin({"low", "medium", "high"})
-    ].drop_duplicates().reset_index(drop=True)
+    df_model1 = df_model1[df_model1["stress_label"].isin({"low", "medium", "high"})].drop_duplicates().reset_index(drop=True)
     df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
 
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
@@ -244,23 +257,6 @@ def predict_stress(text, tokenizer, model):
     return ID2LABEL[pred]
 
 
-def detect_symbols(text, known_symbols):
-    tokens = tokenize_simple(text)
-    token_set = set(tokens)
-    found = []
-
-    for sym in known_symbols:
-        sym_clean = sym.lower()
-        if sym_clean in token_set:
-            found.append(sym_clean)
-        elif "_" in sym_clean:
-            parts = sym_clean.split("_")
-            if all(part in token_set for part in parts):
-                found.append(sym_clean)
-
-    return list(dict.fromkeys(found))
-
-
 def find_similar_examples(text, df_model1, top_k=5):
     query_tokens = set(tokenize_simple(text))
     scores = []
@@ -284,11 +280,17 @@ def infer_emotions(text, df_model1, df_symbol_kb):
 
     emotions = pd.Series(emotions).value_counts().head(5).index.tolist() if emotions else []
 
-    direct_symbols = detect_symbols(text, set(df_symbol_kb["symbol_name"].tolist()))
-    if direct_symbols:
+    dream_tokens = set(tokenize_simple(text))
+    direct_symbol_rows = []
+    for _, row in df_symbol_kb.iterrows():
+        symbol = clean_text(row["symbol_name"]).lower()
+        symbol_parts = symbol.split("_")
+        if all(part in dream_tokens for part in symbol_parts):
+            direct_symbol_rows.append(row)
+
+    if direct_symbol_rows:
         symbol_emotions = []
-        matched_symbol_rows = df_symbol_kb[df_symbol_kb["symbol_name"].isin(direct_symbols)]
-        for _, row in matched_symbol_rows.iterrows():
+        for row in direct_symbol_rows:
             symbol_emotions.extend(row["emotion_list"])
 
         if symbol_emotions:
@@ -298,24 +300,40 @@ def infer_emotions(text, df_model1, df_symbol_kb):
     return emotions
 
 
-def find_interpretation_matches(dream_text, df_interp, max_matches=5):
-    text_lower = f" {normalize_symbol(dream_text)} "
+def find_interpretation_matches(dream_text, df_interp, max_matches=10):
+    dream_text_norm = normalize_symbol(dream_text)
+    dream_tokens = set(tokenize_simple(dream_text_norm))
+
     matches = []
 
     for _, row in df_interp.iterrows():
-        sym = row["symbol_norm"]
-        if not sym:
+        symbol = clean_text(row["dream_symbol"])
+        interpretation = clean_text(row["interpretation"])
+        symbol_norm = normalize_symbol(symbol)
+
+        if not symbol_norm:
             continue
 
-        pattern = f" {sym} "
-        if pattern in text_lower:
-            matches.append((len(sym), row["dream_symbol"], row["interpretation"]))
+        symbol_tokens = set(tokenize_simple(symbol_norm))
+        score = 0
+
+        if f" {symbol_norm} " in f" {dream_text_norm} ":
+            score += 10
+
+        overlap = len(symbol_tokens & dream_tokens)
+        score += overlap * 3
+
+        if len(symbol_tokens) == 1 and list(symbol_tokens)[0] in dream_tokens:
+            score += 5
+
+        if score > 0:
+            matches.append((score, symbol, interpretation))
 
     matches = sorted(matches, key=lambda x: x[0], reverse=True)
 
     dedup = []
     seen = set()
-    for _, symbol, interpretation in matches:
+    for score, symbol, interpretation in matches:
         key = normalize_symbol(symbol)
         if key not in seen:
             seen.add(key)
@@ -326,79 +344,88 @@ def find_interpretation_matches(dream_text, df_interp, max_matches=5):
     return dedup
 
 
-def build_dataset_grounded_prompt(dream_text, stress, emotions, matched_interpretations):
-    emotions_text = ", ".join(emotions[:5]) if emotions else "unclear emotions"
+def get_best_dataset_line(dream_text, df_interp):
+    matches = find_interpretation_matches(dream_text, df_interp, max_matches=10)
 
-    if matched_interpretations:
-        symbol_lines = []
-        for symbol, interpretation in matched_interpretations:
-            symbol_lines.append(f"- {symbol}: {interpretation}")
-        symbol_block = "\n".join(symbol_lines)
-    else:
-        symbol_block = "- No direct symbol interpretation found in dataset."
+    if not matches:
+        return "No direct interpretation found in the dataset.", []
+
+    best_symbol, best_interpretation = matches[0]
+    one_line = extract_first_sentence(best_interpretation)
+
+    return one_line, [s for s, _ in matches[:5]]
+
+
+def build_one_line_prompt(dream_text, stress, emotions, dataset_line):
+    emotions_text = ", ".join(emotions[:5]) if emotions else "unclear"
 
     prompt = f"""
-Write a concise and supportive dream interpretation.
+Rewrite the following dataset interpretation into one very simple natural line.
 
-Requirements:
-- Base the interpretation on the user's dream narrative.
-- Integrate the emotional/risk indicators provided.
-- Use the dataset-based symbol interpretations as grounding.
-- Keep it to 2 short sentences maximum.
-- Sound natural, reflective, and supportive.
-- Do not give direct advice.
-- Do not mention AI, model, prompt, dataset, classifier, or pipeline.
-- Do not copy the dataset text verbatim for the full answer.
-- Summarize and synthesize the meaning clearly.
+Rules:
+- Output only one sentence.
+- Keep the meaning of the dataset line.
+- Use plain and clear English.
+- Do not mention dataset, model, stress level, emotions, analysis, or symbols.
+- Do not add advice.
+- If the dataset line is already simple, keep it simple.
 
-Dream narrative:
+Dream:
 {dream_text}
 
-Risk level:
+Stress level:
 {stress}
 
-Emotional indicators:
+Emotions:
 {emotions_text}
 
-Matched symbol interpretations:
-{symbol_block}
+Dataset interpretation line:
+{dataset_line}
 
-Final dream interpretation:
+Simple one-line interpretation:
 """.strip()
 
     return prompt
 
 
-def postprocess_interpretation(text):
-    text = text.strip()
+def postprocess_interpretation(text, fallback_line):
+    text = clean_text(text)
+
     prefixes = [
-        "final dream interpretation:",
-        "dream interpretation:",
+        "simple one-line interpretation:",
+        "one-line interpretation:",
         "interpretation:",
-        "response:",
         "answer:",
+        "response:",
     ]
 
-    lower_text = text.lower()
+    lowered = text.lower()
     for prefix in prefixes:
-        if lower_text.startswith(prefix):
+        if lowered.startswith(prefix):
             text = text[len(prefix):].strip()
             break
 
     text = re.sub(r"\s+", " ", text).strip()
 
-    if text:
-        text = text[0].upper() + text[1:]
+    if not text:
+        text = fallback_line
 
-    return text
+    first_sentence = extract_first_sentence(text)
+    if not first_sentence:
+        first_sentence = fallback_line
+
+    if first_sentence and first_sentence[-1] not in ".!?":
+        first_sentence += "."
+
+    return first_sentence
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=100):
+def generate_text(prompt, tokenizer, model, max_new_tokens=40):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=768,
+        max_length=512,
     )
     inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
@@ -406,11 +433,10 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=100):
         output_ids = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            do_sample=True,
-            temperature=0.5,
-            top_p=0.9,
-            num_beams=1,
+            do_sample=False,
+            num_beams=4,
             no_repeat_ngram_size=3,
+            early_stopping=True,
         )
 
     text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
@@ -429,32 +455,32 @@ def analyze_dream(
 ):
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
-    matched_interpretations = find_interpretation_matches(dream_text, df_interp, max_matches=5)
 
-    interpretation_prompt = build_dataset_grounded_prompt(
+    dataset_line, matched_symbols = get_best_dataset_line(dream_text, df_interp)
+
+    prompt = build_one_line_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        matched_interpretations=matched_interpretations,
+        dataset_line=dataset_line,
     )
 
-    dream_interpretation = generate_text(
-        interpretation_prompt,
+    generated_line = generate_text(
+        prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=100,
+        max_new_tokens=40,
     )
 
-    dream_interpretation = postprocess_interpretation(dream_interpretation)
-
-    matched_symbols = [symbol for symbol, _ in matched_interpretations]
+    final_interpretation = postprocess_interpretation(generated_line, dataset_line)
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "emotions": emotions,
-        "dream_interpretation": dream_interpretation,
+        "dream_interpretation": final_interpretation,
         "matched_symbols": matched_symbols,
+        "dataset_line": dataset_line,
     }
 
 
@@ -506,7 +532,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the generated dream interpretation grounded in the interpretation dataset.<br>
+            4. Read the one-line dream interpretation grounded in the dataset and simplified by Model 2.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
@@ -573,3 +599,5 @@ if st.button("Analyze Dream"):
 
         if result["matched_symbols"]:
             st.caption("Matched symbols from interpretation dataset: " + ", ".join(result["matched_symbols"]))
+        else:
+            st.caption("Matched symbols from interpretation dataset: none")
