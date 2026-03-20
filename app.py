@@ -212,7 +212,7 @@ def predict_stress(text, tokenizer, model):
         probs = torch.softmax(outputs.logits, dim=1)[0].detach().cpu().numpy()
         pred = int(np.argmax(probs))
 
-    return ID2LABEL[pred], probs
+    return ID2LABEL[pred]
 
 
 def detect_symbols(text, known_symbols):
@@ -245,32 +245,32 @@ def find_similar_examples(text, df_model1, top_k=5):
     return [row for _, row in scores]
 
 
-def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb):
+def infer_emotions(text, df_model1, df_symbol_kb):
     matches = find_similar_examples(text, df_model1, top_k=5)
 
     emotions = []
-    themes = []
-    symbols = []
 
     for row in matches:
         emotions.extend(row["emotion_list"])
-        themes.extend(row["theme_list"])
-        symbols.extend(row["symbol_list"])
 
     emotions = pd.Series(emotions).value_counts().head(5).index.tolist() if emotions else []
-    themes = pd.Series(themes).value_counts().head(5).index.tolist() if themes else []
-    symbols = pd.Series(symbols).value_counts().head(5).index.tolist() if symbols else []
 
     direct_symbols = detect_symbols(
         text,
         set(df_symbol_kb["symbol_name"].tolist())
     )
 
-    for s in direct_symbols:
-        if s not in symbols:
-            symbols.insert(0, s)
+    if direct_symbols:
+        symbol_emotions = []
+        matched_symbol_rows = df_symbol_kb[df_symbol_kb["symbol_name"].isin(direct_symbols)]
+        for _, row in matched_symbol_rows.iterrows():
+            symbol_emotions.extend(row["emotion_list"])
 
-    return emotions, themes, symbols
+        if symbol_emotions:
+            combined = emotions + symbol_emotions
+            emotions = pd.Series(combined).value_counts().head(5).index.tolist()
+
+    return emotions
 
 
 def map_stress_for_model2(stress):
@@ -302,10 +302,8 @@ def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
     return scored[0][1]["recommendation_text"]
 
 
-def build_recommendation_prompt(dream_text, stress, emotions, themes, symbols, retrieved_recommendation):
+def build_recommendation_prompt(dream_text, stress, emotions, retrieved_recommendation):
     emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
-    themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
-    symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
 
     prompt = f"""
 Write one single-line supportive recommendation.
@@ -322,8 +320,6 @@ Rules:
 Dream text: {dream_text}
 Predicted stress level: {stress}
 Inferred emotions: {emotions_text}
-Inferred themes: {themes_text}
-Inferred symbols: {symbols_text}
 Suggested recommendation: {retrieved_recommendation}
 
 One-line recommendation:
@@ -369,10 +365,8 @@ def analyze_dream(
     df_model2,
     df_symbol_kb,
 ):
-    stress, probs = predict_stress(dream_text, stress_tokenizer, stress_model)
-    emotions, themes, symbols = infer_emotions_themes_symbols(
-        dream_text, df_model1, df_symbol_kb
-    )
+    stress = predict_stress(dream_text, stress_tokenizer, stress_model)
+    emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
 
     retrieved_recommendation = retrieve_recommendation(stress, emotions, df_model2)
 
@@ -380,8 +374,6 @@ def analyze_dream(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        themes=themes,
-        symbols=symbols,
         retrieved_recommendation=retrieved_recommendation,
     )
 
@@ -395,7 +387,6 @@ def analyze_dream(
     return {
         "dream_text": dream_text,
         "stress_level": stress,
-        "stress_probs": probs,
         "emotions": emotions,
         "recommendation": recommendation,
     }
@@ -488,12 +479,6 @@ if st.button("Analyze Dream"):
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
             st.subheader("Stress Level")
             st.write(result["stress_level"].upper())
-
-            probs = result["stress_probs"]
-            st.write("Confidence scores")
-            st.caption(f"Low: {probs[0]:.4f}")
-            st.caption(f"Medium: {probs[1]:.4f}")
-            st.caption(f"High: {probs[2]:.4f}")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with col2:
