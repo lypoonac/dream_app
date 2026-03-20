@@ -1,6 +1,7 @@
 import os
 import re
 import random
+import html
 import numpy as np
 import pandas as pd
 import torch
@@ -91,6 +92,23 @@ st.markdown(
         .small-muted {
             color: #5f6c86;
             font-size: 0.95rem;
+        }
+        .highlight-text {
+            background-color: #ffeb3b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            color: #222222;
+            font-weight: 600;
+        }
+        .highlight-block {
+            background-color: #ffeb3b;
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: block;
+            color: #222222;
+            font-weight: 500;
+            line-height: 1.6;
         }
         div.stButton > button {
             background-color: #00008F;
@@ -470,21 +488,34 @@ if st.button("Analyze Dream"):
 
         st.success("Analysis completed.")
 
+        stress_text = html.escape(result["stress_level"].upper())
+        emotions_text = html.escape(", ".join(result["emotions"]) if result["emotions"] else "None")
+        dream_insight_text = html.escape(result["dream_insight"])
+
         col1, col2 = st.columns(2)
 
         with col1:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
             st.subheader("Stress Level")
-            st.write(result["stress_level"].upper())
+            st.markdown(
+                f"<div class='highlight-text'>{stress_text}</div>",
+                unsafe_allow_html=True
+            )
             st.markdown("</div>", unsafe_allow_html=True)
 
         with col2:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
             st.subheader("Emotions")
-            st.write(", ".join(result["emotions"]) if result["emotions"] else "None")
+            st.markdown(
+                f"<div class='highlight-text'>{emotions_text}</div>",
+                unsafe_allow_html=True
+            )
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
         st.subheader("Dream Insight")
-        st.write(result["dream_insight"])
+        st.markdown(
+            f"<div class='highlight-block'>{dream_insight_text}</div>",
+            unsafe_allow_html=True
+        )
         st.markdown("</div>", unsafe_allow_html=True)
