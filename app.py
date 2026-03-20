@@ -75,11 +75,11 @@ st.markdown(
             margin-bottom: 1rem;
         }
         .result-card {
-            background: #ffffff;
+            background: #fff9c4;
             border-radius: 16px;
             padding: 1rem 1.2rem;
-            border: 1px solid #dbe4f3;
-            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
+            border: 1px solid #f4e287;
+            box-shadow: 0 4px 16px rgba(120, 100, 0, 0.08);
             margin-bottom: 1rem;
         }
         .section-title {
@@ -273,22 +273,18 @@ def infer_emotions(text, df_model1, df_symbol_kb):
     return emotions
 
 
-def map_stress_for_model2(stress):
-    if stress == "low":
-        return ["low"]
-    if stress == "medium":
-        return ["medium"]
-    if stress == "high":
-        return ["high", "very_high"]
-    return ["medium"]
+def retrieve_reference_text(pred_stress, inferred_emotions, df_model2):
+    stress_map = {
+        "low": ["low"],
+        "medium": ["medium"],
+        "high": ["high", "very_high"],
+    }
 
-
-def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
-    stress_candidates = map_stress_for_model2(pred_stress)
+    stress_candidates = stress_map.get(pred_stress, ["medium"])
     subset = df_model2[df_model2["stress_label"].isin(stress_candidates)].copy()
 
     if subset.empty:
-        return "Take things one step at a time, reduce pressure, and focus on steady emotional recovery."
+        return ""
 
     emo_set = set(inferred_emotions)
     scored = []
@@ -299,35 +295,36 @@ def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
         scored.append((score, row))
 
     scored = sorted(scored, key=lambda x: x[0], reverse=True)
-    return scored[0][1]["recommendation_text"]
+    return scored[0][1]["recommendation_text"] if scored else ""
 
 
-def build_recommendation_prompt(dream_text, stress, emotions, retrieved_recommendation):
+def build_dream_insight_prompt(dream_text, stress, emotions, reference_text):
     emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
 
     prompt = f"""
-Write one single-line supportive recommendation.
+Write one short dream insight in an interpretation style.
 
 Rules:
-- Keep it to one sentence only.
-- Make it warm, practical, and natural.
-- Do not repeat the prompt.
-- Do not explain the dream.
-- Do not mention AI, analysis, or model.
-- Do not give medical or dangerous advice.
+- Keep it to one or two sentences.
+- Make it reflective, gentle, and natural.
+- Focus on possible meaning or emotional significance in the dream.
+- Do not give advice or action steps.
+- Do not mention AI, analysis, model, classifier, dataset, or prompt.
+- Do not sound clinical.
+- Do not say "this means for sure"; keep it interpretive and tentative.
 - Keep it concise.
 
 Dream text: {dream_text}
 Predicted stress level: {stress}
 Inferred emotions: {emotions_text}
-Suggested recommendation: {retrieved_recommendation}
+Reference style text: {reference_text}
 
-One-line recommendation:
+Dream insight:
 """.strip()
     return prompt
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=60):
+def generate_text(prompt, tokenizer, model, max_new_tokens=80):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
@@ -348,7 +345,7 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=60):
 
     text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
 
-    for prefix in ["One-line recommendation:", "Recommendation:", "Response:", "Answer:"]:
+    for prefix in ["Dream insight:", "Insight:", "Response:", "Answer:"]:
         if text.startswith(prefix):
             text = text[len(prefix):].strip()
 
@@ -368,27 +365,27 @@ def analyze_dream(
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
 
-    retrieved_recommendation = retrieve_recommendation(stress, emotions, df_model2)
+    reference_text = retrieve_reference_text(stress, emotions, df_model2)
 
-    recommendation_prompt = build_recommendation_prompt(
+    insight_prompt = build_dream_insight_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        retrieved_recommendation=retrieved_recommendation,
+        reference_text=reference_text,
     )
 
-    recommendation = generate_text(
-        recommendation_prompt,
+    dream_insight = generate_text(
+        insight_prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=60,
+        max_new_tokens=80,
     )
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "emotions": emotions,
-        "recommendation": recommendation,
+        "dream_insight": dream_insight,
     }
 
 
@@ -412,7 +409,7 @@ if os.path.exists(LOGO_PATH):
                 <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
                     A prototype wellness support tool that analyzes dream narratives to surface
-                    possible stress signals, emotional patterns, and supportive insights.
+                    possible stress signals, emotional patterns, and dream insights.
                 </div>
             </div>
             """,
@@ -425,7 +422,7 @@ else:
             <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool that analyzes dream narratives to surface
-                possible stress signals, emotional patterns, and supportive insights.
+                possible stress signals, emotional patterns, and dream insights.
             </div>
         </div>
         """,
@@ -440,7 +437,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the one-line recommendation.<br>
+            4. Read the generated dream insight.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
@@ -488,6 +485,6 @@ if st.button("Analyze Dream"):
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Recommendation")
-        st.write(result["recommendation"])
+        st.subheader("Dream Insight")
+        st.write(result["dream_insight"])
         st.markdown("</div>", unsafe_allow_html=True)
