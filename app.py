@@ -181,9 +181,7 @@ def load_data():
         lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
     )
 
-    symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
-
-    return df_model1, df_model2, df_symbol_kb, symbol_kb_dict
+    return df_model1, df_model2, df_symbol_kb
 
 
 @st.cache_resource
@@ -304,52 +302,36 @@ def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
     return scored[0][1]["recommendation_text"]
 
 
-def build_combined_prompt(dream_text, stress, emotions, themes, symbols, symbol_kb_dict, retrieved_recommendation):
+def build_recommendation_prompt(dream_text, stress, emotions, themes, symbols, retrieved_recommendation):
     emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
     themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
     symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
 
-    symbol_meanings = []
-    for sym in symbols[:3]:
-        if sym in symbol_kb_dict:
-            meaning = clean_text(symbol_kb_dict[sym]["traditional_summary_en"])
-            if meaning:
-                symbol_meanings.append(f"{sym.replace('_', ' ')}: {meaning}")
-
-    symbol_meanings_text = " | ".join(symbol_meanings) if symbol_meanings else "no extra symbol meanings"
-
     prompt = f"""
-Write one smooth paragraph of 4 to 6 sentences.
-
-The paragraph should combine:
-1. a short psychological interpretation of the dream,
-2. what the emotions and symbols may suggest,
-3. one gentle practical recommendation.
+Write one single-line supportive recommendation.
 
 Rules:
-- Sound natural, warm, and supportive.
+- Keep it to one sentence only.
+- Make it warm, practical, and natural.
 - Do not repeat the prompt.
-- Do not list bullet points.
-- Do not use labels like "interpretation" or "recommendation".
-- Do not predict the future.
-- Do not claim supernatural certainty.
-- Keep it human-friendly and concise.
-- End with a gentle supportive suggestion.
+- Do not explain the dream.
+- Do not mention AI, analysis, or model.
+- Do not give medical or dangerous advice.
+- Keep it concise.
 
 Dream text: {dream_text}
 Predicted stress level: {stress}
 Inferred emotions: {emotions_text}
 Inferred themes: {themes_text}
 Inferred symbols: {symbols_text}
-Symbol meanings: {symbol_meanings_text}
 Suggested recommendation: {retrieved_recommendation}
 
-Response:
+One-line recommendation:
 """.strip()
     return prompt
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=160):
+def generate_text(prompt, tokenizer, model, max_new_tokens=60):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
@@ -370,7 +352,7 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=160):
 
     text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
 
-    for prefix in ["Response:", "Answer:", "Interpretation:", "Recommendation:"]:
+    for prefix in ["One-line recommendation:", "Recommendation:", "Response:", "Answer:"]:
         if text.startswith(prefix):
             text = text[len(prefix):].strip()
 
@@ -386,7 +368,6 @@ def analyze_dream(
     df_model1,
     df_model2,
     df_symbol_kb,
-    symbol_kb_dict,
 ):
     stress, probs = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions, themes, symbols = infer_emotions_themes_symbols(
@@ -395,21 +376,20 @@ def analyze_dream(
 
     retrieved_recommendation = retrieve_recommendation(stress, emotions, df_model2)
 
-    combined_prompt = build_combined_prompt(
+    recommendation_prompt = build_recommendation_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
         themes=themes,
         symbols=symbols,
-        symbol_kb_dict=symbol_kb_dict,
         retrieved_recommendation=retrieved_recommendation,
     )
 
-    dream_insight = generate_text(
-        combined_prompt,
+    recommendation = generate_text(
+        recommendation_prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=160,
+        max_new_tokens=60,
     )
 
     return {
@@ -417,15 +397,12 @@ def analyze_dream(
         "stress_level": stress,
         "stress_probs": probs,
         "emotions": emotions,
-        "themes": themes,
-        "symbols": symbols,
-        "retrieved_recommendation": retrieved_recommendation,
-        "dream_insight": dream_insight,
+        "recommendation": recommendation,
     }
 
 
 try:
-    df_model1, df_model2, df_symbol_kb, symbol_kb_dict = load_data()
+    df_model1, df_model2, df_symbol_kb = load_data()
     stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 except Exception as e:
     st.error("Failed to load required files or models.")
@@ -454,7 +431,7 @@ else:
     st.markdown(
         """
         <div class="brand-card">
-            <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
+            <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool that analyzes dream narratives to surface
                 possible stress signals, emotional patterns, and supportive insights.
@@ -471,30 +448,14 @@ st.markdown(
         <div class="small-muted">
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
-            3. Review the predicted stress level, inferred emotions, themes, and symbols.<br>
-            4. Read the combined dream insight for interpretation and gentle support.<br>
+            3. Review the predicted stress level and inferred emotions.<br>
+            4. Read the one-line recommendation.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-with st.expander("About this tool"):
-    st.markdown(
-        """
-This tool combines stress detection, symbolic pattern analysis, and text generation to produce a short supportive dream insight.
-
-**Support Data**
-- `model1_train.csv`
-- `model2_train.csv`
-- `symbol_kb.csv`
-
-**Note**
-- This app is for supportive reflection only.
-- It is not a substitute for professional mental health care.
-        """
-    )
 
 dream_text = st.text_area(
     "Enter your dream",
@@ -517,7 +478,6 @@ if st.button("Analyze Dream"):
                 df_model1=df_model1,
                 df_model2=df_model2,
                 df_symbol_kb=df_symbol_kb,
-                symbol_kb_dict=symbol_kb_dict,
             )
 
         st.success("Analysis completed.")
@@ -538,16 +498,11 @@ if st.button("Analyze Dream"):
 
         with col2:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
-            st.subheader("Inferred Features")
-            st.write("**Emotions:**", ", ".join(result["emotions"]) if result["emotions"] else "None")
-            st.write("**Themes:**", ", ".join(result["themes"]) if result["themes"] else "None")
-            st.write("**Symbols:**", ", ".join(result["symbols"]) if result["symbols"] else "None")
+            st.subheader("Emotions")
+            st.write(", ".join(result["emotions"]) if result["emotions"] else "None")
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Dream Insight")
-        st.write(result["dream_insight"])
+        st.subheader("Recommendation")
+        st.write(result["recommendation"])
         st.markdown("</div>", unsafe_allow_html=True)
-
-        with st.expander("Supporting context"):
-            st.write("**Retrieved recommendation seed:**", result["retrieved_recommendation"])
