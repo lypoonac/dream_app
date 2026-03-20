@@ -33,8 +33,8 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
-MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
+DREAM_INTERPRETATIONS_PATH = os.path.join(DATA_DIR, "dreams_interpretations.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
 MODEL2_HF_NAME = "google/flan-t5-base"
@@ -148,10 +148,17 @@ def tokenize_simple(text):
     return re.findall(r"[a-zA-Z_]+", str(text).lower())
 
 
+def normalize_symbol(text):
+    text = clean_text(text).lower()
+    text = re.sub(r"[^a-z0-9\s/&'-]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
 @st.cache_data
 def load_data():
     missing = []
-    for p in [MODEL1_PATH, MODEL2_PATH, SYMBOL_KB_PATH]:
+    for p in [MODEL1_PATH, SYMBOL_KB_PATH, DREAM_INTERPRETATIONS_PATH]:
         if not os.path.exists(p):
             missing.append(p)
 
@@ -159,8 +166,8 @@ def load_data():
         raise FileNotFoundError("Missing required files:\n" + "\n".join(missing))
 
     df_model1 = pd.read_csv(MODEL1_PATH)
-    df_model2 = pd.read_csv(MODEL2_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
+    df_interp = pd.read_csv(DREAM_INTERPRETATIONS_PATH)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
         if col not in df_model1.columns:
@@ -173,14 +180,6 @@ def load_data():
     ].drop_duplicates().reset_index(drop=True)
     df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
 
-    for col in ["stress_label", "emotion_labels", "dominant_emotion", "recommendation_text"]:
-        if col not in df_model2.columns:
-            raise ValueError(f"Column '{col}' missing from model2_train.csv")
-        df_model2[col] = df_model2[col].apply(clean_text)
-
-    df_model2["stress_label"] = df_model2["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model2 = df_model2.drop_duplicates().reset_index(drop=True)
-
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         if col not in df_symbol_kb.columns:
             raise ValueError(f"Column '{col}' missing from symbol_kb.csv")
@@ -191,7 +190,28 @@ def load_data():
         lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
     )
 
-    return df_model1, df_model2, df_symbol_kb
+    interp_symbol_col = None
+    interp_text_col = None
+
+    for c in df_interp.columns:
+        c_clean = c.strip().lower()
+        if c_clean == "dream symbol":
+            interp_symbol_col = c
+        if c_clean == "interpretation":
+            interp_text_col = c
+
+    if interp_symbol_col is None or interp_text_col is None:
+        raise ValueError("dreams_interpretations.csv must contain 'Dream Symbol' and 'Interpretation' columns")
+
+    df_interp = df_interp[[interp_symbol_col, interp_text_col]].copy()
+    df_interp.columns = ["dream_symbol", "interpretation"]
+    df_interp["dream_symbol"] = df_interp["dream_symbol"].apply(clean_text)
+    df_interp["interpretation"] = df_interp["interpretation"].apply(clean_text)
+    df_interp = df_interp[(df_interp["dream_symbol"] != "") & (df_interp["interpretation"] != "")]
+    df_interp["symbol_norm"] = df_interp["dream_symbol"].apply(normalize_symbol)
+    df_interp = df_interp.drop_duplicates(subset=["symbol_norm", "interpretation"]).reset_index(drop=True)
+
+    return df_model1, df_symbol_kb, df_interp
 
 
 @st.cache_resource
@@ -230,12 +250,13 @@ def detect_symbols(text, known_symbols):
     found = []
 
     for sym in known_symbols:
-        if sym in token_set:
-            found.append(sym)
-        elif "_" in sym:
-            parts = sym.split("_")
+        sym_clean = sym.lower()
+        if sym_clean in token_set:
+            found.append(sym_clean)
+        elif "_" in sym_clean:
+            parts = sym_clean.split("_")
             if all(part in token_set for part in parts):
-                found.append(sym)
+                found.append(sym_clean)
 
     return list(dict.fromkeys(found))
 
@@ -277,28 +298,72 @@ def infer_emotions(text, df_model1, df_symbol_kb):
     return emotions
 
 
-def build_dream_interpretation_prompt(dream_text, stress, emotions):
+def find_interpretation_matches(dream_text, df_interp, max_matches=5):
+    text_lower = f" {normalize_symbol(dream_text)} "
+    matches = []
+
+    for _, row in df_interp.iterrows():
+        sym = row["symbol_norm"]
+        if not sym:
+            continue
+
+        pattern = f" {sym} "
+        if pattern in text_lower:
+            matches.append((len(sym), row["dream_symbol"], row["interpretation"]))
+
+    matches = sorted(matches, key=lambda x: x[0], reverse=True)
+
+    dedup = []
+    seen = set()
+    for _, symbol, interpretation in matches:
+        key = normalize_symbol(symbol)
+        if key not in seen:
+            seen.add(key)
+            dedup.append((symbol, interpretation))
+        if len(dedup) >= max_matches:
+            break
+
+    return dedup
+
+
+def build_dataset_grounded_prompt(dream_text, stress, emotions, matched_interpretations):
     emotions_text = ", ".join(emotions[:5]) if emotions else "unclear emotions"
+
+    if matched_interpretations:
+        symbol_lines = []
+        for symbol, interpretation in matched_interpretations:
+            symbol_lines.append(f"- {symbol}: {interpretation}")
+        symbol_block = "\n".join(symbol_lines)
+    else:
+        symbol_block = "- No direct symbol interpretation found in dataset."
 
     prompt = f"""
 Write a concise and supportive dream interpretation.
 
 Requirements:
-- Use the user's original dream content.
-- Integrate the emotional and risk indicators provided.
-- Keep it to 1 or 2 short sentences.
-- Sound warm, reflective, and supportive.
-- Interpret the dream gently in terms of emotional meaning.
-- Do not give direct advice or action steps.
-- Do not mention AI, model, prompt, analysis, classifier, dataset, or pipeline.
-- Do not explicitly say "risk indicators" in the output.
-- Avoid robotic or repetitive wording.
+- Base the interpretation on the user's dream narrative.
+- Integrate the emotional/risk indicators provided.
+- Use the dataset-based symbol interpretations as grounding.
+- Keep it to 2 short sentences maximum.
+- Sound natural, reflective, and supportive.
+- Do not give direct advice.
+- Do not mention AI, model, prompt, dataset, classifier, or pipeline.
+- Do not copy the dataset text verbatim for the full answer.
+- Summarize and synthesize the meaning clearly.
 
-Dream content: {dream_text}
-Risk level: {stress}
-Emotional indicators: {emotions_text}
+Dream narrative:
+{dream_text}
 
-Dream interpretation:
+Risk level:
+{stress}
+
+Emotional indicators:
+{emotions_text}
+
+Matched symbol interpretations:
+{symbol_block}
+
+Final dream interpretation:
 """.strip()
 
     return prompt
@@ -306,13 +371,14 @@ Dream interpretation:
 
 def postprocess_interpretation(text):
     text = text.strip()
-
     prefixes = [
+        "final dream interpretation:",
         "dream interpretation:",
         "interpretation:",
         "response:",
         "answer:",
     ]
+
     lower_text = text.lower()
     for prefix in prefixes:
         if lower_text.startswith(prefix):
@@ -327,12 +393,12 @@ def postprocess_interpretation(text):
     return text
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=80):
+def generate_text(prompt, tokenizer, model, max_new_tokens=100):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=512,
+        max_length=768,
     )
     inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
@@ -341,7 +407,7 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=80):
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=True,
-            temperature=0.6,
+            temperature=0.5,
             top_p=0.9,
             num_beams=1,
             no_repeat_ngram_size=3,
@@ -359,35 +425,41 @@ def analyze_dream(
     gen_model,
     df_model1,
     df_symbol_kb,
+    df_interp,
 ):
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
+    matched_interpretations = find_interpretation_matches(dream_text, df_interp, max_matches=5)
 
-    interpretation_prompt = build_dream_interpretation_prompt(
+    interpretation_prompt = build_dataset_grounded_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
+        matched_interpretations=matched_interpretations,
     )
 
     dream_interpretation = generate_text(
         interpretation_prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=80,
+        max_new_tokens=100,
     )
 
     dream_interpretation = postprocess_interpretation(dream_interpretation)
+
+    matched_symbols = [symbol for symbol, _ in matched_interpretations]
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "emotions": emotions,
         "dream_interpretation": dream_interpretation,
+        "matched_symbols": matched_symbols,
     }
 
 
 try:
-    df_model1, df_model2, df_symbol_kb = load_data()
+    df_model1, df_symbol_kb, df_interp = load_data()
     stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 except Exception as e:
     st.error("Failed to load required files or models.")
@@ -406,7 +478,7 @@ if os.path.exists(LOGO_PATH):
                 <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
                     A prototype wellness support tool that analyzes dream narratives to surface
-                    possible stress signals, emotional patterns, and dream interpretation.
+                    possible stress signals, emotional patterns, and dataset-grounded dream interpretation.
                 </div>
             </div>
             """,
@@ -419,7 +491,7 @@ else:
             <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool that analyzes dream narratives to surface
-                possible stress signals, emotional patterns, and dream interpretation.
+                possible stress signals, emotional patterns, and dataset-grounded dream interpretation.
             </div>
         </div>
         """,
@@ -434,7 +506,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the generated dream interpretation.<br>
+            4. Read the generated dream interpretation grounded in the interpretation dataset.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
@@ -462,6 +534,7 @@ if st.button("Analyze Dream"):
                 gen_model=gen_model,
                 df_model1=df_model1,
                 df_symbol_kb=df_symbol_kb,
+                df_interp=df_interp,
             )
 
         st.success("Analysis completed.")
@@ -497,3 +570,6 @@ if st.button("Analyze Dream"):
             unsafe_allow_html=True
         )
         st.markdown("</div>", unsafe_allow_html=True)
+
+        if result["matched_symbols"]:
+            st.caption("Matched symbols from interpretation dataset: " + ", ".join(result["matched_symbols"]))
