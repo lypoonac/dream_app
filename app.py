@@ -13,7 +13,7 @@ from transformers import (
 )
 
 st.set_page_config(
-    page_title="AI Dream Analyzer for AXA: Early Stress Detection",
+    page_title="AXA AI Dream Analyzer: Early Stress Detection",
     page_icon="🌙",
     layout="wide",
 )
@@ -91,23 +91,6 @@ st.markdown(
         .small-muted {
             color: #5f6c86;
             font-size: 0.95rem;
-        }
-        .badge {
-            display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 999px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            margin-right: 0.4rem;
-            margin-top: 0.3rem;
-        }
-        .badge-blue {
-            background: #e9efff;
-            color: #00008F;
-        }
-        .badge-red {
-            background: #ffe9ee;
-            color: #d81e3a;
         }
         div.stButton > button {
             background-color: #00008F;
@@ -321,7 +304,7 @@ def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
     return scored[0][1]["recommendation_text"]
 
 
-def build_interpretation_prompt(dream_text, stress, emotions, themes, symbols, symbol_kb_dict):
+def build_combined_prompt(dream_text, stress, emotions, themes, symbols, symbol_kb_dict, retrieved_recommendation):
     emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
     themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
     symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
@@ -336,18 +319,22 @@ def build_interpretation_prompt(dream_text, stress, emotions, themes, symbols, s
     symbol_meanings_text = " | ".join(symbol_meanings) if symbol_meanings else "no extra symbol meanings"
 
     prompt = f"""
-Answer in 3 to 5 sentences only.
+Write one smooth paragraph of 4 to 6 sentences.
 
-Task: Write a short dream interpretation in clear, natural English.
+The paragraph should combine:
+1. a short psychological interpretation of the dream,
+2. what the emotions and symbols may suggest,
+3. one gentle practical recommendation.
 
 Rules:
-- Be calm, supportive, and human-friendly.
-- Do not repeat the instructions.
-- Do not copy the prompt.
-- Do not say "Task", "Rules", or "Dream text".
+- Sound natural, warm, and supportive.
+- Do not repeat the prompt.
+- Do not list bullet points.
+- Do not use labels like "interpretation" or "recommendation".
 - Do not predict the future.
 - Do not claim supernatural certainty.
-- Focus on psychological and symbolic meaning.
+- Keep it human-friendly and concise.
+- End with a gentle supportive suggestion.
 
 Dream text: {dream_text}
 Predicted stress level: {stress}
@@ -355,43 +342,14 @@ Inferred emotions: {emotions_text}
 Inferred themes: {themes_text}
 Inferred symbols: {symbols_text}
 Symbol meanings: {symbol_meanings_text}
-
-Interpretation:
-""".strip()
-    return prompt
-
-
-def build_recommendation_prompt(dream_text, stress, emotions, themes, symbols, retrieved_recommendation):
-    emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
-    themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
-    symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
-
-    prompt = f"""
-Answer in 2 to 4 sentences only.
-
-Task: Write a short supportive recommendation based on the dream analysis.
-
-Rules:
-- Be gentle, practical, and emotionally supportive.
-- Do not repeat the instructions.
-- Do not copy the prompt.
-- Do not give medical, legal, or dangerous advice.
-- Do not mention AI or model names.
-- Use the suggested recommendation naturally if it fits.
-
-Dream text: {dream_text}
-Predicted stress level: {stress}
-Inferred emotions: {emotions_text}
-Inferred themes: {themes_text}
-Inferred symbols: {symbols_text}
 Suggested recommendation: {retrieved_recommendation}
 
-Recommendation:
+Response:
 """.strip()
     return prompt
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=120):
+def generate_text(prompt, tokenizer, model, max_new_tokens=160):
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
@@ -412,7 +370,7 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=120):
 
     text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
 
-    for prefix in ["Interpretation:", "Recommendation:", "Answer:"]:
+    for prefix in ["Response:", "Answer:", "Interpretation:", "Recommendation:"]:
         if text.startswith(prefix):
             text = text[len(prefix):].strip()
 
@@ -437,36 +395,21 @@ def analyze_dream(
 
     retrieved_recommendation = retrieve_recommendation(stress, emotions, df_model2)
 
-    interpretation_prompt = build_interpretation_prompt(
+    combined_prompt = build_combined_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
         themes=themes,
         symbols=symbols,
         symbol_kb_dict=symbol_kb_dict,
-    )
-
-    recommendation_prompt = build_recommendation_prompt(
-        dream_text=dream_text,
-        stress=stress,
-        emotions=emotions,
-        themes=themes,
-        symbols=symbols,
         retrieved_recommendation=retrieved_recommendation,
     )
 
-    interpretation = generate_text(
-        interpretation_prompt,
+    dream_insight = generate_text(
+        combined_prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=120,
-    )
-
-    recommendation = generate_text(
-        recommendation_prompt,
-        gen_tokenizer,
-        gen_model,
-        max_new_tokens=100,
+        max_new_tokens=160,
     )
 
     return {
@@ -477,8 +420,7 @@ def analyze_dream(
         "themes": themes,
         "symbols": symbols,
         "retrieved_recommendation": retrieved_recommendation,
-        "interpretation": interpretation,
-        "recommendation": recommendation,
+        "dream_insight": dream_insight,
     }
 
 
@@ -499,13 +441,11 @@ if os.path.exists(LOGO_PATH):
         st.markdown(
             """
             <div class="brand-card">
-                <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
+                <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
-                    A prototype wellness support tool combining transformer-based stress detection
-                    with Hugging Face interpretation generation.
+                    A prototype wellness support tool that analyzes dream narratives to surface
+                    possible stress signals, emotional patterns, and supportive insights.
                 </div>
-                <span class="badge badge-blue">Model 1: Stress Classifier</span>
-                <span class="badge badge-red">Model 2: FLAN-T5 Generator</span>
             </div>
             """,
             unsafe_allow_html=True,
@@ -516,11 +456,9 @@ else:
         <div class="brand-card">
             <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
             <div class="sub-title">
-                A prototype wellness support tool combining transformer-based stress detection
-                with Hugging Face interpretation generation.
+                A prototype wellness support tool that analyzes dream narratives to surface
+                possible stress signals, emotional patterns, and supportive insights.
             </div>
-            <span class="badge badge-blue">Model 1: Stress Classifier</span>
-            <span class="badge badge-red">Model 2: FLAN-T5 Generator</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -534,7 +472,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level, inferred emotions, themes, and symbols.<br>
-            4. Read the generated interpretation and recommendation.<br>
+            4. Read the combined dream insight for interpretation and gentle support.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
@@ -542,16 +480,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-with st.expander("About the two models"):
+with st.expander("About this tool"):
     st.markdown(
-        f"""
-**Model 1 — Stress Detection**
-- Hugging Face model: `{MODEL1_HF_NAME}`
-- Predicts stress level: `low`, `medium`, `high`
-
-**Model 2 — Interpretation and Recommendation Generation**
-- Hugging Face model: `{MODEL2_HF_NAME}`
-- Generates interpretation and recommendation text from structured prompts
+        """
+This tool combines stress detection, symbolic pattern analysis, and text generation to produce a short supportive dream insight.
 
 **Support Data**
 - `model1_train.csv`
@@ -613,15 +545,9 @@ if st.button("Analyze Dream"):
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Interpretation")
-        st.write(result["interpretation"])
+        st.subheader("Dream Insight")
+        st.write(result["dream_insight"])
         st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Recommendation")
-        st.write(result["recommendation"])
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        with st.expander("Model 2 supporting context"):
+        with st.expander("Supporting context"):
             st.write("**Retrieved recommendation seed:**", result["retrieved_recommendation"])
-            st.write("**Model 2:**", MODEL2_HF_NAME)
