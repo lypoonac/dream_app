@@ -33,7 +33,6 @@ LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
-MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
@@ -151,7 +150,7 @@ def tokenize_simple(text):
 @st.cache_data
 def load_data():
     missing = []
-    for p in [MODEL1_PATH, MODEL2_PATH, MODEL2_BKUP_PATH, SYMBOL_KB_PATH]:
+    for p in [MODEL1_PATH, MODEL2_PATH, SYMBOL_KB_PATH]:
         if not os.path.exists(p):
             missing.append(p)
 
@@ -160,7 +159,6 @@ def load_data():
 
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
-    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
@@ -187,17 +185,6 @@ def load_data():
     ].drop_duplicates().reset_index(drop=True)
     df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
 
-    for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
-        if col not in df_model2_bkup.columns:
-            raise ValueError(f"Column '{col}' missing from model2_train.csv.bkup.csv")
-        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
-
-    df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
-    df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
-    df_model2_bkup["related_list"] = df_model2_bkup["related_recommendations"].apply(
-        lambda x: [i.strip() for i in clean_text(x).split("|") if i.strip()]
-    )
-
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         if col not in df_symbol_kb.columns:
             raise ValueError(f"Column '{col}' missing from symbol_kb.csv")
@@ -212,9 +199,8 @@ def load_data():
     )
 
     symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
-    symbol_reco_dict = {row["symbol_name"]: row for _, row in df_model2_bkup.iterrows()}
 
-    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict
+    return df_model1, df_model2, df_symbol_kb, symbol_kb_dict
 
 
 @st.cache_resource
@@ -278,7 +264,7 @@ def find_similar_examples(text, df_model1, top_k=5):
     return [row for _, row in scores]
 
 
-def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb, df_model2_bkup):
+def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb):
     matches = find_similar_examples(text, df_model1, top_k=5)
 
     emotions = []
@@ -296,7 +282,7 @@ def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb, df_model2_bkup)
 
     direct_symbols = detect_symbols(
         text,
-        set(df_symbol_kb["symbol_name"].tolist()) | set(df_model2_bkup["symbol_name"].tolist())
+        set(df_symbol_kb["symbol_name"].tolist())
     )
 
     for s in direct_symbols:
@@ -358,7 +344,7 @@ Rules:
 - Be calm, supportive, and human-friendly.
 - Do not repeat the instructions.
 - Do not copy the prompt.
-- Do not say "Task", "Rules", or "Dream".
+- Do not say "Task", "Rules", or "Dream text".
 - Do not predict the future.
 - Do not claim supernatural certainty.
 - Focus on psychological and symbolic meaning.
@@ -391,7 +377,7 @@ Rules:
 - Do not copy the prompt.
 - Do not give medical, legal, or dangerous advice.
 - Do not mention AI or model names.
-- Use the suggested recommendation if it fits naturally.
+- Use the suggested recommendation naturally if it fits.
 
 Dream text: {dream_text}
 Predicted stress level: {stress}
@@ -441,13 +427,12 @@ def analyze_dream(
     gen_model,
     df_model1,
     df_model2,
-    df_model2_bkup,
     df_symbol_kb,
     symbol_kb_dict,
 ):
     stress, probs = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions, themes, symbols = infer_emotions_themes_symbols(
-        dream_text, df_model1, df_symbol_kb, df_model2_bkup
+        dream_text, df_model1, df_symbol_kb
     )
 
     retrieved_recommendation = retrieve_recommendation(stress, emotions, df_model2)
@@ -498,7 +483,7 @@ def analyze_dream(
 
 
 try:
-    df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()
+    df_model1, df_model2, df_symbol_kb, symbol_kb_dict = load_data()
     stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 except Exception as e:
     st.error("Failed to load required files or models.")
@@ -571,7 +556,6 @@ with st.expander("About the two models"):
 **Support Data**
 - `model1_train.csv`
 - `model2_train.csv`
-- `model2_train.csv.bkup.csv`
 - `symbol_kb.csv`
 
 **Note**
@@ -600,7 +584,6 @@ if st.button("Analyze Dream"):
                 gen_model=gen_model,
                 df_model1=df_model1,
                 df_model2=df_model2,
-                df_model2_bkup=df_model2_bkup,
                 df_symbol_kb=df_symbol_kb,
                 symbol_kb_dict=symbol_kb_dict,
             )
