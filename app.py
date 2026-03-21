@@ -10,7 +10,6 @@ import streamlit as st
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
-    AutoModelForSeq2SeqLM,
 )
 
 st.set_page_config(
@@ -41,7 +40,6 @@ DREAM_INTERPRETATION_CANDIDATES = [
 ]
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
-MODEL2_HF_NAME = "peterjerry111/dream_interpretation_model"
 
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
@@ -159,21 +157,6 @@ def normalize_symbol(text):
     return text
 
 
-def split_into_sentences(text):
-    text = clean_text(text)
-    if not text:
-        return []
-    parts = re.split(r"(?<=[.!?])\s+", text)
-    return [p.strip() for p in parts if p.strip()]
-
-
-def extract_first_sentence(text):
-    sentences = split_into_sentences(text)
-    if sentences:
-        return sentences[0]
-    return clean_text(text)
-
-
 def find_existing_file(candidates):
     for path in candidates:
         if os.path.exists(path):
@@ -248,12 +231,7 @@ def load_models():
     stress_tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
     stress_model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
     stress_model.eval()
-
-    gen_tokenizer = AutoTokenizer.from_pretrained(MODEL2_HF_NAME)
-    gen_model = AutoModelForSeq2SeqLM.from_pretrained(MODEL2_HF_NAME).to(DEVICE)
-    gen_model.eval()
-
-    return stress_tokenizer, stress_model, gen_tokenizer, gen_model
+    return stress_tokenizer, stress_model
 
 
 def predict_stress(text, tokenizer, model):
@@ -366,119 +344,41 @@ def get_best_dataset_interpretation(dream_text, df_interp):
     if not matches:
         return {
             "matched_symbols": [],
-            "best_symbol": "",
-            "dataset_full_text": "No direct interpretation found in the dataset.",
-            "dataset_first_sentence": "No direct interpretation found in the dataset."
+            "dataset_full_text": "No direct interpretation found in the dataset."
         }
 
     best_symbol, best_interpretation = matches[0]
 
     return {
         "matched_symbols": [s for s, _ in matches[:5]],
-        "best_symbol": best_symbol,
-        "dataset_full_text": best_interpretation,
-        "dataset_first_sentence": extract_first_sentence(best_interpretation)
+        "dataset_full_text": best_interpretation
     }
-
-
-def postprocess_generated_text(text, fallback_text):
-    text = clean_text(text)
-
-    prefixes = [
-        "simple one-line interpretation:",
-        "one-line interpretation:",
-        "interpretation:",
-        "answer:",
-        "response:",
-    ]
-
-    lowered = text.lower()
-    for prefix in prefixes:
-        if lowered.startswith(prefix):
-            text = text[len(prefix):].strip()
-            break
-
-    text = re.sub(r"\s+", " ", text).strip()
-
-    if not text:
-        return fallback_text
-
-    if len(text) < 15:
-        return fallback_text
-
-    return text
-
-
-def generate_symbol_interpretation(symbol, tokenizer, model, max_new_tokens=64):
-    prompt = f"interpret dream symbol: {normalize_symbol(symbol)}"
-
-    inputs = tokenizer(
-        prompt,
-        return_tensors="pt",
-        truncation=True,
-        max_length=64,
-    )
-    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
-
-    with torch.no_grad():
-        output_ids = model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            do_sample=False,
-            num_beams=4,
-            no_repeat_ngram_size=3,
-            early_stopping=True,
-        )
-
-    text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
-    return text
 
 
 def analyze_dream(
     dream_text,
     stress_tokenizer,
     stress_model,
-    gen_tokenizer,
-    gen_model,
     df_model1,
     df_symbol_kb,
     df_interp,
 ):
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
-
     interp_info = get_best_dataset_interpretation(dream_text, df_interp)
-
-    generated_text = ""
-    final_interpretation = interp_info["dataset_full_text"]
-
-    if interp_info["best_symbol"]:
-        generated_text = generate_symbol_interpretation(
-            interp_info["best_symbol"],
-            gen_tokenizer,
-            gen_model,
-            max_new_tokens=64,
-        )
-        final_interpretation = postprocess_generated_text(
-            generated_text,
-            interp_info["dataset_full_text"]
-        )
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "emotions": emotions,
-        "dream_interpretation": final_interpretation,
+        "dream_interpretation": interp_info["dataset_full_text"],
         "matched_symbols": interp_info["matched_symbols"],
-        "matched_symbol_used": interp_info["best_symbol"],
-        "dataset_interpretation": interp_info["dataset_full_text"],
-        "generated_interpretation": generated_text,
     }
 
 
 try:
     df_model1, df_symbol_kb, df_interp, interp_path_used = load_data()
-    stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
+    stress_tokenizer, stress_model = load_models()
 except Exception as e:
     st.error("Failed to load required files or models.")
     st.exception(e)
@@ -517,7 +417,7 @@ if os.path.exists(LOGO_PATH):
                 <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
                     A prototype wellness support tool that analyzes dream narratives to surface
-                    possible stress signals, emotional patterns, and dream interpretation text.
+                    possible stress signals, emotional patterns, and dataset interpretation text.
                 </div>
             </div>
             """,
@@ -530,7 +430,7 @@ else:
             <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool that analyzes dream narratives to surface
-                possible stress signals, emotional patterns, and dream interpretation text.
+                possible stress signals, emotional patterns, and dataset interpretation text.
             </div>
         </div>
         """,
@@ -545,15 +445,13 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the dream interpretation text shown below.<br>
+            4. Read the dataset interpretation text under Dream Interpretation.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-st.caption(f"Interpretation file loaded: {os.path.basename(interp_path_used)}")
 
 dream_text = st.text_area(
     "Enter your dream",
@@ -571,8 +469,6 @@ if st.button("Analyze Dream"):
                 dream_text=dream_text.strip(),
                 stress_tokenizer=stress_tokenizer,
                 stress_model=stress_model,
-                gen_tokenizer=gen_tokenizer,
-                gen_model=gen_model,
                 df_model1=df_model1,
                 df_symbol_kb=df_symbol_kb,
                 df_interp=df_interp,
@@ -611,21 +507,3 @@ if st.button("Analyze Dream"):
             unsafe_allow_html=True
         )
         st.markdown("</div>", unsafe_allow_html=True)
-
-        if result["matched_symbols"]:
-            st.caption("Matched symbols from dataset: " + ", ".join(result["matched_symbols"]))
-        else:
-            st.caption("Matched symbols from dataset: none")
-
-        if result["matched_symbol_used"]:
-            st.markdown('<div class="result-card">', unsafe_allow_html=True)
-            st.subheader("Interpretation Text Used")
-            st.write(f"Matched symbol: **{result['matched_symbol_used']}**")
-            st.write(result["dream_interpretation"])
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        with st.expander("Show interpretation details"):
-            st.write("**Generated by Model 2:**")
-            st.write(result["generated_interpretation"] if result["generated_interpretation"] else "No generated interpretation.")
-            st.write("**Dataset interpretation text:**")
-            st.write(result["dataset_interpretation"])
