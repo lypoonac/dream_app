@@ -42,9 +42,9 @@ DREAM_INTERPRETATION_CANDIDATES = [
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
 
-# Optional enrichment model
-# If this repo is broken/unavailable, app will safely fall back to retrieval-only
-MODEL2_HF_NAME = "peterjerry111/dream_interpretation_model"
+# General HF model for enrichment / rewriting
+# You can change this to another public instruction model if you want
+ENRICH_MODEL_NAME = "google/flan-t5-base"
 
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
@@ -159,19 +159,6 @@ def normalize_symbol(text):
     return text
 
 
-def split_into_sentences(text):
-    text = clean_text(text)
-    if not text:
-        return []
-    parts = re.split(r"(?<=[.!?])\s+", text)
-    return [p.strip() for p in parts if p.strip()]
-
-
-def extract_first_sentence(text):
-    sentences = split_into_sentences(text)
-    return sentences[0] if sentences else clean_text(text)
-
-
 def find_existing_file(candidates):
     for path in candidates:
         if os.path.exists(path):
@@ -249,14 +236,11 @@ def load_stress_model():
 
 
 @st.cache_resource
-def load_enrichment_model():
-    try:
-        gen_tokenizer = AutoTokenizer.from_pretrained(MODEL2_HF_NAME)
-        gen_model = AutoModelForSeq2SeqLM.from_pretrained(MODEL2_HF_NAME).to(DEVICE)
-        gen_model.eval()
-        return gen_tokenizer, gen_model, True, ""
-    except Exception as e:
-        return None, None, False, str(e)
+def load_enrich_model():
+    tokenizer = AutoTokenizer.from_pretrained(ENRICH_MODEL_NAME)
+    model = AutoModelForSeq2SeqLM.from_pretrained(ENRICH_MODEL_NAME).to(DEVICE)
+    model.eval()
+    return tokenizer, model
 
 
 def predict_stress(text, tokenizer, model):
@@ -385,19 +369,27 @@ def get_best_dataset_interpretation(dream_text, df_interp):
     }
 
 
-def build_enrichment_prompt(dream_text, retrieved_interpretation):
-    return (
-        "Rewrite the following dream interpretation into a short, clear, natural explanation. "
-        "Keep it grounded in the reference interpretation and make it relevant to the dream. "
-        "Do not repeat the prompt. Do not mention 'reference interpretation'.\n\n"
-        f"Dream: {dream_text}\n\n"
-        f"Reference interpretation: {retrieved_interpretation}\n\n"
-        "Improved interpretation:"
-    )
+def build_enrich_prompt(dream_text, retrieved_interpretation):
+    return f"""
+You are helping rewrite a dream interpretation.
+
+Dream:
+{dream_text}
+
+Retrieved interpretation:
+{retrieved_interpretation}
+
+Task:
+Rewrite the interpretation in a short, clear, natural way based on the dream.
+Keep the meaning grounded in the retrieved interpretation.
+Do not copy the text word for word.
+Do not mention "retrieved interpretation".
+Write 2 to 4 sentences only.
+""".strip()
 
 
-def generate_enriched_interpretation(dream_text, retrieved_interpretation, tokenizer, model):
-    prompt = build_enrichment_prompt(dream_text, retrieved_interpretation)
+def enrich_interpretation(dream_text, retrieved_interpretation, tokenizer, model):
+    prompt = build_enrich_prompt(dream_text, retrieved_interpretation)
 
     inputs = tokenizer(
         prompt,
@@ -417,65 +409,44 @@ def generate_enriched_interpretation(dream_text, retrieved_interpretation, token
             no_repeat_ngram_size=3,
         )
 
-    return tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
+    text = tokenizer.decode(output_ids[0], skip_special_tokens=True).strip()
+    return text
 
 
-def is_weird_enrichment(output_text, dream_text, retrieved_interpretation):
-    out = clean_text(output_text)
-    if not out:
+def is_bad_enrichment(text, retrieved_interpretation):
+    text = clean_text(text)
+    retrieved_interpretation = clean_text(retrieved_interpretation)
+
+    if not text:
         return True
 
-    out_low = out.lower()
-    dream_low = clean_text(dream_text).lower()
-    ref_low = clean_text(retrieved_interpretation).lower()
+    low = text.lower()
+    ref_low = retrieved_interpretation.lower()
 
-    if len(out) < 30:
+    if len(text) < 30:
         return True
 
-    bad_starts = [
-        "interpret dream symbol",
-        "dream symbol",
-        "improved interpretation:",
-        "reference interpretation:",
-        "dream:",
-    ]
-    if any(out_low.startswith(x) for x in bad_starts):
+    if low.startswith("dream:") or low.startswith("retrieved interpretation:") or low.startswith("task:"):
         return True
 
-    if out_low == dream_low:
+    if "retrieved interpretation" in low:
         return True
 
-    if out_low == ref_low:
-        return False
-
-    if "interpret dream" in out_low:
+    if "write 2 to 4 sentences" in low:
         return True
 
-    unique_words = set(re.findall(r"[a-zA-Z]+", out_low))
-    if len(unique_words) < 6:
+    if "rewrite the interpretation" in low:
+        return True
+
+    words = re.findall(r"[a-zA-Z]+", low)
+    if len(set(words)) < 8:
+        return True
+
+    # If model output is too close to exact retrieval text, just keep retrieval
+    if low == ref_low:
         return True
 
     return False
-
-
-def hybrid_interpretation(dream_text, retrieved_interpretation, enrich_tokenizer, enrich_model, enrich_available):
-    if not enrich_available or enrich_tokenizer is None or enrich_model is None:
-        return retrieved_interpretation, False, "Enrichment model unavailable"
-
-    try:
-        enriched = generate_enriched_interpretation(
-            dream_text,
-            retrieved_interpretation,
-            enrich_tokenizer,
-            enrich_model
-        )
-
-        if is_weird_enrichment(enriched, dream_text, retrieved_interpretation):
-            return retrieved_interpretation, False, "Enrichment output looked invalid"
-
-        return enriched, True, ""
-    except Exception as e:
-        return retrieved_interpretation, False, str(e)
 
 
 def analyze_dream(
@@ -484,7 +455,6 @@ def analyze_dream(
     stress_model,
     enrich_tokenizer,
     enrich_model,
-    enrich_available,
     df_model1,
     df_symbol_kb,
     df_interp,
@@ -495,13 +465,23 @@ def analyze_dream(
     retrieval = get_best_dataset_interpretation(dream_text, df_interp)
     retrieved_interpretation = retrieval["retrieved_interpretation"]
 
-    final_interpretation, enriched_used, enrich_note = hybrid_interpretation(
-        dream_text,
-        retrieved_interpretation,
-        enrich_tokenizer,
-        enrich_model,
-        enrich_available
-    )
+    try:
+        enriched = enrich_interpretation(
+            dream_text=dream_text,
+            retrieved_interpretation=retrieved_interpretation,
+            tokenizer=enrich_tokenizer,
+            model=enrich_model,
+        )
+
+        if is_bad_enrichment(enriched, retrieved_interpretation):
+            final_interpretation = retrieved_interpretation
+            enriched_used = False
+        else:
+            final_interpretation = enriched
+            enriched_used = True
+    except Exception:
+        final_interpretation = retrieved_interpretation
+        enriched_used = False
 
     return {
         "stress_level": stress,
@@ -511,14 +491,13 @@ def analyze_dream(
         "matched_symbols": retrieval["matched_symbols"],
         "random_used": retrieval["random_used"],
         "enriched_used": enriched_used,
-        "enrich_note": enrich_note,
     }
 
 
 try:
     df_model1, df_symbol_kb, df_interp, interp_path_used = load_data()
     stress_tokenizer, stress_model = load_stress_model()
-    enrich_tokenizer, enrich_model, enrich_available, enrich_error = load_enrichment_model()
+    enrich_tokenizer, enrich_model = load_enrich_model()
 except Exception as e:
     st.error("Failed to load required files or models.")
     st.exception(e)
@@ -535,7 +514,8 @@ if os.path.exists(LOGO_PATH):
             <div class="brand-card">
                 <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
-                    A hybrid prototype that combines retrieval-based interpretation with optional model enrichment.
+                    A prototype wellness support tool that analyzes dream narratives to surface
+                    possible stress signals, emotional patterns, and enriched dream interpretation.
                 </div>
             </div>
             """,
@@ -547,7 +527,8 @@ else:
         <div class="brand-card">
             <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
-                A hybrid prototype that combines retrieval-based interpretation with optional model enrichment.
+                A prototype wellness support tool that analyzes dream narratives to surface
+                possible stress signals, emotional patterns, and enriched dream interpretation.
             </div>
         </div>
         """,
@@ -559,18 +540,15 @@ st.markdown(
     <div class="guide-card">
         <div class="section-title">How this version works</div>
         <div class="small-muted">
-            1. Your dream is analyzed for stress level and emotions.<br>
-            2. The app retrieves the closest dream interpretation from the dataset.<br>
-            3. If the enrichment model behaves well, it rewrites the interpretation more naturally.<br>
-            4. If the model output looks strange, the app safely falls back to the retrieved dataset interpretation.
+            1. The app predicts stress level from your dream.<br>
+            2. It finds the closest interpretation from the dream interpretation dataset.<br>
+            3. It enriches that interpretation using a Hugging Face model.<br>
+            4. If no close match is found, it randomly selects one interpretation and rewrites it.
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-if not enrich_available:
-    st.warning("Enrichment model could not be loaded. The app will use retrieval-only interpretation.")
 
 dream_text = st.text_area(
     "Enter your dream",
@@ -590,7 +568,6 @@ if st.button("Analyze Dream"):
                 stress_model,
                 enrich_tokenizer,
                 enrich_model,
-                enrich_available,
                 df_model1,
                 df_symbol_kb,
                 df_interp,
@@ -622,18 +599,14 @@ if st.button("Analyze Dream"):
         st.markdown("</div>", unsafe_allow_html=True)
 
         if result["random_used"]:
-            st.caption("No direct interpretation match found. A random dataset interpretation was used as the base.")
+            st.caption("No direct dataset match found. A random interpretation was selected and used as the base.")
         else:
             st.caption("Matched symbols: " + ", ".join(result["matched_symbols"]))
 
         if result["enriched_used"]:
-            st.caption("Interpretation was enriched by the model.")
+            st.caption("Interpretation was enriched using a Hugging Face model.")
         else:
-            st.caption("Interpretation shown is the retrieved dataset interpretation.")
+            st.caption("Enrichment was not used, so the base dataset interpretation was shown.")
 
-        with st.expander("Show retrieval details"):
-            st.write("**Retrieved dataset interpretation:**")
+        with st.expander("Show retrieved base interpretation"):
             st.write(result["retrieved_interpretation"])
-            if result["enrich_note"]:
-                st.write("**Enrichment note:**")
-                st.write(result["enrich_note"])
