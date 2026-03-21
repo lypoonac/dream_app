@@ -1,45 +1,59 @@
+# Standard library imports
 import os
 import re
 import random
 import base64
+
+# Third-party data and ML libraries
 import numpy as np
 import pandas as pd
 import torch
 import streamlit as st
 
+# Hugging Face Transformers for classification and text generation
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
     AutoModelForSeq2SeqLM,
 )
 
+# Configure the Streamlit page
 st.set_page_config(
     page_title="AXA Health Dream Analyzer",
     page_icon="🌙",
     layout="wide",
 )
 
+# Set random seed for reproducibility
 SEED = 42
 random.seed(SEED)
 np.random.seed(SEED)
 torch.manual_seed(SEED)
+
+# If GPU is available, also seed CUDA operations
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(SEED)
 
+# Select device: GPU if available, otherwise CPU
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
+# Define base directory and data folder paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
+# Define file paths for datasets
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 
+# Hugging Face model names
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
 GEN_MODEL_NAME = "google/flan-t5-base"
 
+# Mapping model output IDs to readable stress labels
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
+# Custom CSS styling for the Streamlit app UI
 st.markdown(
     """
     <style>
@@ -425,12 +439,14 @@ st.markdown(
 )
 
 
+# Clean text values by converting NaN to empty string and trimming whitespace
 def clean_text(x):
     if pd.isna(x):
         return ""
     return str(x).strip()
 
 
+# Split comma-separated labels/tags into a normalized lowercase list
 def split_tags(x):
     x = clean_text(x)
     if not x:
@@ -438,21 +454,26 @@ def split_tags(x):
     return [i.strip().lower() for i in x.split(",") if i.strip()]
 
 
+# Tokenize text into simple lowercase alphabetic tokens
 def tokenize_simple(text):
     return re.findall(r"[a-zA-Z_]+", str(text).lower())
 
 
+# Cache dataset loading to avoid re-reading files on every rerun
 @st.cache_data
 def load_data():
+    # Check whether all required CSV files exist
     required_files = [MODEL1_PATH, MODEL2_PATH, SYMBOL_KB_PATH]
     for path in required_files:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Missing file: {path}")
 
+    # Load datasets
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
 
+    # Clean and normalize model1 dataset columns
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
         df_model1[col] = df_model1[col].apply(clean_text)
 
@@ -460,10 +481,13 @@ def load_data():
     df_model1 = df_model1[
         df_model1["stress_label"].isin({"low", "medium", "high"})
     ].drop_duplicates().reset_index(drop=True)
+
+    # Convert label strings into list format for easier matching
     df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
     df_model1["theme_list"] = df_model1["theme_labels"].apply(split_tags)
     df_model1["symbol_list"] = df_model1["symbol_labels"].apply(split_tags)
 
+    # Clean and normalize model2 dataset columns
     for col in ["stress_label", "emotion_labels", "dominant_emotion", "recommendation_text"]:
         df_model2[col] = df_model2[col].apply(clean_text)
 
@@ -471,8 +495,11 @@ def load_data():
     df_model2 = df_model2[
         df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})
     ].drop_duplicates().reset_index(drop=True)
+
+    # Convert emotion labels into list format
     df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
 
+    # Clean and normalize symbol knowledge base columns
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
 
@@ -480,17 +507,21 @@ def load_data():
     df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(split_tags)
     df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(split_tags)
 
+    # Build dictionary for quick symbol lookup
     symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
 
     return df_model1, df_model2, df_symbol_kb, symbol_kb_dict
 
 
+# Cache model loading so models are downloaded/loaded only once
 @st.cache_resource
 def load_models():
+    # Load tokenizer and classifier for stress prediction
     stress_tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
     stress_model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
     stress_model.eval()
 
+    # Load tokenizer and seq2seq model for supportive text generation
     gen_tokenizer = AutoTokenizer.from_pretrained(GEN_MODEL_NAME)
     gen_model = AutoModelForSeq2SeqLM.from_pretrained(GEN_MODEL_NAME).to(DEVICE)
     gen_model.eval()
@@ -498,10 +529,12 @@ def load_models():
     return stress_tokenizer, stress_model, gen_tokenizer, gen_model
 
 
+# Load datasets and models
 df_model1, df_model2, df_symbol_kb, symbol_kb_dict = load_data()
 stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 
 
+# Predict stress level from dream text using the classifier model
 def predict_stress(text):
     inputs = stress_tokenizer(
         text,
@@ -520,6 +553,7 @@ def predict_stress(text):
     return ID2LABEL[pred], probs
 
 
+# Find similar dream examples by word overlap
 def find_similar_examples(text, top_k=5):
     query_tokens = set(tokenize_simple(text))
     scores = []
@@ -534,6 +568,7 @@ def find_similar_examples(text, top_k=5):
     return [row for _, row in scores]
 
 
+# Infer likely emotions from the most similar dream examples
 def infer_emotions(text):
     matches = find_similar_examples(text, top_k=5)
     emotions = []
@@ -545,6 +580,7 @@ def infer_emotions(text):
     return emotions
 
 
+# Map model1 stress labels to compatible model2 stress labels
 def map_stress_for_model2(stress):
     if stress == "low":
         return ["low"]
@@ -555,16 +591,19 @@ def map_stress_for_model2(stress):
     return ["medium"]
 
 
+# Retrieve the best matching recommendation from dataset 2
 def retrieve_recommendation(pred_stress, inferred_emotions):
     stress_candidates = map_stress_for_model2(pred_stress)
     subset = df_model2[df_model2["stress_label"].isin(stress_candidates)].copy()
 
+    # Fallback message if no matching rows are found
     if subset.empty:
         return "Take things one step at a time, reduce pressure, and focus on steady emotional recovery."
 
     emo_set = set(inferred_emotions)
     scored = []
 
+    # Score recommendations by emotion overlap
     for _, row in subset.iterrows():
         overlap = len(emo_set.intersection(set(row["emotion_list"])))
         score = overlap + (1 if row["dominant_emotion"] in emo_set else 0)
@@ -574,6 +613,7 @@ def retrieve_recommendation(pred_stress, inferred_emotions):
     return scored[0][1]["recommendation_text"]
 
 
+# Build the prompt used for generating supportive well-being tips
 def build_wellbeing_tips_prompt(dream_text, stress, emotions, fallback_tip):
     emotion_text = ", ".join(emotions[:5]) if emotions else "none clearly detected"
 
@@ -600,6 +640,7 @@ Do not mention mental illness.
 """.strip()
 
 
+# Generate text using the seq2seq model
 def generate_text(prompt, tokenizer, model, max_new_tokens=120):
     inputs = tokenizer(
         prompt,
@@ -622,6 +663,7 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=120):
     return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
 
+# Detect poor-quality or invalid generated text
 def is_bad_generated_text(text):
     if not text:
         return True
@@ -637,21 +679,29 @@ def is_bad_generated_text(text):
         "write well-being tips",
     ]
 
+    # Reject output if it looks like the prompt was repeated
     if any(lowered.startswith(prefix) for prefix in bad_prefixes):
         return True
 
+    # Reject output if it is too short to be useful
     if len(text.split()) < 8:
         return True
 
     return False
 
 
+# Main analysis pipeline for a dream
 def analyze_dream(dream_text):
+    # Step 1: Predict stress level
     stress, probs = predict_stress(dream_text)
+
+    # Step 2: Infer emotions from similar examples
     emotions = infer_emotions(dream_text)
 
+    # Step 3: Retrieve a fallback recommendation from dataset
     fallback_tip = retrieve_recommendation(stress, emotions)
 
+    # Step 4: Generate well-being tips using the language model
     wellbeing_prompt = build_wellbeing_tips_prompt(
         dream_text=dream_text,
         stress=stress,
@@ -665,6 +715,7 @@ def analyze_dream(dream_text):
         max_new_tokens=120,
     )
 
+    # Step 5: If generated text looks invalid, use fallback tip instead
     if is_bad_generated_text(wellbeing_tips):
         wellbeing_tips = fallback_tip
 
@@ -677,16 +728,20 @@ def analyze_dream(dream_text):
     }
 
 
+# Path to AXA logo image
 logo_path = os.path.join(BASE_DIR, "axa_logo.png")
 
+# Open main app wrapper
 st.markdown('<div class="app-shell">', unsafe_allow_html=True)
 
+# Load and encode logo as base64 so it can be embedded directly in HTML
 logo_html = ""
 if os.path.exists(logo_path):
     with open(logo_path, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
     logo_html = f'<img src="data:image/png;base64,{encoded}" alt="AXA Health Logo" />'
 
+# Render top hero/header section
 st.markdown(
     f"""
     <div class="hero-wrap">
@@ -706,6 +761,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Render instructions panel
 st.markdown(
     """
     <div class="panel-card soft-blue">
@@ -721,6 +777,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Input text area for user dream description
 dream_text = st.text_area(
     "Describe your dream",
     value="",
@@ -728,15 +785,19 @@ dream_text = st.text_area(
     placeholder="Example: I was running through a crowded station trying to find the right platform, but every sign kept changing..."
 )
 
+# Trigger analysis when button is clicked
 if st.button("Analyze Dream"):
     if dream_text.strip():
+        # Show loading spinner during analysis
         with st.spinner("Analyzing your dream..."):
             result = analyze_dream(dream_text.strip())
 
         st.success("Analysis completed successfully.")
 
+        # Create two-column layout for result summary
         col1, col2 = st.columns(2)
 
+        # Left column: stress level result
         with col1:
             st.markdown(
                 f"""
@@ -751,6 +812,7 @@ if st.button("Analyze Dream"):
                 unsafe_allow_html=True,
             )
 
+        # Right column: detected emotions result
         with col2:
             emotions_html = ""
             if result["emotions"]:
@@ -774,6 +836,7 @@ if st.button("Analyze Dream"):
                 unsafe_allow_html=True,
             )
 
+        # Display generated or fallback well-being tips
         st.markdown(
             f"""
             <div class="tips-card">
@@ -786,6 +849,7 @@ if st.button("Analyze Dream"):
             unsafe_allow_html=True,
         )
 
+        # Footer disclaimer
         st.markdown(
             """
             <div class="footer-note">
@@ -795,6 +859,8 @@ if st.button("Analyze Dream"):
             unsafe_allow_html=True,
         )
     else:
+        # Warn user if no dream text was entered
         st.warning("Please enter a dream before analysis.")
 
+# Close main app wrapper
 st.markdown('</div>', unsafe_allow_html=True)
