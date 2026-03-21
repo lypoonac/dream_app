@@ -338,14 +338,19 @@ def find_interpretation_matches(dream_text, df_interp, max_matches=10):
     return dedup
 
 
+def get_random_interpretation(df_interp):
+    row = df_interp.sample(1, random_state=random.randint(0, 10_000_000)).iloc[0]
+    return {
+        "matched_symbols": [clean_text(row["dream_symbol"])],
+        "dataset_full_text": clean_text(row["interpretation"])
+    }
+
+
 def get_best_dataset_interpretation(dream_text, df_interp):
     matches = find_interpretation_matches(dream_text, df_interp, max_matches=10)
 
     if not matches:
-        return {
-            "matched_symbols": [],
-            "dataset_full_text": "No direct interpretation found in the dataset."
-        }
+        return get_random_interpretation(df_interp)
 
     best_symbol, best_interpretation = matches[0]
 
@@ -446,7 +451,8 @@ st.markdown(
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
             4. Read the dataset interpretation text under Dream Interpretation.<br>
-            5. This tool supports reflection and early stress awareness, not diagnosis.
+            5. If no direct match is found, a random dream interpretation will be shown.<br>
+            6. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
     """,
