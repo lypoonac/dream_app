@@ -135,16 +135,6 @@ st.markdown(
             max-width: 72px;
         }
 
-        .eyebrow {
-            display: inline-block;
-            font-size: 0.78rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: rgba(255,255,255,0.82);
-            margin-bottom: 0.55rem;
-        }
-
         .hero-title {
             color: #ffffff;
             font-size: 2.1rem;
@@ -199,7 +189,7 @@ st.markdown(
         .guide-text {
             color: var(--text-soft);
             font-size: 0.97rem;
-            line-height: 1.75;
+            line-height: 1.8;
         }
 
         .metric-card {
@@ -268,15 +258,6 @@ st.markdown(
             font-weight: 700;
             padding: 0 0.08rem;
             display: inline;
-        }
-
-        .input-shell {
-            background: rgba(255,255,255,0.72);
-            border: 1px solid var(--border-soft);
-            border-radius: 20px;
-            padding: 0.9rem;
-            box-shadow: var(--shadow-soft);
-            margin-bottom: 1rem;
         }
 
         .stTextArea label {
@@ -396,8 +377,7 @@ st.markdown(
 
             .panel-card,
             .metric-card,
-            .tips-card,
-            .input-shell {
+            .tips-card {
                 background: rgba(15, 23, 42, 0.92);
                 border-color: var(--border-soft);
             }
@@ -708,11 +688,9 @@ st.markdown(
                 {logo_html}
             </div>
             <div>
-                <div class="eyebrow">AXA Health • Wellness Support Prototype</div>
-                <div class="hero-title">Dream Analyzer for Early Stress Awareness</div>
+                <div class="hero-title">AXA Dream Analyzer for Early Stress Awareness</div>
                 <p class="hero-subtitle">
-                    A refined reflective wellness interface designed to help users explore dream narratives,
-                    identify emotional signals, and receive supportive well-being tips in a clear, professional format.
+                    A wellness support tool that helps you reflect on dream themes and emotions, and offers stress awareness guidance.
                 </p>
             </div>
         </div>
@@ -726,24 +704,22 @@ st.markdown(
     <div class="panel-card soft-blue">
         <div class="section-title with-accent">How to use</div>
         <div class="guide-text">
-            1. Enter your dream in the text box below.<br>
-            2. Select <b>Analyze Dream</b> to run the assessment.<br>
-            3. Review the stress level and detected emotions.<br>
-            4. Read the <b>Well-being tips</b> for supportive reflection and next steps.
+            1. Type or paste your dream in the box below.<br>
+            2. Click <b>Analyze Dream</b>.<br>
+            3. Review the key themes, emotion cues and a stress level indicator.<br><br>
+            <b>Important:</b> This tool provides general wellness support and self reflection only. It does not provide medical or mental health diagnosis, treatment, or emergency support. If you feel overwhelmed or unsafe, please seek professional help or local emergency services.
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-st.markdown('<div class="input-shell">', unsafe_allow_html=True)
 dream_text = st.text_area(
     "Describe your dream",
     value="",
     height=200,
     placeholder="Example: I was running through a crowded station trying to find the right platform, but every sign kept changing..."
 )
-st.markdown('</div>', unsafe_allow_html=True)
 
 if st.button("Analyze Dream"):
     if dream_text.strip():
