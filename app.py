@@ -13,7 +13,7 @@ from transformers import (
 )
 
 st.set_page_config(
-    page_title="AI Dream Analyzer for AXA: Early Stress Detection",
+    page_title="AXA AI Dream Analyzer - Early Stress Detection",
     page_icon="🌙",
     layout="wide",
 )
@@ -79,6 +79,15 @@ st.markdown(
         }
 
         .result-card {
+            background: #fff7cc;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            border: 1px solid #f2d66b;
+            box-shadow: 0 4px 16px rgba(160, 120, 0, 0.08);
+            margin-bottom: 1rem;
+        }
+
+        .normal-card {
             background: #ffffff;
             border-radius: 16px;
             padding: 1rem 1.2rem;
@@ -97,26 +106,6 @@ st.markdown(
         .small-muted {
             color: #5f6c86;
             font-size: 0.95rem;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 999px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            margin-right: 0.4rem;
-            margin-top: 0.3rem;
-        }
-
-        .badge-blue {
-            background: #e9efff;
-            color: #00008F;
-        }
-
-        .badge-red {
-            background: #ffe9ee;
-            color: #d81e3a;
         }
 
         div.stButton > button {
@@ -498,13 +487,15 @@ def analyze_dream(dream_text):
     if is_bad_generated_text(interpretation):
         interpretation = (
             "This dream may reflect how your mind is processing recent emotions, pressure, "
-            "or unresolved thoughts. The mix of themes and symbols suggests an inner attempt "
-            "to make sense of stress in a symbolic way. Rather than predicting something literal, "
-            "it may be expressing your current emotional state."
+            "or unresolved thoughts. The dream content may be a symbolic expression of your "
+            "current inner state rather than something literal. It can be helpful to view it "
+            "as a reflection of emotional processing and personal stress."
         )
 
     if is_bad_generated_text(wellbeing_tips):
         wellbeing_tips = fallback_tip
+
+    combined_wellbeing = f"{wellbeing_tips}\n\n{interpretation}"
 
     return {
         "dream_text": dream_text,
@@ -515,6 +506,7 @@ def analyze_dream(dream_text):
         "symbols": symbols,
         "interpretation": interpretation,
         "wellbeing_tips": wellbeing_tips,
+        "combined_wellbeing": combined_wellbeing,
     }
 
 
@@ -530,13 +522,10 @@ with header_col2:
     st.markdown(
         """
         <div class="brand-card">
-            <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
+            <div class="main-title">AXA AI Dream Analyzer - Early Stress Detection</div>
             <div class="sub-title">
-                A prototype wellness support tool combining transformer-based stress detection
-                with enriched dream reflection and well-being guidance.
+                A prototype wellness support tool for reflective dream analysis and early stress awareness.
             </div>
-            <span class="badge badge-blue">Model 1: Hugging Face Stress Classifier</span>
-            <span class="badge badge-red">Model 2: Hugging Face Result Enrichment</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -549,38 +538,14 @@ st.markdown(
         <div class="small-muted">
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
-            3. Review the predicted stress level, detected emotions, themes, and symbols.<br>
-            4. Read the interpretation and the <b>Well-being tips</b> for reflection.<br>
+            3. Review the predicted stress level and detected emotions.<br>
+            4. Read the <b>Well-being tips</b> for supportive reflection.<br>
             5. This tool is for wellness support and early awareness, not medical diagnosis.
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
-
-with st.expander("About the two models"):
-    st.markdown(
-        """
-**Model 1 — Stress Detection**
-- Hugging Face model: `peterjerry111/dream-stress-classifier`
-- Predicts stress level: `low`, `medium`, `high`
-
-**Model 2 — Result Enrichment**
-- Hugging Face model: `google/flan-t5-base`
-- Generates:
-  - dream interpretation
-  - Well-being tips
-
-**Support Data**
-- `model1_train.csv` for similar-dream feature inference
-- `model2_train.csv` for fallback recommendation retrieval
-- `symbol_kb.csv` for symbol meaning lookup
-
-**Note**
-- This app is designed for reflective and supportive use.
-- It is not a substitute for professional mental health care.
-        """
-    )
 
 dream_text = st.text_area(
     "Enter your dream",
@@ -599,33 +564,20 @@ if st.button("Analyze Dream"):
         col1, col2 = st.columns(2)
 
         with col1:
-            st.markdown('<div class="result-card">', unsafe_allow_html=True)
+            st.markdown('<div class="normal-card">', unsafe_allow_html=True)
             st.subheader("Stress Level")
             st.write(result["stress_level"].upper())
-
-            probs = result["stress_probs"]
-            st.write("Confidence scores")
-            st.caption(f"Low: {probs[0]:.4f}")
-            st.caption(f"Medium: {probs[1]:.4f}")
-            st.caption(f"High: {probs[2]:.4f}")
             st.markdown("</div>", unsafe_allow_html=True)
 
         with col2:
-            st.markdown('<div class="result-card">', unsafe_allow_html=True)
-            st.subheader("Detected Features")
-            st.write("**Emotions:**", ", ".join(result["emotions"]) if result["emotions"] else "None")
-            st.write("**Themes:**", ", ".join(result["themes"]) if result["themes"] else "None")
-            st.write("**Symbols:**", ", ".join(result["symbols"]) if result["symbols"] else "None")
+            st.markdown('<div class="normal-card">', unsafe_allow_html=True)
+            st.subheader("Detected Emotions")
+            st.write(", ".join(result["emotions"]) if result["emotions"] else "None")
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Interpretation")
-        st.write(result["interpretation"])
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown('<div class="result-card">', unsafe_allow_html=True)
         st.subheader("Well-being tips")
-        st.write(result["wellbeing_tips"])
+        st.write(result["combined_wellbeing"])
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.warning("Please enter a dream before analysis.")
