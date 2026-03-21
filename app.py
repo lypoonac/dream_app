@@ -34,7 +34,6 @@ LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
-MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
@@ -128,14 +127,13 @@ def tokenize_simple(text):
 
 @st.cache_data
 def load_data():
-    required_files = [MODEL1_PATH, MODEL2_PATH, MODEL2_BKUP_PATH, SYMBOL_KB_PATH]
+    required_files = [MODEL1_PATH, MODEL2_PATH, SYMBOL_KB_PATH]
     for path in required_files:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Missing file: {path}")
 
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
-    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
@@ -154,17 +152,12 @@ def load_data():
     df_model2 = df_model2[df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})].drop_duplicates().reset_index(drop=True)
     df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
 
-    for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
-        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
-
-    df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
-
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
 
     df_symbol_kb["symbol_name"] = df_symbol_kb["symbol_name"].str.lower()
 
-    return df_model1, df_model2, df_model2_bkup, df_symbol_kb
+    return df_model1, df_model2, df_symbol_kb
 
 
 @st.cache_resource
@@ -227,7 +220,7 @@ def find_similar_examples(text, df_model1, top_k=5):
     return [row for _, row in scores]
 
 
-def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb, df_model2_bkup):
+def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb):
     matches = find_similar_examples(text, df_model1, top_k=5)
 
     emotions, themes, symbols = [], [], []
@@ -243,7 +236,7 @@ def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb, df_model2_bkup)
 
     direct_symbols = detect_symbols(
         text,
-        set(df_symbol_kb["symbol_name"].tolist()) | set(df_model2_bkup["symbol_name"].tolist())
+        set(df_symbol_kb["symbol_name"].tolist())
     )
 
     for s in direct_symbols:
@@ -358,12 +351,11 @@ def analyze_dream(
     gen_model,
     df_model1,
     df_model2,
-    df_model2_bkup,
     df_symbol_kb,
 ):
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions, themes, symbols = infer_emotions_themes_symbols(
-        dream_text, df_model1, df_symbol_kb, df_model2_bkup
+        dream_text, df_model1, df_symbol_kb
     )
 
     prompt = build_recommendation_prompt(
@@ -398,7 +390,7 @@ def analyze_dream(
 
 
 try:
-    df_model1, df_model2, df_model2_bkup, df_symbol_kb = load_data()
+    df_model1, df_model2, df_symbol_kb = load_data()
     stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 except Exception as e:
     st.error("Failed to load files or models.")
@@ -437,7 +429,6 @@ if st.button("Analyze Dream"):
                 gen_model,
                 df_model1,
                 df_model2,
-                df_model2_bkup,
                 df_symbol_kb,
             )
 
