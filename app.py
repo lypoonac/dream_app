@@ -411,12 +411,12 @@ st.markdown(
             }
 
             .tips-text {
-                color: #c8d7ff;
+                color: #ffffff;
             }
 
             .highlight-text {
-                background: linear-gradient(transparent 58%, rgba(255, 255, 255, 0.92) 58%);
-                color: #c8d7ff;
+                background: linear-gradient(transparent 58%, rgba(255, 255, 255, 0.20) 58%);
+                color: #ffffff;
             }
         }
     </style>
