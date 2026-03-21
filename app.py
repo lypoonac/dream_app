@@ -34,7 +34,7 @@ LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
-DREAM_INTERPRETATIONS_PATH = os.path.join(DATA_DIR, "dreams_interpretations.csv")
+DREAM_INTERPRETATIONS_PATH = os.path.join(DATA_DIR, "dreams_interpretations_dataset.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
 MODEL2_HF_NAME = "peterjerry111/dream_interpretation_model"
@@ -214,7 +214,7 @@ def load_data():
             interp_text_col = c
 
     if interp_symbol_col is None or interp_text_col is None:
-        raise ValueError("dreams_interpretations.csv must contain 'Dream Symbol' and 'Interpretation' columns")
+        raise ValueError("dreams_interpretations_dataset.csv must contain 'Dream Symbol' and 'Interpretation' columns")
 
     df_interp = df_interp[[interp_symbol_col, interp_text_col]].copy()
     df_interp.columns = ["dream_symbol", "interpretation"]
@@ -344,19 +344,28 @@ def find_interpretation_matches(dream_text, df_interp, max_matches=10):
     return dedup
 
 
-def get_best_dataset_line(dream_text, df_interp):
+def get_best_dataset_interpretation(dream_text, df_interp):
     matches = find_interpretation_matches(dream_text, df_interp, max_matches=10)
 
     if not matches:
-        return "No direct interpretation found in the dataset.", []
+        return {
+            "matched_symbols": [],
+            "best_symbol": "",
+            "dataset_full_text": "No direct interpretation found in the dataset.",
+            "dataset_first_sentence": "No direct interpretation found in the dataset."
+        }
 
     best_symbol, best_interpretation = matches[0]
-    one_line = extract_first_sentence(best_interpretation)
 
-    return one_line, [s for s, _ in matches[:5]]
+    return {
+        "matched_symbols": [s for s, _ in matches[:5]],
+        "best_symbol": best_symbol,
+        "dataset_full_text": best_interpretation,
+        "dataset_first_sentence": extract_first_sentence(best_interpretation)
+    }
 
 
-def postprocess_interpretation(text, fallback_line):
+def postprocess_generated_text(text, fallback_text):
     text = clean_text(text)
 
     prefixes = [
@@ -376,20 +385,16 @@ def postprocess_interpretation(text, fallback_line):
     text = re.sub(r"\s+", " ", text).strip()
 
     if not text:
-        text = fallback_line
+        return fallback_text
 
-    first_sentence = extract_first_sentence(text)
-    if not first_sentence:
-        first_sentence = fallback_line
+    if len(text) < 15:
+        return fallback_text
 
-    if first_sentence and first_sentence[-1] not in ".!?":
-        first_sentence += "."
-
-    return first_sentence
+    return text
 
 
 def generate_symbol_interpretation(symbol, tokenizer, model, max_new_tokens=64):
-    prompt = f"interpret dream symbol: {symbol}"
+    prompt = f"interpret dream symbol: {normalize_symbol(symbol)}"
 
     inputs = tokenizer(
         prompt,
@@ -426,26 +431,32 @@ def analyze_dream(
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
     emotions = infer_emotions(dream_text, df_model1, df_symbol_kb)
 
-    dataset_line, matched_symbols = get_best_dataset_line(dream_text, df_interp)
+    interp_info = get_best_dataset_interpretation(dream_text, df_interp)
 
-    if matched_symbols:
-        generated_line = generate_symbol_interpretation(
-            matched_symbols[0],
+    generated_text = ""
+    final_interpretation = interp_info["dataset_full_text"]
+
+    if interp_info["best_symbol"]:
+        generated_text = generate_symbol_interpretation(
+            interp_info["best_symbol"],
             gen_tokenizer,
             gen_model,
             max_new_tokens=64,
         )
-        final_interpretation = postprocess_interpretation(generated_line, dataset_line)
-    else:
-        final_interpretation = dataset_line
+        final_interpretation = postprocess_generated_text(
+            generated_text,
+            interp_info["dataset_full_text"]
+        )
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "emotions": emotions,
         "dream_interpretation": final_interpretation,
-        "matched_symbols": matched_symbols,
-        "dataset_line": dataset_line,
+        "matched_symbols": interp_info["matched_symbols"],
+        "matched_symbol_used": interp_info["best_symbol"],
+        "dataset_interpretation": interp_info["dataset_full_text"],
+        "generated_interpretation": generated_text,
     }
 
 
@@ -469,7 +480,7 @@ if os.path.exists(LOGO_PATH):
                 <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
                 <div class="sub-title">
                     A prototype wellness support tool that analyzes dream narratives to surface
-                    possible stress signals, emotional patterns, and dataset-grounded dream interpretation.
+                    possible stress signals, emotional patterns, and dream interpretation text.
                 </div>
             </div>
             """,
@@ -482,7 +493,7 @@ else:
             <div class="main-title">AXA AI Dream Analyzer: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool that analyzes dream narratives to surface
-                possible stress signals, emotional patterns, and dataset-grounded dream interpretation.
+                possible stress signals, emotional patterns, and dream interpretation text.
             </div>
         </div>
         """,
@@ -497,7 +508,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the one-line dream interpretation generated from the matched dream symbol.<br>
+            4. Read the dream interpretation text shown below.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
@@ -563,6 +574,19 @@ if st.button("Analyze Dream"):
         st.markdown("</div>", unsafe_allow_html=True)
 
         if result["matched_symbols"]:
-            st.caption("Matched symbols from interpretation dataset: " + ", ".join(result["matched_symbols"]))
+            st.caption("Matched symbols from dataset: " + ", ".join(result["matched_symbols"]))
         else:
-            st.caption("Matched symbols from interpretation dataset: none")
+            st.caption("Matched symbols from dataset: none")
+
+        if result["matched_symbol_used"]:
+            st.markdown('<div class="result-card">', unsafe_allow_html=True)
+            st.subheader("Interpretation Text Used")
+            st.write(f"Matched symbol: **{result['matched_symbol_used']}**")
+            st.write(result["dream_interpretation"])
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with st.expander("Show interpretation details"):
+            st.write("**Generated by Model 2:**")
+            st.write(result["generated_interpretation"] if result["generated_interpretation"] else "No generated interpretation.")
+            st.write("**Dataset interpretation text:**")
+            st.write(result["dataset_interpretation"])
