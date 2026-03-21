@@ -6,7 +6,11 @@ import pandas as pd
 import torch
 import streamlit as st
 
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM,
+)
 
 st.set_page_config(
     page_title="AI Dream Analyzer for AXA: Early Stress Detection",
@@ -28,10 +32,10 @@ DATA_DIR = os.path.join(BASE_DIR, "data")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
-MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
+GEN_MODEL_NAME = "google/flan-t5-base"
 
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
@@ -152,21 +156,27 @@ def split_tags(x):
 
 
 def tokenize_simple(text):
-    return re.findall(r"[a-zA-Z_]+", text.lower())
+    return re.findall(r"[a-zA-Z_]+", str(text).lower())
 
 
 @st.cache_data
 def load_data():
+    required_files = [MODEL1_PATH, MODEL2_PATH, SYMBOL_KB_PATH]
+    for path in required_files:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing file: {path}")
+
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
-    df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
         df_model1[col] = df_model1[col].apply(clean_text)
 
     df_model1["stress_label"] = df_model1["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model1 = df_model1[df_model1["stress_label"].isin({"low", "medium", "high"})].drop_duplicates().reset_index(drop=True)
+    df_model1 = df_model1[
+        df_model1["stress_label"].isin({"low", "medium", "high"})
+    ].drop_duplicates().reset_index(drop=True)
     df_model1["emotion_list"] = df_model1["emotion_labels"].apply(split_tags)
     df_model1["theme_list"] = df_model1["theme_labels"].apply(split_tags)
     df_model1["symbol_list"] = df_model1["symbol_labels"].apply(split_tags)
@@ -180,42 +190,33 @@ def load_data():
     ].drop_duplicates().reset_index(drop=True)
     df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
 
-    for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
-        df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
-
-    df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
-    df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
-    df_model2_bkup["related_list"] = df_model2_bkup["related_recommendations"].apply(
-        lambda x: [i.strip() for i in clean_text(x).split("|") if i.strip()]
-    )
-
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
 
     df_symbol_kb["symbol_name"] = df_symbol_kb["symbol_name"].str.lower()
-    df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(
-        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
-    df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(
-        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
+    df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(split_tags)
+    df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(split_tags)
 
     symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
-    symbol_reco_dict = {row["symbol_name"]: row for _, row in df_model2_bkup.iterrows()}
 
-    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict
+    return df_model1, df_model2, df_symbol_kb, symbol_kb_dict
 
 
 @st.cache_resource
-def load_model1():
-    tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
-    model.eval()
-    return tokenizer, model
+def load_models():
+    stress_tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
+    stress_model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
+    stress_model.eval()
+
+    gen_tokenizer = AutoTokenizer.from_pretrained(GEN_MODEL_NAME)
+    gen_model = AutoModelForSeq2SeqLM.from_pretrained(GEN_MODEL_NAME).to(DEVICE)
+    gen_model.eval()
+
+    return stress_tokenizer, stress_model, gen_tokenizer, gen_model
 
 
-df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()
-stress_tokenizer, stress_model = load_model1()
+df_model1, df_model2, df_symbol_kb, symbol_kb_dict = load_data()
+stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 
 
 def predict_stress(text):
@@ -284,7 +285,7 @@ def infer_emotions_themes_symbols(text):
 
     direct_symbols = detect_symbols(
         text,
-        set(df_symbol_kb["symbol_name"].tolist()) | set(df_model2_bkup["symbol_name"].tolist())
+        set(df_symbol_kb["symbol_name"].tolist())
     )
 
     for s in direct_symbols:
@@ -323,21 +324,12 @@ def retrieve_recommendation(pred_stress, inferred_emotions):
     return scored[0][1]["recommendation_text"]
 
 
-def natural_stress_phrase(stress):
-    mapping = {
-        "low": "fairly calm or reflective",
-        "medium": "emotionally unsettled",
-        "high": "highly stressed or overwhelmed"
-    }
-    return mapping.get(stress, "emotionally activated")
-
-
 def summarize_symbols_naturally(symbols):
     symbol_lines = []
 
     for sym in symbols[:3]:
         if sym in symbol_kb_dict:
-            summary = symbol_kb_dict[sym]["traditional_summary_en"]
+            summary = clean_text(symbol_kb_dict[sym]["traditional_summary_en"])
             summary = summary.replace("May suggest ", "").strip()
             summary = summary.rstrip(".")
             symbol_lines.append((sym.replace("_", " "), summary))
@@ -345,67 +337,174 @@ def summarize_symbols_naturally(symbols):
     return symbol_lines
 
 
-def build_interpretation_paragraph(stress, emotions, themes, symbols):
-    stress_phrase = natural_stress_phrase(stress)
-    intro = f"This dream may reflect a mind that feels {stress_phrase} right now."
+def build_interpretation_prompt(dream_text, stress, emotions, themes, symbols):
+    emotion_text = ", ".join(emotions[:5]) if emotions else "none clearly detected"
+    theme_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly detected"
+    symbol_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly detected"
 
-    emo_part = f"Feelings like {', '.join(emotions[:3])} seem to be close to the surface." if emotions else ""
-
-    symbol_info = summarize_symbols_naturally(symbols)
-    if symbol_info:
-        symbol_texts = [f"{name} often point to {meaning}" for name, meaning in symbol_info[:2]]
-        symbol_part = "In this kind of dream, " + " and ".join(symbol_texts) + "."
+    symbol_summaries = summarize_symbols_naturally(symbols)
+    if symbol_summaries:
+        kb_text = "; ".join([f"{name}: {meaning}" for name, meaning in symbol_summaries[:3]])
     else:
-        symbol_part = ""
+        kb_text = "none"
 
-    theme_part = f"The overall pattern suggests themes around {', '.join(themes[:3]).replace('_', ' ')}." if themes else ""
+    return f"""
+You are a supportive dream reflection assistant.
 
-    closing = "Rather than predicting something literal, the dream is more likely showing how your mind is processing pressure, change, or unresolved feelings."
+Dream text:
+{dream_text}
 
-    parts = [intro, emo_part, symbol_part, theme_part, closing]
-    return " ".join([p for p in parts if p]).strip()
+Predicted stress level:
+{stress}
+
+Detected emotions:
+{emotion_text}
+
+Detected themes:
+{theme_text}
+
+Detected symbols:
+{symbol_text}
+
+Symbol meanings from knowledge base:
+{kb_text}
+
+Write one short interpretation paragraph in 4 to 5 sentences.
+Keep it calm, reflective, and non-clinical.
+Do not claim certainty.
+Do not say the dream predicts the future.
+Explain that the dream may reflect the person's emotional processing.
+""".strip()
 
 
-def build_recommendation_paragraph(stress, emotions, symbols):
-    base_rec = retrieve_recommendation(stress, emotions)
+def build_wellbeing_tips_prompt(dream_text, stress, emotions, themes, symbols, fallback_tip):
+    emotion_text = ", ".join(emotions[:5]) if emotions else "none clearly detected"
+    theme_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly detected"
+    symbol_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly detected"
 
-    extra = []
-    for sym in symbols[:2]:
-        if sym in symbol_reco_dict:
-            sym_rec = symbol_reco_dict[sym]["default_recommendation"]
-            if sym_rec and sym_rec not in extra:
-                extra.append(sym_rec)
+    return f"""
+You are a supportive well-being assistant.
 
-    if stress == "high":
-        support_line = "If this dream matches how you have been feeling lately, it may help to slow down, reduce stimulation, and focus only on the next manageable step."
-    elif stress == "medium":
-        support_line = "It may help to simplify your day, check in with your emotions, and avoid forcing clarity too quickly."
-    else:
-        support_line = "This can be a good moment to keep things steady, listen to yourself, and move gently with what feels meaningful."
+Dream text:
+{dream_text}
 
-    final_parts = [base_rec, support_line]
-    if extra:
-        final_parts.append(extra[0])
+Predicted stress level:
+{stress}
 
-    return " ".join(final_parts).strip()
+Detected emotions:
+{emotion_text}
+
+Detected themes:
+{theme_text}
+
+Detected symbols:
+{symbol_text}
+
+Fallback support tip:
+{fallback_tip}
+
+Write well-being tips in 3 to 4 sentences.
+Keep the tone gentle, practical, and supportive.
+Focus on rest, reflection, emotional balance, and manageable next steps.
+Do not mention diagnosis.
+Do not mention mental illness.
+""".strip()
+
+
+def generate_text(prompt, tokenizer, model, max_new_tokens=120):
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512,
+    )
+    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
+
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+            early_stopping=True,
+        )
+
+    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+
+
+def is_bad_generated_text(text):
+    if not text:
+        return True
+
+    lowered = text.lower().strip()
+
+    bad_prefixes = [
+        "dream text:",
+        "predicted stress level:",
+        "detected emotions:",
+        "detected themes:",
+        "detected symbols:",
+        "fallback support tip:",
+        "you are a supportive",
+        "write one short interpretation",
+        "write well-being tips",
+    ]
+
+    if any(lowered.startswith(prefix) for prefix in bad_prefixes):
+        return True
+
+    if len(text.split()) < 8:
+        return True
+
+    return False
 
 
 def analyze_dream(dream_text):
     stress, probs = predict_stress(dream_text)
     emotions, themes, symbols = infer_emotions_themes_symbols(dream_text)
 
-    interpretation = build_interpretation_paragraph(
+    interpretation_prompt = build_interpretation_prompt(
+        dream_text=dream_text,
         stress=stress,
         emotions=emotions,
         themes=themes,
-        symbols=symbols
+        symbols=symbols,
+    )
+    interpretation = generate_text(
+        interpretation_prompt,
+        gen_tokenizer,
+        gen_model,
+        max_new_tokens=140,
     )
 
-    recommendation = build_recommendation_paragraph(
+    fallback_tip = retrieve_recommendation(stress, emotions)
+
+    wellbeing_prompt = build_wellbeing_tips_prompt(
+        dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        symbols=symbols
+        themes=themes,
+        symbols=symbols,
+        fallback_tip=fallback_tip,
     )
+    wellbeing_tips = generate_text(
+        wellbeing_prompt,
+        gen_tokenizer,
+        gen_model,
+        max_new_tokens=120,
+    )
+
+    if is_bad_generated_text(interpretation):
+        interpretation = (
+            "This dream may reflect how your mind is processing recent emotions, pressure, "
+            "or unresolved thoughts. The mix of themes and symbols suggests an inner attempt "
+            "to make sense of stress in a symbolic way. Rather than predicting something literal, "
+            "it may be expressing your current emotional state."
+        )
+
+    if is_bad_generated_text(wellbeing_tips):
+        wellbeing_tips = fallback_tip
 
     return {
         "dream_text": dream_text,
@@ -415,7 +514,7 @@ def analyze_dream(dream_text):
         "themes": themes,
         "symbols": symbols,
         "interpretation": interpretation,
-        "recommendation": recommendation
+        "wellbeing_tips": wellbeing_tips,
     }
 
 
@@ -434,10 +533,10 @@ with header_col2:
             <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
             <div class="sub-title">
                 A prototype wellness support tool combining transformer-based stress detection
-                with symbolic dream interpretation and recommendation retrieval.
+                with enriched dream reflection and well-being guidance.
             </div>
             <span class="badge badge-blue">Model 1: Hugging Face Stress Classifier</span>
-            <span class="badge badge-red">Model 2: Symbolic Interpretation Pipeline</span>
+            <span class="badge badge-red">Model 2: Hugging Face Result Enrichment</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -451,7 +550,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level, detected emotions, themes, and symbols.<br>
-            4. Read the generated interpretation and recommendation for early reflection.<br>
+            4. Read the interpretation and the <b>Well-being tips</b> for reflection.<br>
             5. This tool is for wellness support and early awareness, not medical diagnosis.
         </div>
     </div>
@@ -466,12 +565,16 @@ with st.expander("About the two models"):
 - Hugging Face model: `peterjerry111/dream-stress-classifier`
 - Predicts stress level: `low`, `medium`, `high`
 
-**Model 2 — Interpretation Pipeline**
-- Retrieval from similar dream examples
-- Symbol knowledge base lookup
-- Emotion/theme/symbol inference
-- Recommendation retrieval
-- Natural language paragraph construction
+**Model 2 — Result Enrichment**
+- Hugging Face model: `google/flan-t5-base`
+- Generates:
+  - dream interpretation
+  - Well-being tips
+
+**Support Data**
+- `model1_train.csv` for similar-dream feature inference
+- `model2_train.csv` for fallback recommendation retrieval
+- `symbol_kb.csv` for symbol meaning lookup
 
 **Note**
 - This app is designed for reflective and supportive use.
@@ -521,8 +624,8 @@ if st.button("Analyze Dream"):
         st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Recommendation")
-        st.write(result["recommendation"])
+        st.subheader("Well-being tips")
+        st.write(result["wellbeing_tips"])
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.warning("Please enter a dream before analysis.")
