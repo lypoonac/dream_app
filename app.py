@@ -13,7 +13,7 @@ from transformers import (
 )
 
 st.set_page_config(
-    page_title="AXA AI Dream Analyzer - Early Stress Detection",
+    page_title="AXA Health Dream Analyzer",
     page_icon="🌙",
     layout="wide",
 )
@@ -42,145 +42,393 @@ ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 st.markdown(
     """
     <style>
+        :root {
+            --axa-blue: #00008f;
+            --axa-blue-deep: #05055f;
+            --axa-blue-soft: #e9edff;
+            --axa-red: #ff3b43;
+            --bg-main: #f4f7fc;
+            --bg-alt: #eef3fb;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-main: #14213d;
+            --text-soft: #5b6785;
+            --border-soft: #d9e2f2;
+            --shadow-soft: 0 10px 30px rgba(6, 24, 70, 0.08);
+            --shadow-strong: 0 18px 40px rgba(6, 24, 70, 0.12);
+            --highlight-yellow: #ffe96a;
+        }
+
         .stApp {
-            background: linear-gradient(180deg, #f7f9fc 0%, #eef3fb 100%);
-            color: #1f2937;
+            background:
+                radial-gradient(circle at top right, rgba(0, 0, 143, 0.08), transparent 28%),
+                linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+            color: var(--text-main);
         }
 
-        .main-title {
-            color: #00008F;
-            font-size: 2.2rem;
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            max-width: 1180px;
+        }
+
+        .app-shell {
+            padding: 0.25rem 0 1.5rem 0;
+        }
+
+        .hero-wrap {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--axa-blue) 0%, #101e9c 60%, #1b2bb3 100%);
+            border-radius: 24px;
+            padding: 2rem 2rem 1.75rem 2rem;
+            box-shadow: var(--shadow-strong);
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .hero-wrap::before {
+            content: "";
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(255,255,255,0.16), transparent 65%);
+            border-radius: 50%;
+        }
+
+        .hero-wrap::after {
+            content: "";
+            position: absolute;
+            top: 18px;
+            right: 82px;
+            width: 10px;
+            height: 110px;
+            background: var(--axa-red);
+            transform: rotate(35deg);
+            border-radius: 999px;
+            box-shadow: 0 0 16px rgba(255, 59, 67, 0.35);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 1.25rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-logo-box {
+            width: 96px;
+            height: 96px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 20px;
+            backdrop-filter: blur(6px);
+        }
+
+        .hero-logo-box img {
+            max-width: 72px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: rgba(255,255,255,0.82);
+            margin-bottom: 0.55rem;
+        }
+
+        .hero-title {
+            color: #ffffff;
+            font-size: 2.1rem;
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 0.3rem;
+            line-height: 1.12;
+            margin: 0 0 0.45rem 0;
         }
 
-        .sub-title {
-            color: #44526b;
+        .hero-subtitle {
+            color: rgba(255,255,255,0.88);
             font-size: 1rem;
-            margin-bottom: 0.8rem;
+            line-height: 1.6;
+            max-width: 760px;
+            margin: 0;
         }
 
-        .brand-card {
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 1.2rem 1.2rem 1rem 1.2rem;
-            border-left: 6px solid #00008F;
-            box-shadow: 0 8px 24px rgba(0, 20, 80, 0.08);
+        .panel-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            padding: 1.25rem 1.25rem;
             margin-bottom: 1rem;
         }
 
-        .guide-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 1rem 1.2rem;
-            border: 1px solid #dbe4f3;
-            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
-            margin-bottom: 1rem;
-        }
-
-        .result-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 1rem 1.2rem;
-            border: 1px solid #dbe4f3;
-            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
-            margin-bottom: 1rem;
-        }
-
-        .normal-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 1rem 1.2rem;
-            border: 1px solid #dbe4f3;
-            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
-            margin-bottom: 1rem;
+        .panel-card.soft-blue {
+            background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
         }
 
         .section-title {
-            color: #00008F;
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            color: var(--axa-blue);
+            font-size: 1.02rem;
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            letter-spacing: 0.01em;
         }
 
-        .small-muted {
-            color: #5f6c86;
+        .section-title.with-accent {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .section-title.with-accent::before {
+            content: "";
+            width: 6px;
+            height: 22px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--axa-red), #ff7a80);
+        }
+
+        .guide-text {
+            color: var(--text-soft);
+            font-size: 0.97rem;
+            line-height: 1.75;
+        }
+
+        .metric-card {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            padding: 1.1rem 1.15rem;
+            box-shadow: var(--shadow-soft);
+            min-height: 150px;
+        }
+
+        .metric-label {
+            color: var(--text-soft);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            margin-bottom: 0.65rem;
+        }
+
+        .metric-value {
+            color: var(--axa-blue);
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 0.35rem;
+            line-height: 1.2;
+        }
+
+        .metric-helper {
+            color: var(--text-soft);
             font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .tips-card {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            padding: 1.2rem 1.25rem;
+            margin-top: 0.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tips-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--axa-blue), var(--axa-red));
+        }
+
+        .tips-text {
+            color: var(--text-main);
+            font-size: 1rem;
+            line-height: 1.9;
+            margin-top: 0.2rem;
         }
 
         .highlight-text {
-            background: #ffeb3b;
-            color: #000000;
+            background: linear-gradient(transparent 58%, var(--highlight-yellow) 58%);
+            color: inherit;
             font-weight: 700;
-            padding: 0.1rem 0.3rem;
-            border-radius: 4px;
+            padding: 0 0.08rem;
             display: inline;
-            line-height: 1.8;
+        }
+
+        .input-shell {
+            background: rgba(255,255,255,0.72);
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 0.9rem;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 1rem;
+        }
+
+        .stTextArea label {
+            color: var(--axa-blue) !important;
+            font-weight: 700 !important;
+        }
+
+        .stTextArea textarea {
+            background: #ffffff !important;
+            color: var(--text-main) !important;
+            border: 1px solid #cfd9ec !important;
+            border-radius: 16px !important;
+            padding: 1rem !important;
+            font-size: 1rem !important;
+            line-height: 1.6 !important;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+
+        .stTextArea textarea:focus {
+            border: 1px solid var(--axa-blue) !important;
+            box-shadow: 0 0 0 3px rgba(0, 0, 143, 0.10) !important;
         }
 
         div.stButton > button {
-            background-color: #00008F;
+            width: 100%;
+            background: linear-gradient(135deg, var(--axa-blue) 0%, #2337c6 100%);
             color: white;
-            border-radius: 10px;
             border: none;
-            padding: 0.6rem 1.2rem;
-            font-weight: 700;
+            border-radius: 14px;
+            padding: 0.82rem 1.2rem;
+            font-weight: 800;
+            font-size: 0.98rem;
+            letter-spacing: 0.01em;
+            box-shadow: 0 10px 24px rgba(0, 0, 143, 0.22);
+            transition: all 0.2s ease;
         }
 
         div.stButton > button:hover {
-            background-color: #1f1fb8;
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #09097c 0%, #2b43de 100%);
+            box-shadow: 0 14px 26px rgba(0, 0, 143, 0.28);
             color: white;
         }
 
-        textarea {
-            border-radius: 12px !important;
+        div.stButton > button:focus:not(:active) {
+            border: none;
+            box-shadow: 0 0 0 4px rgba(0, 0, 143, 0.16);
+            color: white;
+        }
+
+        .footer-note {
+            color: var(--text-soft);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.4rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.42rem 0.75rem;
+            border-radius: 999px;
+            background: var(--axa-blue-soft);
+            color: var(--axa-blue);
+            font-size: 0.88rem;
+            font-weight: 700;
+            border: 1px solid #d6def8;
+        }
+
+        @media (max-width: 860px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-logo-box {
+                width: 84px;
+                height: 84px;
+            }
+
+            .hero-title {
+                font-size: 1.7rem;
+            }
+
+            .block-container {
+                padding-top: 1.25rem;
+            }
         }
 
         @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-main: #081120;
+                --bg-alt: #0b1426;
+                --card-bg: rgba(15, 23, 42, 0.92);
+                --text-main: #e5ecf6;
+                --text-soft: #a9b7d0;
+                --border-soft: #23314f;
+                --axa-blue-soft: rgba(77, 113, 255, 0.16);
+                --highlight-yellow: #f7df57;
+                --shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.28);
+                --shadow-strong: 0 18px 42px rgba(0, 0, 0, 0.34);
+            }
+
             .stApp {
-                background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-                color: #f3f4f6;
+                background:
+                    radial-gradient(circle at top right, rgba(77, 113, 255, 0.10), transparent 28%),
+                    linear-gradient(180deg, #081120 0%, #0d1728 100%);
+                color: var(--text-main);
             }
 
-            .main-title {
-                color: #93c5fd;
+            .panel-card,
+            .metric-card,
+            .tips-card,
+            .input-shell {
+                background: rgba(15, 23, 42, 0.92);
+                border-color: var(--border-soft);
             }
 
-            .sub-title {
-                color: #cbd5e1;
+            .panel-card.soft-blue,
+            .metric-card,
+            .tips-card {
+                background: linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(12, 19, 35, 0.96) 100%);
             }
 
-            .brand-card,
-            .guide-card,
-            .result-card,
-            .normal-card {
-                background: #1f2937;
-                border: 1px solid #334155;
-                box-shadow: none;
+            .section-title,
+            .metric-value,
+            .stTextArea label {
+                color: #c8d7ff !important;
             }
 
-            .section-title {
-                color: #93c5fd;
+            .stTextArea textarea {
+                background: #0f172a !important;
+                color: #e5ecf6 !important;
+                border: 1px solid #2a3a5f !important;
             }
 
-            .small-muted {
-                color: #cbd5e1;
+            .stTextArea textarea:focus {
+                border: 1px solid #6d87ff !important;
+                box-shadow: 0 0 0 3px rgba(109, 135, 255, 0.18) !important;
             }
 
-            .highlight-text {
-                background: #ffeb3b;
-                color: #000000;
-            }
-
-            div.stButton > button {
-                background-color: #2563eb;
-                color: white;
-            }
-
-            div.stButton > button:hover {
-                background-color: #3b82f6;
-                color: white;
+            .badge {
+                background: rgba(77, 113, 255, 0.14);
+                color: #dbe5ff;
+                border-color: #2a3a5f;
             }
         }
     </style>
@@ -443,75 +691,127 @@ def analyze_dream(dream_text):
 
 logo_path = os.path.join(BASE_DIR, "axa_logo.png")
 
-header_col1, header_col2 = st.columns([1, 4])
+st.markdown('<div class="app-shell">', unsafe_allow_html=True)
 
-with header_col1:
-    if os.path.exists(logo_path):
-        st.image(logo_path, width=140)
-
-with header_col2:
-    st.markdown(
-        """
-        <div class="brand-card">
-            <div class="main-title">AXA AI Dream Analyzer - Early Stress Detection</div>
-            <div class="sub-title">
-                A prototype wellness support tool for reflective dream analysis and early stress awareness.
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+logo_html = ""
+if os.path.exists(logo_path):
+    import base64
+    with open(logo_path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+    logo_html = f'<img src="data:image/png;base64,{encoded}" alt="AXA Health Logo" />'
 
 st.markdown(
-    """
-    <div class="guide-card">
-        <div class="section-title">Simple User Guide</div>
-        <div class="small-muted">
-            1. Type your dream into the text box below.<br>
-            2. Click <b>Analyze Dream</b> to start the analysis.<br>
-            3. Review the predicted stress level and detected emotions.<br>
-            4. Read the <b>Well-being tips</b> for supportive reflection.<br>
-            5. This tool is for wellness support and early awareness, not medical diagnosis.
+    f"""
+    <div class="hero-wrap">
+        <div class="hero-grid">
+            <div class="hero-logo-box">
+                {logo_html}
+            </div>
+            <div>
+                <div class="eyebrow">AXA Health • Wellness Support Prototype</div>
+                <div class="hero-title">Dream Analyzer for Early Stress Awareness</div>
+                <p class="hero-subtitle">
+                    A refined reflective wellness interface designed to help users explore dream narratives,
+                    identify emotional signals, and receive supportive well-being tips in a clear, professional format.
+                </p>
+            </div>
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-dream_text = st.text_area(
-    "Enter your dream",
-    value="",
-    height=180,
-    placeholder="Describe your dream here..."
+st.markdown(
+    """
+    <div class="panel-card soft-blue">
+        <div class="section-title with-accent">How to use</div>
+        <div class="guide-text">
+            1. Enter your dream in the text box below.<br>
+            2. Select <b>Analyze Dream</b> to run the assessment.<br>
+            3. Review the stress level and detected emotions.<br>
+            4. Read the <b>Well-being tips</b> for supportive reflection and next steps.
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
+
+st.markdown('<div class="input-shell">', unsafe_allow_html=True)
+dream_text = st.text_area(
+    "Describe your dream",
+    value="",
+    height=200,
+    placeholder="Example: I was running through a crowded station trying to find the right platform, but every sign kept changing..."
+)
+st.markdown('</div>', unsafe_allow_html=True)
 
 if st.button("Analyze Dream"):
     if dream_text.strip():
         with st.spinner("Analyzing your dream..."):
             result = analyze_dream(dream_text.strip())
 
-        st.success("Analysis completed.")
+        st.success("Analysis completed successfully.")
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.markdown('<div class="normal-card">', unsafe_allow_html=True)
-            st.subheader("Stress Level")
-            st.write(result["stress_level"].upper())
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <div class="metric-card">
+                    <div class="metric-label">Predicted Stress Level</div>
+                    <div class="metric-value">{result["stress_level"].upper()}</div>
+                    <div class="metric-helper">
+                        This result reflects the overall stress pattern inferred from the dream narrative.
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
         with col2:
-            st.markdown('<div class="normal-card">', unsafe_allow_html=True)
-            st.subheader("Detected Emotions")
-            st.write(", ".join(result["emotions"]) if result["emotions"] else "None")
-            st.markdown("</div>", unsafe_allow_html=True)
+            emotions_html = ""
+            if result["emotions"]:
+                emotions_html = '<div class="badge-row">' + "".join(
+                    [f'<span class="badge">{emotion.title()}</span>' for emotion in result["emotions"]]
+                ) + "</div>"
+            else:
+                emotions_html = '<div class="metric-helper">No clear emotions detected.</div>'
 
-        st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Well-being tips")
+            st.markdown(
+                f"""
+                <div class="metric-card">
+                    <div class="metric-label">Detected Emotions</div>
+                    <div class="metric-value" style="font-size: 1.15rem;">Emotional Signals</div>
+                    <div class="metric-helper">
+                        The following emotional themes were most strongly associated with the narrative:
+                    </div>
+                    {emotions_html}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
         st.markdown(
-            f'<p><span class="highlight-text">{result["wellbeing_tips"]}</span></p>',
-            unsafe_allow_html=True
+            f"""
+            <div class="tips-card">
+                <div class="section-title with-accent">Well-being Tips</div>
+                <div class="tips-text">
+                    <span class="highlight-text">{result["wellbeing_tips"]}</span>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown(
+            """
+            <div class="footer-note">
+                This tool is intended for wellness support and reflective awareness only. It does not provide medical or clinical diagnosis.
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     else:
         st.warning("Please enter a dream before analysis.")
+
+st.markdown('</div>', unsafe_allow_html=True)
