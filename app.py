@@ -1,15 +1,21 @@
 import os
 import re
+import time
 import random
+import html
 import numpy as np
 import pandas as pd
 import torch
 import streamlit as st
 
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import (
+    AutoTokenizer,
+    AutoModelForSequenceClassification,
+    AutoModelForSeq2SeqLM
+)
 
 st.set_page_config(
-    page_title="AI Dream Analyzer for AXA: Early Stress Detection",
+    page_title="AXA AI Dream Analyzer",
     page_icon="🌙",
     layout="wide",
 )
@@ -25,6 +31,8 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
+LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 MODEL2_PATH = os.path.join(DATA_DIR, "model2_train.csv")
@@ -32,6 +40,7 @@ MODEL2_BKUP_PATH = os.path.join(DATA_DIR, "model2_train.csv.bkup.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
+GEN_MODEL_NAME = "google/flan-t5-base"
 
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
@@ -41,39 +50,14 @@ st.markdown(
         .stApp {
             background: linear-gradient(180deg, #f7f9fc 0%, #eef3fb 100%);
         }
-
-        .main-title {
-            color: #00008F;
-            font-size: 2.2rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 0.3rem;
-        }
-
-        .sub-title {
-            color: #44526b;
-            font-size: 1rem;
-            margin-bottom: 0.8rem;
-        }
-
         .brand-card {
             background: #ffffff;
             border-radius: 18px;
-            padding: 1.2rem 1.2rem 1rem 1.2rem;
+            padding: 1.2rem;
             border-left: 6px solid #00008F;
             box-shadow: 0 8px 24px rgba(0, 20, 80, 0.08);
             margin-bottom: 1rem;
         }
-
-        .guide-card {
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 1rem 1.2rem;
-            border: 1px solid #dbe4f3;
-            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
-            margin-bottom: 1rem;
-        }
-
         .result-card {
             background: #ffffff;
             border-radius: 16px;
@@ -82,39 +66,33 @@ st.markdown(
             box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
             margin-bottom: 1rem;
         }
-
-        .section-title {
+        .main-title {
             color: #00008F;
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-size: 2.1rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
         }
-
-        .small-muted {
-            color: #5f6c86;
-            font-size: 0.95rem;
+        .sub-title {
+            color: #44526b;
+            font-size: 1rem;
         }
-
-        .badge {
+        .highlight-text {
+            background-color: #ffeb3b;
+            padding: 4px 8px;
+            border-radius: 6px;
             display: inline-block;
-            padding: 0.35rem 0.7rem;
-            border-radius: 999px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            margin-right: 0.4rem;
-            margin-top: 0.3rem;
+            color: #222222;
+            font-weight: 600;
         }
-
-        .badge-blue {
-            background: #e9efff;
-            color: #00008F;
+        .highlight-block {
+            background-color: #ffeb3b;
+            padding: 10px 12px;
+            border-radius: 8px;
+            display: block;
+            color: #222222;
+            font-weight: 500;
+            line-height: 1.7;
         }
-
-        .badge-red {
-            background: #ffe9ee;
-            color: #d81e3a;
-        }
-
         div.stButton > button {
             background-color: #00008F;
             color: white;
@@ -123,14 +101,9 @@ st.markdown(
             padding: 0.6rem 1.2rem;
             font-weight: 700;
         }
-
         div.stButton > button:hover {
             background-color: #1f1fb8;
             color: white;
-        }
-
-        textarea {
-            border-radius: 12px !important;
         }
     </style>
     """,
@@ -152,11 +125,15 @@ def split_tags(x):
 
 
 def tokenize_simple(text):
-    return re.findall(r"[a-zA-Z_]+", text.lower())
+    return re.findall(r"[a-zA-Z_]+", str(text).lower())
 
 
 @st.cache_data
 def load_data():
+    for path in [MODEL1_PATH, MODEL2_PATH, MODEL2_BKUP_PATH, SYMBOL_KB_PATH]:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing file: {path}")
+
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_model2 = pd.read_csv(MODEL2_PATH)
     df_model2_bkup = pd.read_csv(MODEL2_BKUP_PATH)
@@ -175,9 +152,7 @@ def load_data():
         df_model2[col] = df_model2[col].apply(clean_text)
 
     df_model2["stress_label"] = df_model2["stress_label"].str.lower().replace({"moderate": "medium"})
-    df_model2 = df_model2[
-        df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})
-    ].drop_duplicates().reset_index(drop=True)
+    df_model2 = df_model2[df_model2["stress_label"].isin({"low", "medium", "high", "very_high", "severe"})].drop_duplicates().reset_index(drop=True)
     df_model2["emotion_list"] = df_model2["emotion_labels"].apply(split_tags)
 
     for col in ["symbol_name", "default_stress", "default_recommendation", "related_recommendations"]:
@@ -185,55 +160,43 @@ def load_data():
 
     df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
     df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
-    df_model2_bkup["related_list"] = df_model2_bkup["related_recommendations"].apply(
-        lambda x: [i.strip() for i in clean_text(x).split("|") if i.strip()]
-    )
 
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
 
     df_symbol_kb["symbol_name"] = df_symbol_kb["symbol_name"].str.lower()
-    df_symbol_kb["theme_list"] = df_symbol_kb["theme_tags"].apply(
-        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
-    df_symbol_kb["emotion_list"] = df_symbol_kb["emotion_hints"].apply(
-        lambda x: [i.strip().lower() for i in clean_text(x).split(",") if i.strip()]
-    )
 
-    symbol_kb_dict = {row["symbol_name"]: row for _, row in df_symbol_kb.iterrows()}
-    symbol_reco_dict = {row["symbol_name"]: row for _, row in df_model2_bkup.iterrows()}
-
-    return df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict
+    return df_model1, df_model2, df_model2_bkup, df_symbol_kb
 
 
 @st.cache_resource
-def load_model1():
-    tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
-    model.eval()
-    return tokenizer, model
+def load_models():
+    stress_tokenizer = AutoTokenizer.from_pretrained(MODEL1_HF_NAME)
+    stress_model = AutoModelForSequenceClassification.from_pretrained(MODEL1_HF_NAME).to(DEVICE)
+    stress_model.eval()
+
+    gen_tokenizer = AutoTokenizer.from_pretrained(GEN_MODEL_NAME)
+    gen_model = AutoModelForSeq2SeqLM.from_pretrained(GEN_MODEL_NAME).to(DEVICE)
+    gen_model.eval()
+
+    return stress_tokenizer, stress_model, gen_tokenizer, gen_model
 
 
-df_model1, df_model2, df_model2_bkup, df_symbol_kb, symbol_kb_dict, symbol_reco_dict = load_data()
-stress_tokenizer, stress_model = load_model1()
-
-
-def predict_stress(text):
-    inputs = stress_tokenizer(
+def predict_stress(text, tokenizer, model):
+    inputs = tokenizer(
         text,
         return_tensors="pt",
         truncation=True,
         padding=True,
-        max_length=256,
+        max_length=256
     )
     inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
     with torch.no_grad():
-        outputs = stress_model(**inputs)
-        probs = torch.softmax(outputs.logits, dim=1)[0].cpu().numpy()
-        pred = int(np.argmax(probs))
+        outputs = model(**inputs)
+        pred = torch.argmax(outputs.logits, dim=1).item()
 
-    return ID2LABEL[pred], probs
+    return ID2LABEL[pred]
 
 
 def detect_symbols(text, known_symbols):
@@ -252,7 +215,7 @@ def detect_symbols(text, known_symbols):
     return list(dict.fromkeys(found))
 
 
-def find_similar_examples(text, top_k=5):
+def find_similar_examples(text, df_model1, top_k=5):
     query_tokens = set(tokenize_simple(text))
     scores = []
 
@@ -266,12 +229,10 @@ def find_similar_examples(text, top_k=5):
     return [row for _, row in scores]
 
 
-def infer_emotions_themes_symbols(text):
-    matches = find_similar_examples(text, top_k=5)
+def infer_emotions_themes_symbols(text, df_model1, df_symbol_kb, df_model2_bkup):
+    matches = find_similar_examples(text, df_model1, top_k=5)
 
-    emotions = []
-    themes = []
-    symbols = []
+    emotions, themes, symbols = [], [], []
 
     for row in matches:
         emotions.extend(row["emotion_list"])
@@ -304,7 +265,7 @@ def map_stress_for_model2(stress):
     return ["medium"]
 
 
-def retrieve_recommendation(pred_stress, inferred_emotions):
+def retrieve_recommendation(pred_stress, inferred_emotions, df_model2):
     stress_candidates = map_stress_for_model2(pred_stress)
     subset = df_model2[df_model2["stress_label"].isin(stress_candidates)].copy()
 
@@ -323,206 +284,199 @@ def retrieve_recommendation(pred_stress, inferred_emotions):
     return scored[0][1]["recommendation_text"]
 
 
-def natural_stress_phrase(stress):
-    mapping = {
-        "low": "fairly calm or reflective",
-        "medium": "emotionally unsettled",
-        "high": "highly stressed or overwhelmed"
-    }
-    return mapping.get(stress, "emotionally activated")
+def build_recommendation_prompt(dream_text, stress, emotions, themes, symbols):
+    emotions_text = ", ".join(emotions[:5]) if emotions else "none clearly inferred"
+    themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
+    symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
+
+    prompt = f"""
+Give a short supportive recommendation based on this dream analysis.
+
+Dream: {dream_text}
+Stress level: {stress}
+Emotions: {emotions_text}
+Themes: {themes_text}
+Symbols: {symbols_text}
+
+Write only the recommendation in 2 to 3 sentences.
+Be calm, practical, and supportive.
+Do not repeat the prompt.
+"""
+    return prompt.strip()
 
 
-def summarize_symbols_naturally(symbols):
-    symbol_lines = []
+def generate_text(prompt, tokenizer, model, max_new_tokens=100):
+    inputs = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=512
+    )
+    inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
-    for sym in symbols[:3]:
-        if sym in symbol_kb_dict:
-            summary = symbol_kb_dict[sym]["traditional_summary_en"]
-            summary = summary.replace("May suggest ", "").strip()
-            summary = summary.rstrip(".")
-            symbol_lines.append((sym.replace("_", " "), summary))
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=False,
+            num_beams=4,
+            no_repeat_ngram_size=3,
+            early_stopping=True
+        )
 
-    return symbol_lines
-
-
-def build_interpretation_paragraph(stress, emotions, themes, symbols):
-    stress_phrase = natural_stress_phrase(stress)
-    intro = f"This dream may reflect a mind that feels {stress_phrase} right now."
-
-    emo_part = f"Feelings like {', '.join(emotions[:3])} seem to be close to the surface." if emotions else ""
-
-    symbol_info = summarize_symbols_naturally(symbols)
-    if symbol_info:
-        symbol_texts = [f"{name} often point to {meaning}" for name, meaning in symbol_info[:2]]
-        symbol_part = "In this kind of dream, " + " and ".join(symbol_texts) + "."
-    else:
-        symbol_part = ""
-
-    theme_part = f"The overall pattern suggests themes around {', '.join(themes[:3]).replace('_', ' ')}." if themes else ""
-
-    closing = "Rather than predicting something literal, the dream is more likely showing how your mind is processing pressure, change, or unresolved feelings."
-
-    parts = [intro, emo_part, symbol_part, theme_part, closing]
-    return " ".join([p for p in parts if p]).strip()
+    text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+    return text
 
 
-def build_recommendation_paragraph(stress, emotions, symbols):
-    base_rec = retrieve_recommendation(stress, emotions)
+def is_bad_recommendation(text):
+    if not text:
+        return True
 
-    extra = []
-    for sym in symbols[:2]:
-        if sym in symbol_reco_dict:
-            sym_rec = symbol_reco_dict[sym]["default_recommendation"]
-            if sym_rec and sym_rec not in extra:
-                extra.append(sym_rec)
+    low = text.lower()
 
-    if stress == "high":
-        support_line = "If this dream matches how you have been feeling lately, it may help to slow down, reduce stimulation, and focus only on the next manageable step."
-    elif stress == "medium":
-        support_line = "It may help to simplify your day, check in with your emotions, and avoid forcing clarity too quickly."
-    else:
-        support_line = "This can be a good moment to keep things steady, listen to yourself, and move gently with what feels meaningful."
+    bad_starts = [
+        "you are",
+        "dream:",
+        "stress level:",
+        "emotions:",
+        "themes:",
+        "symbols:",
+        "give a short supportive recommendation",
+        "write only the recommendation",
+    ]
 
-    final_parts = [base_rec, support_line]
-    if extra:
-        final_parts.append(extra[0])
+    if any(low.startswith(x) for x in bad_starts):
+        return True
 
-    return " ".join(final_parts).strip()
+    if len(text.split()) < 6:
+        return True
+
+    return False
 
 
-def analyze_dream(dream_text):
-    stress, probs = predict_stress(dream_text)
-    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text)
+def analyze_dream(dream_text, stress_tokenizer, stress_model, gen_tokenizer, gen_model, df_model1, df_model2, df_model2_bkup, df_symbol_kb):
+    stress = predict_stress(dream_text, stress_tokenizer, stress_model)
+    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text, df_model1, df_symbol_kb, df_model2_bkup)
 
-    interpretation = build_interpretation_paragraph(
+    recommendation_prompt = build_recommendation_prompt(
+        dream_text=dream_text,
         stress=stress,
         emotions=emotions,
         themes=themes,
         symbols=symbols
     )
 
-    recommendation = build_recommendation_paragraph(
-        stress=stress,
-        emotions=emotions,
-        symbols=symbols
+    generated_recommendation = generate_text(
+        recommendation_prompt,
+        gen_tokenizer,
+        gen_model,
+        max_new_tokens=100
     )
 
+    fallback_recommendation = retrieve_recommendation(stress, emotions, df_model2)
+
+    if is_bad_recommendation(generated_recommendation):
+        final_recommendation = fallback_recommendation
+        recommendation_source = "retrieved"
+    else:
+        final_recommendation = generated_recommendation
+        recommendation_source = "generated"
+
     return {
-        "dream_text": dream_text,
         "stress_level": stress,
-        "stress_probs": probs,
         "emotions": emotions,
         "themes": themes,
         "symbols": symbols,
-        "interpretation": interpretation,
-        "recommendation": recommendation
+        "recommendation": final_recommendation,
+        "recommendation_source": recommendation_source,
+        "raw_generated_recommendation": generated_recommendation,
     }
 
 
-logo_path = os.path.join(BASE_DIR, "axa_logo.png")
+try:
+    df_model1, df_model2, df_model2_bkup, df_symbol_kb = load_data()
+    stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
+except Exception as e:
+    st.error("Failed to load files or models.")
+    st.exception(e)
+    st.stop()
 
-header_col1, header_col2 = st.columns([1, 4])
-
-with header_col1:
-    if os.path.exists(logo_path):
-        st.image(logo_path, width=140)
-
-with header_col2:
-    st.markdown(
-        """
-        <div class="brand-card">
-            <div class="main-title">AI Dream Analyzer for AXA: Early Stress Detection</div>
-            <div class="sub-title">
-                A prototype wellness support tool combining transformer-based stress detection
-                with symbolic dream interpretation and recommendation retrieval.
-            </div>
-            <span class="badge badge-blue">Model 1: Hugging Face Stress Classifier</span>
-            <span class="badge badge-red">Model 2: Symbolic Interpretation Pipeline</span>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 st.markdown(
     """
-    <div class="guide-card">
-        <div class="section-title">Simple User Guide</div>
-        <div class="small-muted">
-            1. Type your dream into the text box below.<br>
-            2. Click <b>Analyze Dream</b> to start the analysis.<br>
-            3. Review the predicted stress level, detected emotions, themes, and symbols.<br>
-            4. Read the generated interpretation and recommendation for early reflection.<br>
-            5. This tool is for wellness support and early awareness, not medical diagnosis.
+    <div class="brand-card">
+        <div class="main-title">AXA AI Dream Analyzer</div>
+        <div class="sub-title">
+            Dream-based stress detection with supportive recommendation output.
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-with st.expander("About the two models"):
-    st.markdown(
-        """
-**Model 1 — Stress Detection**
-- Hugging Face model: `peterjerry111/dream-stress-classifier`
-- Predicts stress level: `low`, `medium`, `high`
-
-**Model 2 — Interpretation Pipeline**
-- Retrieval from similar dream examples
-- Symbol knowledge base lookup
-- Emotion/theme/symbol inference
-- Recommendation retrieval
-- Natural language paragraph construction
-
-**Note**
-- This app is designed for reflective and supportive use.
-- It is not a substitute for professional mental health care.
-        """
-    )
-
 dream_text = st.text_area(
     "Enter your dream",
-    value="",
     height=180,
     placeholder="Describe your dream here..."
 )
 
 if st.button("Analyze Dream"):
-    if dream_text.strip():
-        with st.spinner("Analyzing your dream..."):
-            result = analyze_dream(dream_text.strip())
-
-        st.success("Analysis completed.")
+    if not dream_text.strip():
+        st.warning("Please enter a dream.")
+    else:
+        with st.spinner("Analyzing..."):
+            result = analyze_dream(
+                dream_text.strip(),
+                stress_tokenizer,
+                stress_model,
+                gen_tokenizer,
+                gen_model,
+                df_model1,
+                df_model2,
+                df_model2_bkup,
+                df_symbol_kb,
+            )
 
         col1, col2 = st.columns(2)
 
         with col1:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
             st.subheader("Stress Level")
-            st.write(result["stress_level"].upper())
-
-            probs = result["stress_probs"]
-            st.write("Confidence scores")
-            st.caption(f"Low: {probs[0]:.4f}")
-            st.caption(f"Medium: {probs[1]:.4f}")
-            st.caption(f"High: {probs[2]:.4f}")
+            st.markdown(
+                f"<div class='highlight-text'>{html.escape(result['stress_level'].upper())}</div>",
+                unsafe_allow_html=True
+            )
             st.markdown("</div>", unsafe_allow_html=True)
 
         with col2:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
-            st.subheader("Detected Features")
-            st.write("**Emotions:**", ", ".join(result["emotions"]) if result["emotions"] else "None")
-            st.write("**Themes:**", ", ".join(result["themes"]) if result["themes"] else "None")
-            st.write("**Symbols:**", ", ".join(result["symbols"]) if result["symbols"] else "None")
+            st.subheader("Emotions")
+            st.markdown(
+                f"<div class='highlight-text'>{html.escape(', '.join(result['emotions']) if result['emotions'] else 'None')}</div>",
+                unsafe_allow_html=True
+            )
             st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
-        st.subheader("Interpretation")
-        st.write(result["interpretation"])
+        st.subheader("Themes")
+        st.write(", ".join(result["themes"]) if result["themes"] else "None")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div class="result-card">', unsafe_allow_html=True)
+        st.subheader("Symbols")
+        st.write(", ".join(result["symbols"]) if result["symbols"] else "None")
         st.markdown("</div>", unsafe_allow_html=True)
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
         st.subheader("Recommendation")
-        st.write(result["recommendation"])
+        st.markdown(
+            f"<div class='highlight-block'>{html.escape(result['recommendation'])}</div>",
+            unsafe_allow_html=True
+        )
         st.markdown("</div>", unsafe_allow_html=True)
-    else:
-        st.warning("Please enter a dream before analysis.")
+
+        st.caption(f"Recommendation source: {result['recommendation_source']}")
+
+        with st.expander("Debug"):
+            st.write("Raw generated recommendation:")
+            st.write(result["raw_generated_recommendation"])
