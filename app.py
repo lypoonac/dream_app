@@ -34,7 +34,11 @@ LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
 SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
-DREAM_INTERPRETATIONS_PATH = os.path.join(DATA_DIR, "dreams_interpretations_dataset.csv")
+
+DREAM_INTERPRETATION_CANDIDATES = [
+    os.path.join(DATA_DIR, "dreams_interpretations_dataset.csv"),
+    os.path.join(DATA_DIR, "dreams_interpretations.csv"),
+]
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
 MODEL2_HF_NAME = "peterjerry111/dream_interpretation_model"
@@ -170,19 +174,31 @@ def extract_first_sentence(text):
     return clean_text(text)
 
 
+def find_existing_file(candidates):
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+    return None
+
+
 @st.cache_data
 def load_data():
+    interp_path = find_existing_file(DREAM_INTERPRETATION_CANDIDATES)
+
     missing = []
-    for p in [MODEL1_PATH, SYMBOL_KB_PATH, DREAM_INTERPRETATIONS_PATH]:
-        if not os.path.exists(p):
-            missing.append(p)
+    if not os.path.exists(MODEL1_PATH):
+        missing.append(MODEL1_PATH)
+    if not os.path.exists(SYMBOL_KB_PATH):
+        missing.append(SYMBOL_KB_PATH)
+    if interp_path is None:
+        missing.extend(DREAM_INTERPRETATION_CANDIDATES)
 
     if missing:
         raise FileNotFoundError("Missing required files:\n" + "\n".join(missing))
 
     df_model1 = pd.read_csv(MODEL1_PATH)
     df_symbol_kb = pd.read_csv(SYMBOL_KB_PATH)
-    df_interp = pd.read_csv(DREAM_INTERPRETATIONS_PATH)
+    df_interp = pd.read_csv(interp_path)
 
     for col in ["dream_text", "stress_label", "emotion_labels", "theme_labels", "symbol_labels"]:
         if col not in df_model1.columns:
@@ -214,7 +230,7 @@ def load_data():
             interp_text_col = c
 
     if interp_symbol_col is None or interp_text_col is None:
-        raise ValueError("dreams_interpretations_dataset.csv must contain 'Dream Symbol' and 'Interpretation' columns")
+        raise ValueError("Interpretation CSV must contain 'Dream Symbol' and 'Interpretation' columns")
 
     df_interp = df_interp[[interp_symbol_col, interp_text_col]].copy()
     df_interp.columns = ["dream_symbol", "interpretation"]
@@ -224,7 +240,7 @@ def load_data():
     df_interp["symbol_norm"] = df_interp["dream_symbol"].apply(normalize_symbol)
     df_interp = df_interp.drop_duplicates(subset=["symbol_norm", "interpretation"]).reset_index(drop=True)
 
-    return df_model1, df_symbol_kb, df_interp
+    return df_model1, df_symbol_kb, df_interp, interp_path
 
 
 @st.cache_resource
@@ -461,11 +477,32 @@ def analyze_dream(
 
 
 try:
-    df_model1, df_symbol_kb, df_interp = load_data()
+    df_model1, df_symbol_kb, df_interp, interp_path_used = load_data()
     stress_tokenizer, stress_model, gen_tokenizer, gen_model = load_models()
 except Exception as e:
     st.error("Failed to load required files or models.")
     st.exception(e)
+
+    st.markdown("### Expected files in `data/`")
+    st.code(
+        "\n".join([
+            "model1_train.csv",
+            "symbol_kb.csv",
+            "dreams_interpretations_dataset.csv  OR  dreams_interpretations.csv",
+        ])
+    )
+
+    if os.path.exists(DATA_DIR):
+        st.markdown("### Files currently found in `data/`")
+        found_files = sorted(os.listdir(DATA_DIR))
+        if found_files:
+            st.code("\n".join(found_files))
+        else:
+            st.code("(data folder exists but is empty)")
+    else:
+        st.markdown("### Data folder status")
+        st.code(f"Missing folder: {DATA_DIR}")
+
     st.stop()
 
 
@@ -515,6 +552,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.caption(f"Interpretation file loaded: {os.path.basename(interp_path_used)}")
 
 dream_text = st.text_area(
     "Enter your dream",
