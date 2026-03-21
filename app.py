@@ -44,6 +44,7 @@ st.markdown(
     <style>
         .stApp {
             background: linear-gradient(180deg, #f7f9fc 0%, #eef3fb 100%);
+            color: #1f2937;
         }
 
         .main-title {
@@ -79,11 +80,11 @@ st.markdown(
         }
 
         .result-card {
-            background: #fff7cc;
+            background: #ffffff;
             border-radius: 16px;
             padding: 1rem 1.2rem;
-            border: 1px solid #f2d66b;
-            box-shadow: 0 4px 16px rgba(160, 120, 0, 0.08);
+            border: 1px solid #dbe4f3;
+            box-shadow: 0 4px 16px rgba(0, 20, 80, 0.05);
             margin-bottom: 1rem;
         }
 
@@ -108,6 +109,16 @@ st.markdown(
             font-size: 0.95rem;
         }
 
+        .highlight-text {
+            background: #ffeb3b;
+            color: #000000;
+            font-weight: 700;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            display: inline;
+            line-height: 1.8;
+        }
+
         div.stButton > button {
             background-color: #00008F;
             color: white;
@@ -124,6 +135,53 @@ st.markdown(
 
         textarea {
             border-radius: 12px !important;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .stApp {
+                background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+                color: #f3f4f6;
+            }
+
+            .main-title {
+                color: #93c5fd;
+            }
+
+            .sub-title {
+                color: #cbd5e1;
+            }
+
+            .brand-card,
+            .guide-card,
+            .result-card,
+            .normal-card {
+                background: #1f2937;
+                border: 1px solid #334155;
+                box-shadow: none;
+            }
+
+            .section-title {
+                color: #93c5fd;
+            }
+
+            .small-muted {
+                color: #cbd5e1;
+            }
+
+            .highlight-text {
+                background: #ffeb3b;
+                color: #000000;
+            }
+
+            div.stButton > button {
+                background-color: #2563eb;
+                color: white;
+            }
+
+            div.stButton > button:hover {
+                background-color: #3b82f6;
+                color: white;
+            }
         }
     </style>
     """,
@@ -226,22 +284,6 @@ def predict_stress(text):
     return ID2LABEL[pred], probs
 
 
-def detect_symbols(text, known_symbols):
-    tokens = tokenize_simple(text)
-    token_set = set(tokens)
-    found = []
-
-    for sym in known_symbols:
-        if sym in token_set:
-            found.append(sym)
-        elif "_" in sym:
-            parts = sym.split("_")
-            if all(part in token_set for part in parts):
-                found.append(sym)
-
-    return list(dict.fromkeys(found))
-
-
 def find_similar_examples(text, top_k=5):
     query_tokens = set(tokenize_simple(text))
     scores = []
@@ -256,32 +298,15 @@ def find_similar_examples(text, top_k=5):
     return [row for _, row in scores]
 
 
-def infer_emotions_themes_symbols(text):
+def infer_emotions(text):
     matches = find_similar_examples(text, top_k=5)
-
     emotions = []
-    themes = []
-    symbols = []
 
     for row in matches:
         emotions.extend(row["emotion_list"])
-        themes.extend(row["theme_list"])
-        symbols.extend(row["symbol_list"])
 
     emotions = pd.Series(emotions).value_counts().head(5).index.tolist() if emotions else []
-    themes = pd.Series(themes).value_counts().head(5).index.tolist() if themes else []
-    symbols = pd.Series(symbols).value_counts().head(5).index.tolist() if symbols else []
-
-    direct_symbols = detect_symbols(
-        text,
-        set(df_symbol_kb["symbol_name"].tolist())
-    )
-
-    for s in direct_symbols:
-        if s not in symbols:
-            symbols.insert(0, s)
-
-    return emotions, themes, symbols
+    return emotions
 
 
 def map_stress_for_model2(stress):
@@ -313,63 +338,8 @@ def retrieve_recommendation(pred_stress, inferred_emotions):
     return scored[0][1]["recommendation_text"]
 
 
-def summarize_symbols_naturally(symbols):
-    symbol_lines = []
-
-    for sym in symbols[:3]:
-        if sym in symbol_kb_dict:
-            summary = clean_text(symbol_kb_dict[sym]["traditional_summary_en"])
-            summary = summary.replace("May suggest ", "").strip()
-            summary = summary.rstrip(".")
-            symbol_lines.append((sym.replace("_", " "), summary))
-
-    return symbol_lines
-
-
-def build_interpretation_prompt(dream_text, stress, emotions, themes, symbols):
+def build_wellbeing_tips_prompt(dream_text, stress, emotions, fallback_tip):
     emotion_text = ", ".join(emotions[:5]) if emotions else "none clearly detected"
-    theme_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly detected"
-    symbol_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly detected"
-
-    symbol_summaries = summarize_symbols_naturally(symbols)
-    if symbol_summaries:
-        kb_text = "; ".join([f"{name}: {meaning}" for name, meaning in symbol_summaries[:3]])
-    else:
-        kb_text = "none"
-
-    return f"""
-You are a supportive dream reflection assistant.
-
-Dream text:
-{dream_text}
-
-Predicted stress level:
-{stress}
-
-Detected emotions:
-{emotion_text}
-
-Detected themes:
-{theme_text}
-
-Detected symbols:
-{symbol_text}
-
-Symbol meanings from knowledge base:
-{kb_text}
-
-Write one short interpretation paragraph in 4 to 5 sentences.
-Keep it calm, reflective, and non-clinical.
-Do not claim certainty.
-Do not say the dream predicts the future.
-Explain that the dream may reflect the person's emotional processing.
-""".strip()
-
-
-def build_wellbeing_tips_prompt(dream_text, stress, emotions, themes, symbols, fallback_tip):
-    emotion_text = ", ".join(emotions[:5]) if emotions else "none clearly detected"
-    theme_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly detected"
-    symbol_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly detected"
 
     return f"""
 You are a supportive well-being assistant.
@@ -382,12 +352,6 @@ Predicted stress level:
 
 Detected emotions:
 {emotion_text}
-
-Detected themes:
-{theme_text}
-
-Detected symbols:
-{symbol_text}
 
 Fallback support tip:
 {fallback_tip}
@@ -432,11 +396,8 @@ def is_bad_generated_text(text):
         "dream text:",
         "predicted stress level:",
         "detected emotions:",
-        "detected themes:",
-        "detected symbols:",
         "fallback support tip:",
         "you are a supportive",
-        "write one short interpretation",
         "write well-being tips",
     ]
 
@@ -451,21 +412,7 @@ def is_bad_generated_text(text):
 
 def analyze_dream(dream_text):
     stress, probs = predict_stress(dream_text)
-    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text)
-
-    interpretation_prompt = build_interpretation_prompt(
-        dream_text=dream_text,
-        stress=stress,
-        emotions=emotions,
-        themes=themes,
-        symbols=symbols,
-    )
-    interpretation = generate_text(
-        interpretation_prompt,
-        gen_tokenizer,
-        gen_model,
-        max_new_tokens=140,
-    )
+    emotions = infer_emotions(dream_text)
 
     fallback_tip = retrieve_recommendation(stress, emotions)
 
@@ -473,8 +420,6 @@ def analyze_dream(dream_text):
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
-        themes=themes,
-        symbols=symbols,
         fallback_tip=fallback_tip,
     )
     wellbeing_tips = generate_text(
@@ -484,29 +429,15 @@ def analyze_dream(dream_text):
         max_new_tokens=120,
     )
 
-    if is_bad_generated_text(interpretation):
-        interpretation = (
-            "This dream may reflect how your mind is processing recent emotions, pressure, "
-            "or unresolved thoughts. The dream content may be a symbolic expression of your "
-            "current inner state rather than something literal. It can be helpful to view it "
-            "as a reflection of emotional processing and personal stress."
-        )
-
     if is_bad_generated_text(wellbeing_tips):
         wellbeing_tips = fallback_tip
-
-    combined_wellbeing = f"{wellbeing_tips}\n\n{interpretation}"
 
     return {
         "dream_text": dream_text,
         "stress_level": stress,
         "stress_probs": probs,
         "emotions": emotions,
-        "themes": themes,
-        "symbols": symbols,
-        "interpretation": interpretation,
         "wellbeing_tips": wellbeing_tips,
-        "combined_wellbeing": combined_wellbeing,
     }
 
 
@@ -577,7 +508,10 @@ if st.button("Analyze Dream"):
 
         st.markdown('<div class="result-card">', unsafe_allow_html=True)
         st.subheader("Well-being tips")
-        st.write(result["combined_wellbeing"])
+        st.markdown(
+            f'<p><span class="highlight-text">{result["wellbeing_tips"]}</span></p>',
+            unsafe_allow_html=True
+        )
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.warning("Please enter a dream before analysis.")
