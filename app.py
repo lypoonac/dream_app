@@ -37,7 +37,7 @@ SYMBOL_KB_PATH = os.path.join(DATA_DIR, "symbol_kb.csv")
 DREAM_INTERPRETATIONS_PATH = os.path.join(DATA_DIR, "dreams_interpretations.csv")
 
 MODEL1_HF_NAME = "peterjerry111/dream-stress-classifier"
-MODEL2_HF_NAME = "google/flan-t5-base"
+MODEL2_HF_NAME = "peterjerry111/dream_interpretation_model"
 
 ID2LABEL = {0: "low", 1: "medium", 2: "high"}
 
@@ -356,38 +356,6 @@ def get_best_dataset_line(dream_text, df_interp):
     return one_line, [s for s, _ in matches[:5]]
 
 
-def build_one_line_prompt(dream_text, stress, emotions, dataset_line):
-    emotions_text = ", ".join(emotions[:5]) if emotions else "unclear"
-
-    prompt = f"""
-Rewrite the following dataset interpretation into one very simple natural line.
-
-Rules:
-- Output only one sentence.
-- Keep the meaning of the dataset line.
-- Use plain and clear English.
-- Do not mention dataset, model, stress level, emotions, analysis, or symbols.
-- Do not add advice.
-- If the dataset line is already simple, keep it simple.
-
-Dream:
-{dream_text}
-
-Stress level:
-{stress}
-
-Emotions:
-{emotions_text}
-
-Dataset interpretation line:
-{dataset_line}
-
-Simple one-line interpretation:
-""".strip()
-
-    return prompt
-
-
 def postprocess_interpretation(text, fallback_line):
     text = clean_text(text)
 
@@ -420,12 +388,14 @@ def postprocess_interpretation(text, fallback_line):
     return first_sentence
 
 
-def generate_text(prompt, tokenizer, model, max_new_tokens=40):
+def generate_symbol_interpretation(symbol, tokenizer, model, max_new_tokens=64):
+    prompt = f"interpret dream symbol: {symbol}"
+
     inputs = tokenizer(
         prompt,
         return_tensors="pt",
         truncation=True,
-        max_length=512,
+        max_length=64,
     )
     inputs = {k: v.to(DEVICE) for k, v in inputs.items()}
 
@@ -458,21 +428,16 @@ def analyze_dream(
 
     dataset_line, matched_symbols = get_best_dataset_line(dream_text, df_interp)
 
-    prompt = build_one_line_prompt(
-        dream_text=dream_text,
-        stress=stress,
-        emotions=emotions,
-        dataset_line=dataset_line,
-    )
-
-    generated_line = generate_text(
-        prompt,
-        gen_tokenizer,
-        gen_model,
-        max_new_tokens=40,
-    )
-
-    final_interpretation = postprocess_interpretation(generated_line, dataset_line)
+    if matched_symbols:
+        generated_line = generate_symbol_interpretation(
+            matched_symbols[0],
+            gen_tokenizer,
+            gen_model,
+            max_new_tokens=64,
+        )
+        final_interpretation = postprocess_interpretation(generated_line, dataset_line)
+    else:
+        final_interpretation = dataset_line
 
     return {
         "dream_text": dream_text,
@@ -532,7 +497,7 @@ st.markdown(
             1. Type your dream into the text box below.<br>
             2. Click <b>Analyze Dream</b> to start the analysis.<br>
             3. Review the predicted stress level and inferred emotions.<br>
-            4. Read the one-line dream interpretation grounded in the dataset and simplified by Model 2.<br>
+            4. Read the one-line dream interpretation generated from the matched dream symbol.<br>
             5. This tool supports reflection and early stress awareness, not diagnosis.
         </div>
     </div>
