@@ -1,6 +1,5 @@
 import os
 import re
-import time
 import random
 import html
 import numpy as np
@@ -11,7 +10,7 @@ import streamlit as st
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
-    AutoModelForSeq2SeqLM
+    AutoModelForSeq2SeqLM,
 )
 
 st.set_page_config(
@@ -31,7 +30,6 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
 LOGO_PATH = os.path.join(BASE_DIR, "axa_logo.png")
 
 MODEL1_PATH = os.path.join(DATA_DIR, "model1_train.csv")
@@ -130,7 +128,8 @@ def tokenize_simple(text):
 
 @st.cache_data
 def load_data():
-    for path in [MODEL1_PATH, MODEL2_PATH, MODEL2_BKUP_PATH, SYMBOL_KB_PATH]:
+    required_files = [MODEL1_PATH, MODEL2_PATH, MODEL2_BKUP_PATH, SYMBOL_KB_PATH]
+    for path in required_files:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Missing file: {path}")
 
@@ -159,7 +158,6 @@ def load_data():
         df_model2_bkup[col] = df_model2_bkup[col].apply(clean_text)
 
     df_model2_bkup["symbol_name"] = df_model2_bkup["symbol_name"].str.lower()
-    df_model2_bkup["default_stress"] = df_model2_bkup["default_stress"].str.lower()
 
     for col in ["symbol_name", "traditional_summary_en", "theme_tags", "emotion_hints", "stress_hint", "source_origin"]:
         df_symbol_kb[col] = df_symbol_kb[col].apply(clean_text)
@@ -289,7 +287,7 @@ def build_recommendation_prompt(dream_text, stress, emotions, themes, symbols):
     themes_text = ", ".join([t.replace("_", " ") for t in themes[:5]]) if themes else "none clearly inferred"
     symbols_text = ", ".join([s.replace("_", " ") for s in symbols[:5]]) if symbols else "none clearly inferred"
 
-    prompt = f"""
+    return f"""
 Give a short supportive recommendation based on this dream analysis.
 
 Dream: {dream_text}
@@ -301,8 +299,7 @@ Symbols: {symbols_text}
 Write only the recommendation in 2 to 3 sentences.
 Be calm, practical, and supportive.
 Do not repeat the prompt.
-"""
-    return prompt.strip()
+""".strip()
 
 
 def generate_text(prompt, tokenizer, model, max_new_tokens=100):
@@ -324,17 +321,16 @@ def generate_text(prompt, tokenizer, model, max_new_tokens=100):
             early_stopping=True
         )
 
-    text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-    return text
+    return tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
 
 
 def is_bad_recommendation(text):
     if not text:
         return True
 
-    low = text.lower()
+    low = text.lower().strip()
 
-    bad_starts = [
+    bad_prefixes = [
         "you are",
         "dream:",
         "stress level:",
@@ -345,7 +341,7 @@ def is_bad_recommendation(text):
         "write only the recommendation",
     ]
 
-    if any(low.startswith(x) for x in bad_starts):
+    if any(low.startswith(prefix) for prefix in bad_prefixes):
         return True
 
     if len(text.split()) < 6:
@@ -354,33 +350,43 @@ def is_bad_recommendation(text):
     return False
 
 
-def analyze_dream(dream_text, stress_tokenizer, stress_model, gen_tokenizer, gen_model, df_model1, df_model2, df_model2_bkup, df_symbol_kb):
+def analyze_dream(
+    dream_text,
+    stress_tokenizer,
+    stress_model,
+    gen_tokenizer,
+    gen_model,
+    df_model1,
+    df_model2,
+    df_model2_bkup,
+    df_symbol_kb,
+):
     stress = predict_stress(dream_text, stress_tokenizer, stress_model)
-    emotions, themes, symbols = infer_emotions_themes_symbols(dream_text, df_model1, df_symbol_kb, df_model2_bkup)
+    emotions, themes, symbols = infer_emotions_themes_symbols(
+        dream_text, df_model1, df_symbol_kb, df_model2_bkup
+    )
 
-    recommendation_prompt = build_recommendation_prompt(
+    prompt = build_recommendation_prompt(
         dream_text=dream_text,
         stress=stress,
         emotions=emotions,
         themes=themes,
-        symbols=symbols
+        symbols=symbols,
     )
 
     generated_recommendation = generate_text(
-        recommendation_prompt,
+        prompt,
         gen_tokenizer,
         gen_model,
-        max_new_tokens=100
+        max_new_tokens=100,
     )
 
     fallback_recommendation = retrieve_recommendation(stress, emotions, df_model2)
 
     if is_bad_recommendation(generated_recommendation):
         final_recommendation = fallback_recommendation
-        recommendation_source = "retrieved"
     else:
         final_recommendation = generated_recommendation
-        recommendation_source = "generated"
 
     return {
         "stress_level": stress,
@@ -388,8 +394,6 @@ def analyze_dream(dream_text, stress_tokenizer, stress_model, gen_tokenizer, gen
         "themes": themes,
         "symbols": symbols,
         "recommendation": final_recommendation,
-        "recommendation_source": recommendation_source,
-        "raw_generated_recommendation": generated_recommendation,
     }
 
 
@@ -444,16 +448,17 @@ if st.button("Analyze Dream"):
             st.subheader("Stress Level")
             st.markdown(
                 f"<div class='highlight-text'>{html.escape(result['stress_level'].upper())}</div>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
             st.markdown("</div>", unsafe_allow_html=True)
 
         with col2:
             st.markdown('<div class="result-card">', unsafe_allow_html=True)
             st.subheader("Emotions")
+            emotions_text = ", ".join(result["emotions"]) if result["emotions"] else "None"
             st.markdown(
-                f"<div class='highlight-text'>{html.escape(', '.join(result['emotions']) if result['emotions'] else 'None')}</div>",
-                unsafe_allow_html=True
+                f"<div class='highlight-text'>{html.escape(emotions_text)}</div>",
+                unsafe_allow_html=True,
             )
             st.markdown("</div>", unsafe_allow_html=True)
 
@@ -471,12 +476,6 @@ if st.button("Analyze Dream"):
         st.subheader("Recommendation")
         st.markdown(
             f"<div class='highlight-block'>{html.escape(result['recommendation'])}</div>",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         st.markdown("</div>", unsafe_allow_html=True)
-
-        st.caption(f"Recommendation source: {result['recommendation_source']}")
-
-        with st.expander("Debug"):
-            st.write("Raw generated recommendation:")
-            st.write(result["raw_generated_recommendation"])
