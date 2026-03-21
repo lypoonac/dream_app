@@ -246,15 +246,15 @@ st.markdown(
         }
 
         .tips-text {
-            color: var(--text-main);
+            color: var(--axa-blue);
             font-size: 1rem;
             line-height: 1.9;
             margin-top: 0.2rem;
         }
 
         .highlight-text {
-            background: linear-gradient(transparent 58%, rgba(255, 59, 67, 0.28) 58%);
-            color: #c1121f;
+            background: linear-gradient(transparent 58%, rgba(255, 255, 255, 0.95) 58%);
+            color: var(--axa-blue);
             font-weight: 700;
             padding: 0 0.08rem;
             display: inline;
@@ -410,9 +410,13 @@ st.markdown(
                 border-color: #2a3a5f;
             }
 
+            .tips-text {
+                color: #c8d7ff;
+            }
+
             .highlight-text {
-                background: linear-gradient(transparent 58%, rgba(255, 59, 67, 0.32) 58%);
-                color: #ff7b84;
+                background: linear-gradient(transparent 58%, rgba(255, 255, 255, 0.92) 58%);
+                color: #c8d7ff;
             }
         }
     </style>
