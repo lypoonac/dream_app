@@ -1,6 +1,7 @@
 import os
 import re
 import random
+import base64
 import numpy as np
 import pandas as pd
 import torch
@@ -55,7 +56,6 @@ st.markdown(
             --border-soft: #d9e2f2;
             --shadow-soft: 0 10px 30px rgba(6, 24, 70, 0.08);
             --shadow-strong: 0 18px 40px rgba(6, 24, 70, 0.12);
-            --highlight-yellow: #ffe96a;
         }
 
         .stApp {
@@ -253,8 +253,8 @@ st.markdown(
         }
 
         .highlight-text {
-            background: linear-gradient(transparent 58%, var(--highlight-yellow) 58%);
-            color: inherit;
+            background: linear-gradient(transparent 58%, rgba(255, 59, 67, 0.28) 58%);
+            color: #c1121f;
             font-weight: 700;
             padding: 0 0.08rem;
             display: inline;
@@ -363,7 +363,6 @@ st.markdown(
                 --text-soft: #a9b7d0;
                 --border-soft: #23314f;
                 --axa-blue-soft: rgba(77, 113, 255, 0.16);
-                --highlight-yellow: #f7df57;
                 --shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.28);
                 --shadow-strong: 0 18px 42px rgba(0, 0, 0, 0.34);
             }
@@ -409,6 +408,11 @@ st.markdown(
                 background: rgba(77, 113, 255, 0.14);
                 color: #dbe5ff;
                 border-color: #2a3a5f;
+            }
+
+            .highlight-text {
+                background: linear-gradient(transparent 58%, rgba(255, 59, 67, 0.32) 58%);
+                color: #ff7b84;
             }
         }
     </style>
@@ -675,7 +679,6 @@ st.markdown('<div class="app-shell">', unsafe_allow_html=True)
 
 logo_html = ""
 if os.path.exists(logo_path):
-    import base64
     with open(logo_path, "rb") as f:
         encoded = base64.b64encode(f.read()).decode()
     logo_html = f'<img src="data:image/png;base64,{encoded}" alt="AXA Health Logo" />'
